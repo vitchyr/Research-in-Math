@@ -17,6 +17,15 @@ def weighted_choice(weights):
         if rnd < total:
             return key
 
+def add_random_edge(graph):
+    while True:
+        node1 = random.choice(graph.nodes())
+        node2 = random.choice(graph.nodes())
+
+        if(node1 != node2 and not graph.has_edge(node1, node2)):
+            G.add_edge(node1, node2)
+            break
+
 def pr_function(I, c, ds, d0):
     return I * c / ds + (1.0 - I) / d0
 
@@ -25,39 +34,49 @@ def iterate(graph):
     
     if graph.degree(node) == 0:
         return
-
-    #Uninitialized
-    deg_min = -1
     
+    inverse_sum = 0.0
     for neighbor in graph.neighbors(node):    
-        if(deg_min == -1 or graph.degree(neighbor) < deg_min):
-            deg_min = graph.degree(neighbor)
+        inverse_sum += 1.0 / float(graph.degree(neighbor))
+
+    c = 1.0 / inverse_sum
 
     weights = {}
 
     for neighbor in graph.neighbors(node):    
-        weights[neighbor] = pr_function(I, deg_min, graph.degree(neighbor), 
+        weights[neighbor] = pr_function(I, c,  graph.degree(neighbor), 
             graph.degree(node))   
+
 
     node_to_defriend = weighted_choice(weights)
     graph.remove_edge(node, node_to_defriend)
 
-    other_nodes = copy.copy(graph.nodes())
-    other_nodes.remove(node)
-    new_node = random.choice(other_nodes)
+    #Rewire
+    if graph.degree(node) == len(graph.nodes()) - 1:
+        add_random_edge(graph)
+    else:
+        other_nodes = copy.copy(graph.nodes())
+        other_nodes.remove(node)
 
-    graph.add_edge(node, new_node)
-        
+        while True:
+            new_node = random.choice(other_nodes)
+            
+            if graph.has_edge(new_node, node):
+                other_nodes.remove(new_node)
+            else:
+                graph.add_edge(node, new_node)
+                break
+
 
 if __name__ == '__main__':
     
     #Set this stuff manually
-    graph = networkx.erdos_renyi_graph(10, .15)
-    times = 100
-    I = 0
+    graph = networkx.erdos_renyi_graph(40, .15)
+    times = 10000
+    I = 1
 
     for i in range(times):
         iterate(graph)
 
-    networkx.draw(graph)
+    networkx.draw_circular(graph)
     matplotlib.pyplot.show()
