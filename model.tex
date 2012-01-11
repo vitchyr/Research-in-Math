@@ -1,0 +1,30 @@
+\documentclass[a4paper,10pt]{article}
+
+%opening
+\title{}
+\author{}
+
+\begin{document}
+
+\section{Model Definition}
+
+The following is done in a single iteration. The process operates on a graph $G = (V, E)$.
+
+\begin{enumerate}
+ \item Chose a vertex $v_0$ randomly from the set of all vertices. 
+ \item Do nothing if $deg(v_0) = 0$. 
+ \item For some edge $e^*$ that is incident to $v_0$, break $e^*$ with probability
+
+ \begin{equation}
+  I \frac{c}{d^*} + (1 - I)\frac{1}{deg(v_0)}
+ \end{equation}
+
+where $d^*$ is the degree of the \emph{other} vertex that $e^*$ is incident to. 
+
+ \item Add a new edge $\{v_0, v'\}$ with $v'$ chosen randomly from $V \setminus \{v_0\}$.
+
+\end{enumerate}
+
+In the probability function, $c$ is some normalizing coeffecient such that $\frac{c}{d^*} \leq 1$. This is sufficient to normalize the entire probability function. The variable $I$ represents \emph{intolerance}. If $I = 0$, each edge has the same chance of being broken. If $I = 1$, the chance that $e^*$ is broken is $\frac{c}{d^*}$.
+
+\end{document}
