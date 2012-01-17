@@ -29,7 +29,7 @@ def add_random_edge(graph):
 def pr_function(I, c, ds, d0):
     return I * c / ds + (1.0 - I) / d0
 
-def iterate(graph):
+def iterate(graph, I):
     node = random.choice(graph.nodes())    
     
     if graph.degree(node) == 0:
@@ -71,12 +71,12 @@ def iterate(graph):
 if __name__ == '__main__':
     
     #Set this stuff manually
-    graph = networkx.erdos_renyi_graph(40, .15)
+    graph = networkx.erdos_renyi_graph(40, .025)
     times = 10000
     I = 1
 
     for i in range(times):
-        iterate(graph)
+        iterate(graph, I)
 
-    networkx.draw_circular(graph)
+    networkx.draw(graph)
     matplotlib.pyplot.show()
