@@ -7,7 +7,7 @@ class Entry:
 
     def __str__(self):
         return '%s|%s|%s|%s' % (self.I, self.gc_n_nodes, self.gc_diameter,
-            self.degree_stdev)
+            self.n_components)
 
 
 if __name__ == '__main__':
@@ -44,15 +44,12 @@ if __name__ == '__main__':
 
         entry.gc_n_nodes = max_size 
         entry.gc_diameter = networkx.diameter(components[max_size_id])
-
-        degree_list_stats = corestats.Stats(graph.degree().values())
-        entry.degree_median = degree_list_stats.median()
-        entry.degree_stdev = degree_list_stats.stdev()
+        entry.n_components = len(components)
 
         entries.append(entry)
         I += I_step
 
-    output = 'I|gc_n_nodes|gc_diameter|degree_stdev'
+    output = 'I|gc_n_nodes|gc_diameter|n_components'
 
     for entry in entries:
         output += '\n%s' % entry

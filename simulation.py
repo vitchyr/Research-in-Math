@@ -1,5 +1,6 @@
 import random
 import copy
+import math
 
 import networkx
 import matplotlib.pyplot
@@ -26,8 +27,10 @@ def add_random_edge(graph):
             G.add_edge(node1, node2)
             break
 
+#Unnormalized breaking probability
 def pr_function(I, c, ds, d0):
-    return I * c / ds + (1.0 - I) / d0
+    pr = math.cos(I) / ds + math.sin(I) / d0
+    return pr
 
 def iterate(graph, I):
     node = random.choice(graph.nodes())    
@@ -44,9 +47,8 @@ def iterate(graph, I):
     weights = {}
 
     for neighbor in graph.neighbors(node):    
-        weights[neighbor] = pr_function(I, c,  graph.degree(neighbor), 
+        weights[neighbor] = pr_function(I, c, graph.degree(neighbor), 
             graph.degree(node))   
-
 
     node_to_defriend = weighted_choice(weights)
     graph.remove_edge(node, node_to_defriend)
@@ -69,11 +71,10 @@ def iterate(graph, I):
 
 
 if __name__ == '__main__':
-    
     #Set this stuff manually
     graph = networkx.erdos_renyi_graph(40, .025)
     times = 10000
-    I = 1
+    I = 0
 
     for i in range(times):
         iterate(graph, I)
