@@ -1,6 +1,7 @@
 import simulation
 
 import corestats
+import matplotlib
 import networkx
 
 class Entry:
@@ -11,10 +12,10 @@ class Entry:
 
 
 if __name__ == '__main__':
-    n_nodes = 40
-    n_edges = 20
+    n_nodes = 10
+    n_edges = 5
 
-    n_simulations = 1000
+    n_simulations = 5
     n_iterations = 1000
 
     graph = networkx.gnm_random_graph(n_nodes, n_edges)
@@ -31,23 +32,19 @@ if __name__ == '__main__':
 
         components = networkx.connected_component_subgraphs(graph)
 
-        max_size = 0
-        max_size_id = 0
-
-        for i, component in enumerate(components):
-            if component.number_of_nodes() > max_size:
-                max_size = component.number_of_nodes()
-                max_size_id = i
-
         entry = Entry()
         entry.I = I
 
-        entry.gc_n_nodes = max_size 
-        entry.gc_diameter = networkx.diameter(components[max_size_id])
+        entry.gc_n_nodes = components[0].number_of_nodes()
+        entry.gc_diameter = networkx.diameter(components[0])
         entry.n_components = len(components)
 
         entries.append(entry)
         I += I_step
+
+        print entry
+        networkx.draw(graph)
+        matplotlib.pyplot.show()
 
     output = 'I|gc_n_nodes|gc_diameter|n_components'
 
