@@ -1,30 +1,54 @@
 \documentclass[a4paper,10pt]{article}
 
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{graphicx}
+
 %opening
-\title{}
-\author{}
+\title{A Social Network Model}
+\author{Sam Magura, Vitchyr Pong}
 
 \begin{document}
 
+\maketitle
+
+\section{Introduction}
+
+In this social network model, we choose a node and break one of its incident edges. The model is speical in that the node is less likely to break a connection with a high-degree neighbor. This behavior reflects real social behavior; relationships with popular, well-connected people are potentially more valuble than relationships with less well-connected people. The model takes a parameter $I$ --- a measure of \emph{intolerance} toward unpopular people --- that determines the extent to which the degrees of adjacent nodes affect the breaking probabilities. We predicted that changing $I$ make the model behave differently, but our simulations showed no relationship between $I$ and the model's macroscopic behavior. 
+
 \section{Model Definition}
 
-The following is done in a single iteration. The process operates on a graph $G = (V, E)$.
+The process operates on a graph $G = (V, E)$. An iteration consists of the following steps. 
 
 \begin{enumerate}
- \item Chose a vertex $v_0$ randomly from the set of all vertices. 
- \item Do nothing if $deg(v_0) = 0$. 
- \item For some edge $e^*$ that is incident to $v_0$, break $e^*$ with probability
+ \item Chose a vertex $v_0$ randomly from the set of all vertices with degree 1 or greater. 
+ \item Exactly one edge incident to $v_0$ will be broken. For an edge $e^*$ that is incident to $v_0$, let the chance that $e^*$ is broken be proportional to
 
  \begin{equation}
-  I \frac{c}{d^*} + (1 - I)\frac{1}{deg(v_0)}
+\label{eqn:pr-function}
+  I \frac{1}{d^*} + (1 - I)\frac{1}{deg(v_0)}
  \end{equation}
 
-where $d^*$ is the degree of the \emph{other} vertex that $e^*$ is incident to. 
+where $d^*$ is the degree of the \emph{other} vertex that $e^*$ is incident on. Let this equation be known as the probability function. 
 
- \item Add a new edge $\{v_0, v'\}$ with $v'$ chosen randomly from $V \setminus \{v_0\}$.
+ \item Select a vertex $v'$ from $V \setminus \{v_0\}$. If there already exists an edge $(v_0, v')$, select a new $v'$ from $V \setminus \{v_0\}$. Continue to select vertices until a $v'$ is selected that is not adjacent to $v_0$.
+
+ \item Add an edge $(v_0, v')$ to the graph. 
 
 \end{enumerate}
 
-In the probability function, $c$ is some normalizing coeffecient such that the sum of $\frac{c}{d^*}$ for all $d^*$ is no greater than 1. This is sufficient to normalize the entire probability function. The variable $I$ represents \emph{intolerance}. If $I = 0$, each edge has the same chance of being broken. If $I = 1$, the chance that $e^*$ is broken is $\frac{c}{d^*}$.
+\section{Results}
+
+We implemented the model in the Python programming language. In our implementation, the initial graph was $G(n, M)$ Erdos-Renyi random graph. We wrote an additional script to run the model many times with different values $I$ to see if the behavior of the model depended on $I$ is a significant way. The script performed 1000 iterations for each trial. It then gathered several statistics on the resultant graph: number of nodes in largest component, diameter of largest component, and number of components. We predicted that the size and diameter of the largest component would increase with $I$, while the number of components would decrease with $I$. 
+
+\begin{figure}[H]
+\begin{center}
+\subfloat{\includegraphics[height=3.5cm]{graphs/gt_ex1.png}}
+\hspace{1cm}
+\subfloat{\includegraphics[height=3.5cm]{graphs/gt_ex.png}}
+\caption{Results for $n = 40$ and $M = 20$.}
+\end{center}
+\end{figure} 
+
 
 \end{document}
