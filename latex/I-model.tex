@@ -43,12 +43,43 @@ We implemented the model in the Python programming language. In our implementati
 
 \begin{figure}[H]
 \begin{center}
-\subfloat{\includegraphics[height=3.5cm]{graphs/gt_ex1.png}}
-\hspace{1cm}
-\subfloat{\includegraphics[height=3.5cm]{graphs/gt_ex.png}}
-\caption{Results for $n = 40$ and $M = 20$.}
+\subfloat{\includegraphics[height=4cm]{images/gc_size.png}}
+\subfloat{\includegraphics[height=4cm]{images/gc_diameter.png}}
+\caption{Size and diameter of the largest component, for 40 nodes, 20 edges, and 1000 iterations per trial.}
 \end{center}
 \end{figure} 
+
+\begin{figure}[H]
+\begin{center}
+\subfloat{\includegraphics[height=4cm]{images/n_components.png}}
+\subfloat{\includegraphics[height=4cm]{images/n_components_mean.png}}
+\caption{Number of components and 20-trial means for number of components --- using 40 nodes, 20 edges, and 1000 iterations per trial.}
+\end{center}
+\end{figure} 
+
+We did not notice a substantial correlation between $I$ and the size of largest component, the diameter of the largest component, or the number of components. There appears to be a very slight negative correlation between $I$ and the 20-trial number-of-component means.
+
+%Vitchyr's ``sine wave''!
+
+\subsection{Model Variations}
+In attempt to get more interesting results, we tried several changes to the model. None of the changes produced correlations between $I$ and any of the three quantities we recorded.
+
+\begin{itemize}
+
+ \item We tried to change the probability function to increase the effect of $I$ on the breaking probabilities. For example,
+ \begin{equation}
+  I^2 \frac{1}{d^*} + (1 - I)^2\frac{1}{deg(v_0)}
+ \end{equation}
+and
+ \begin{equation}
+  sin(I) \frac{1}{d^*} + cos(I)\frac{1}{deg(v_0)}.
+ \end{equation}
+
+ Neither of these probability functions produced interesting results.
+
+ \item Instead of using a probability function, we modified the model so that $v_0$ would always break its connection with its neighbor of least degree --- and if there were multiple neighbors of least degree, chose which one to break with randomly. 
+
+\end{itemize}
 
 
 \end{document}
