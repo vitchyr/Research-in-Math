@@ -5,6 +5,12 @@ import math
 import networkx
 import matplotlib.pyplot
 
+##Model Options
+##1. Pick v_0 random & Break with probability
+##2. Pick v_0 randomly & Rewire with probability
+##3. Pick v_0 via e_0 & Break with probability
+##4. Pick v_0 via e_0 & Rewire with probability
+
 def weighted_choice(weights):
     totals = {}
     running_total = 0
@@ -18,66 +24,91 @@ def weighted_choice(weights):
         if rnd < total:
             return key
 
-def add_random_edge(graph):
-    while True:
-        node1 = random.choice(graph.nodes())
-        node2 = random.choice(graph.nodes())
-
-        if(node1 != node2 and not graph.has_edge(node1, node2)):
-            G.add_edge(node1, node2)
-            break
+def absolute_choice(weights):
+    return min(weights, key=weights.get)
 
 #Unnormalized breaking probability
-def pr_function(I, c, ds, d0):
-    pr = math.cos(I) / ds + math.sin(I) / d0
+def break_pr_function(I, d_neighbor, d_node):
+    pr = I / d_neighbor + (1-I) / d_node
     return pr
 
-def iterate(graph, I):
-    node = random.choice(graph.nodes())    
-    
-    if graph.degree(node) == 0:
-        return
-    
-    inverse_sum = 0.0
-    for neighbor in graph.neighbors(node):    
-        inverse_sum += 1.0 / float(graph.degree(neighbor))
+def rewire_pr_function(I, d_someNode, avg_deg):
+    pr = I * d_someNode + (1-I) * avg_deg
+    return pr
 
-    c = 1.0 / inverse_sum
-
+def breakWeighted(graph, I, node):
     weights = {}
-
     for neighbor in graph.neighbors(node):    
-        weights[neighbor] = pr_function(I, c, graph.degree(neighbor), 
+        weights[neighbor] = break_pr_function(I, graph.degree(neighbor), 
             graph.degree(node))   
 
-    node_to_defriend = weighted_choice(weights)
+    node_to_defriend = absolute_choice(weights)
     graph.remove_edge(node, node_to_defriend)
 
-    #Rewire
-    if graph.degree(node) == len(graph.nodes()) - 1:
-        add_random_edge(graph)
-    else:
-        other_nodes = copy.copy(graph.nodes())
-        other_nodes.remove(node)
+def rewireRandomly(graph, node):
+    other_nodes = copy.copy(graph.nodes())
+    other_nodes.remove(node)
+    while True:
+        new_node = random.choice(other_nodes)
+        if graph.has_edge(new_node, node):
+            other_nodes.remove(new_node)
+        else:
+            graph.add_edge(node, new_node)
+            break
 
-        while True:
-            new_node = random.choice(other_nodes)
+def rewireWeighted(graph, node, I):
+    graph_copy = copy.copy(graph.nodes()) #shallow copy of all potential nodes to make a new edge with
+    graph_copy.remove(node)
+    
+    for potentialNode in graph_copy: #remove nodes that already have an edge with *node*
+        if graph.has_edge(node, potentialNode):
+            graph_copy.remove(potentialNode)
             
-            if graph.has_edge(new_node, node):
-                other_nodes.remove(new_node)
-            else:
-                graph.add_edge(node, new_node)
-                break
+    #Probability Setup
+    weights = {}
+    avg_deg = len(graph.edges())/float(len(graph.nodes()))
+    
+    for someNode in graph_copy:    
+        weights[someNode] = rewire_pr_function(I, graph.degree(someNode), 
+            avg_deg)
+    #Choose new node to connect to
+    new_node = weighted_choice(weights)      
+    graph.add_edge(node, new_node)
+
+def iterate(graph, I, m): #m is the model number used (1-4)
+    if m<3:
+        node = random.choice(graph.nodes())
+    else:
+        node = random.choice(random.choice(graph.edges()))
+
+    #Checks:
+    if graph.degree(node) == 0:
+        return
+    if len(graph.neighbors(node)) == 0: #double check (didn't work without sometimes)
+        return
+
+    #Rewire
+    if m%2: #break weighted rewire randomly
+        breakWeighted(graph, I, node)
+        rewireRandomly(graph, node)
+        
+    else: #break evenly rewired weighted
+        graph.remove_edge(node, random.choice(graph.neighbors(node))) #breaks randomly
+        rewireWeighted(graph, node, I)
 
 
-if __name__ == '__main__':
-    #Set this stuff manually
-    graph = networkx.erdos_renyi_graph(40, .025)
-    times = 10000
-    I = 0
-
-    for i in range(times):
-        iterate(graph, I)
-
-    networkx.draw(graph)
-    matplotlib.pyplot.show()
+##if __name__ == '__main__':
+##    #Set this stuff manually
+##    try:
+##        n_nodes = input("How many nodes? ")
+##        n_edges = input("Make an edge withedges? ")
+##        I = float(input("What I value? "))
+##    graph = networkx.erdos_renyi_graph(40, .025)
+##    times = 100
+##    I = 1
+##
+##    for i in range(times):
+##        iterate(graph, I)
+##
+##    networkx.draw(graph)
+##    matplotlib.pyplot.show()
