@@ -68,8 +68,8 @@ In order to see why there were no correlations, we tracked the size and diameter
 \caption{How the size of the largest component changes as iterations are performed. The plot for diameter of largest component was similar.}
 \end{center}
 \end{figure} 
+The plot shows that the model is not stable, i.e. the size of the largest component does not approach a specific value. This is to be expected because an edge is broken each iteration, no matter what. The previous plot shows that, often times, over half of the graph's 20 edges are in the largest component. In an iteration where one of these edges is broken, the size of the largest component can only decrease or remain the same. Additionally, the value of $I$ does not restrict the graph from reaching any given state; at most, the value of $I$ could make a certain state less likely to reach. With the size of the largest component ranging from 5 to 21 --- for a graph with 40 nodes and 20 edges --- the existence of a correlation between this property of the graph and $I$ seems unlikely.
 
-The plot shows that the model is not directional --- i.e. the size of the largest component is neither steadily increasing nor steadily decreasing as iterations are performed. This is to be expected however, because the process is such that there are no stable graphs; an edge is broken each iteration, no matter what. Additionally, the value of $I$ does not restrict the graph from reaching any given state; at most, the value of $I$ can make a certain state less likely to reach. After reaching these conclusions, it makes sense that the metrics we measured were not correlated with $I$.
 \subsection{Model Variations}
 In attempt to get more interesting results, we tried several changes to the model. None of the changes produced correlations between $I$ and any of the three quantities we recorded.
 
@@ -81,7 +81,7 @@ In attempt to get more interesting results, we tried several changes to the mode
  \end{equation}
 and
  \begin{equation}
-  \frac{sin(I)}{deg(v^*)} + \frac{cos(I)}{deg(v_0)}.
+  \frac{sin(\frac{\pi}{4}I)}{deg(v^*)} + \frac{cos(\frac{\pi}{4}I)}{deg(v_0)}.
  \end{equation}
 
  \item Instead of using a probability function, we modified the model so that $v_0$ would always break its connection with its neighbor of least degree --- and if there were multiple neighbors of least degree, chose which one to break with randomly. 
