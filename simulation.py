@@ -42,7 +42,7 @@ def breakWeighted(graph, I, node):
         weights[neighbor] = break_pr_function(I, graph.degree(neighbor), 
             graph.degree(node))   
 
-    node_to_defriend = absolute_choice(weights)
+    node_to_defriend = weighted_choice(weights)
     graph.remove_edge(node, node_to_defriend)
 
 def rewireRandomly(graph, node):

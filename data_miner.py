@@ -31,7 +31,6 @@ if __name__ == '__main__':
     try:
         n_nodes = input("How many nodes? ")
         n_edges = input("How many edges? ")
-        I = 0.0
         n_steps = input("Use how many different I values? ")
         n_simulations = input("Average how many simulations per I value? ")
         n_iterations = input("Use how many iterations per I simulations? ")
@@ -44,6 +43,7 @@ What model do you want to use? ")
     except ValueError:
         print "Please enter integers.\n"
 
+    I = 0.0
     I_step = 1.0 / float(n_steps)
 
     output1 = 'I\tgc_n_nodes\tgc_diameter\tn_components\n'
@@ -65,8 +65,6 @@ What model do you want to use? ")
             gc_n_nodes_list.append(components[0].number_of_nodes())
             gc_diameter_list.append(networkx.diameter(components[0]))
             n_components_list.append(len(components))
-
-        components = networkx.connected_component_subgraphs(graph)
 
         entry = Entry()
         entry.I = I
