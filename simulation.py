@@ -29,7 +29,7 @@ def absolute_choice(weights):
 
 #Unnormalized breaking probability
 def break_pr_function(I, d_neighbor, d_node):
-    pr = I / d_neighbor + (1-I) / d_node
+    pr = float(I) / d_neighbor + float(1 - I) / d_node
     return pr
 
 def rewire_pr_function(I, d_someNode, avg_deg):
