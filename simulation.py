@@ -28,19 +28,24 @@ def absolute_choice(weights):
     return min(weights, key=weights.get)
 
 #Unnormalized breaking probability
-def break_pr_function(I, d_neighbor, d_node):
-    pr = float(I) / d_neighbor + float(1 - I) / d_node
+def break_pr_function(I, d_neighbor, avg_degree):
+    pr = float(I) / d_neighbor + float(1 - I) / avg_degree
     return pr
 
-def rewire_pr_function(I, d_someNode, avg_deg):
-    pr = I * d_someNode + (1-I) * avg_deg
+def rewire_pr_function(I, d_someNode, avg_degree):
+    pr = I * d_someNode + (1-I) * avg_degree
     return pr
+
+def get_avg_degree(graph):
+    return 2 * graph.number_of_edges() / float(graph.number_of_nodes()) 
 
 def breakWeighted(graph, I, node):
     weights = {}
+    avg_degree = get_avg_degree(graph)
+
     for neighbor in graph.neighbors(node):    
         weights[neighbor] = break_pr_function(I, graph.degree(neighbor), 
-            graph.degree(node))   
+            avg_degree)   
 
     node_to_defriend = weighted_choice(weights)
     graph.remove_edge(node, node_to_defriend)
@@ -66,11 +71,11 @@ def rewireWeighted(graph, node, I):
             
     #Probability Setup
     weights = {}
-    avg_deg = len(graph.edges())/float(len(graph.nodes()))
+    avg_degree = get_avg_degree(graph)
     
     for someNode in graph_copy:    
         weights[someNode] = rewire_pr_function(I, graph.degree(someNode), 
-            avg_deg)
+            avg_degree)
     #Choose new node to connect to
     new_node = weighted_choice(weights)      
     graph.add_edge(node, new_node)
