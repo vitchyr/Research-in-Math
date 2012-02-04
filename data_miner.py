@@ -40,7 +40,7 @@ if __name__ == '__main__':
     3: Pick v_0 via e_0 & Break with probability\n\
     4: Pick v_0 via e_0 & Rewire with probability\n\
 What model do you want to use? ")
-    except ValueError:
+    except (ValueError, SyntaxError):
         print "Please enter integers.\n"
 
     I = 0.0
@@ -50,6 +50,10 @@ What model do you want to use? ")
     output2 = 'Step\tgc_n_nodes\tgc_diameter\tn_components\n'
     
     for i in range(n_steps):
+
+        for j in range(1, 4):
+            if j * n_steps / 4 == i:
+                print(str(j * 25) + "% done")
 
         gc_n_nodes_list = []
         gc_diameter_list = []
