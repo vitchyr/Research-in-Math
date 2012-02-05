@@ -3,7 +3,6 @@
 \usepackage{subfig}
 \usepackage{float}
 \usepackage{graphicx}
-\usepackage{verbatim}
 
 %opening
 \title{Social Network Models}
@@ -65,13 +64,12 @@ Define the behavior of the \emph{rewiring-function model} as follows.
 where $\overline{deg}$ is the mean degree of the vertices in the graph. $I$ is in the range $[0, 1]$. This is the rewiring-function. We chose to use the mean degree here because the values of the two terms of the rewiring-function should be balanced. 
 
 \end{description}
-\begin{comment}
 
 \section{Results}
 
-\subsection{Breaking-function Model}
+We implemented the two variations of the model in the Python programming language. In our implementation, the initial graph is $G(n, M)$ Erdos-Renyi random graph. We wrote an additional script to run the model many times with different values of $I$ to see if the behavior of the model depended on $I$ in a significant way. For each trial, the script !!!!!!!!It then gathered several statistics on the resultant graph: number of nodes in largest component, diameter of largest component, and number of components. We predicted that the size and diameter of the largest component would increase with $I$, while the number of components would decrease with $I$. 
 
-%We implemented the model in the Python programming language. In our implementation, the initial graph is $G(n, M)$ Erdos-Renyi random graph. We wrote an additional script to run the model many times with different values of $I$ to see if the behavior of the model depended on $I$ in a significant way. The script performed 1000 iterations for each trial. It then gathered several statistics on the resultant graph: number of nodes in largest component, diameter of largest component, and number of components. We predicted that the size and diameter of the largest component would increase with $I$, while the number of components would decrease with $I$. 
+\subsection{Breaking-function Model}
 
 \begin{figure}[H]
 \begin{center}
@@ -120,5 +118,6 @@ and
 
 \end{itemize}
  None of these changes produced correlations.
-\end{comment}
+
+
 \end{document}
