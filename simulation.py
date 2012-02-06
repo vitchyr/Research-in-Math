@@ -80,7 +80,10 @@ def rewireWeighted(graph, node, I):
     new_node = weighted_choice(weights)      
     graph.add_edge(node, new_node)
 
+    return weights[new_node]
+
 def iterate(graph, I, m): #m is the model number used (1-4)
+
     if m<3:
         node = random.choice(graph.nodes())
     else:
@@ -98,8 +101,15 @@ def iterate(graph, I, m): #m is the model number used (1-4)
         rewireRandomly(graph, node)
         
     else: #break evenly rewired weighted
-        graph.remove_edge(node, random.choice(graph.neighbors(node))) #breaks randomly
-        rewireWeighted(graph, node, I)
+        old_node = random.choice(graph.neighbors(node)) 
+        graph.remove_edge(node, old_node) 
+
+        #this stuff for markov.py
+        R_new_node = rewireWeighted(graph, node, I)
+        R_old_node = rewire_pr_function(I, graph.degree(old_node), 
+            get_avg_degree(graph))
+
+        return R_new_node / R_old_node
 
 
 ##if __name__ == '__main__':
