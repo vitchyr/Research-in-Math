@@ -9,6 +9,9 @@ def print_progress(i, times):
     if i % (times / 10) == 0 and i != 0:
         print('{:.0%} done'.format(float(i)/times))
 
+def abs_diff(n1, n2):
+    return abs(n1 - n2) / ((n1 + n2) / 2)
+
 def get_V1(graph):
     V1 = [] 
 
@@ -41,15 +44,14 @@ def rewire_pr_function(I, d_someNode, avg_degree):
 def get_avg_degree(graph):
     return 2 * graph.number_of_edges() / float(graph.number_of_nodes()) 
 
-def break_weighted(graph, I, node):
+def break_weighted_select(graph, I, node):
     weights = {}
 
     for neighbor in graph.neighbors(node):    
         weights[neighbor] = break_pr_function(I, graph.degree(neighbor), 
             graph.avg_degree)   
 
-    node_to_defriend = weighted_choice(weights)
-    graph.remove_edge(node, node_to_defriend)
+    return weighted_choice(weights)
 
 def rewire_randomly(graph, node):
     other_nodes = copy.copy(graph.nodes())
@@ -89,6 +91,7 @@ def iterate(graph, I, model_no):
     #is in an intermediate state
     graph.avg_degree = get_avg_degree(graph)
 
+    #TODO: DON'T SELECT NODE ADJACENT TO ALL OTHERS... FIX THIS SOMEHOW
     while True:
         node = random.choice(graph.nodes())
 
@@ -97,8 +100,9 @@ def iterate(graph, I, model_no):
 
     #break-function model
     if model_no == 1: 
-        break_weighted(graph, I, node)
+        old_node = break_weighted_select(graph, I, node)
         rewire_randomly(graph, node)
+        graph.remove_edge(old_node, node)
         
     #rewire-function model
     else: 
