@@ -16,7 +16,7 @@ def get_V1(graph):
     V1 = [] 
 
     for node, degree in graph.degree_iter():
-        if degree > 0:
+        if degree > 0 and degree < graph.number_of_nodes() - 1:
             V1.append(node)
 
     return V1 
@@ -91,11 +91,11 @@ def iterate(graph, I, model_no):
     #is in an intermediate state
     graph.avg_degree = get_avg_degree(graph)
 
-    #TODO: DON'T SELECT NODE ADJACENT TO ALL OTHERS... FIX THIS SOMEHOW
     while True:
         node = random.choice(graph.nodes())
 
-        if graph.degree(node) > 0:
+        if(graph.degree(node) > 0 and
+            graph.degree(node) < graph.number_of_nodes() - 1):
             break
 
     #break-function model
