@@ -49,35 +49,37 @@ def rewire_randomly(graph, node):
             graph.add_edge(node, new_node)
             break
 
-def rewire_weighted(graph, node, I):
-    nodes_copy = copy.copy(graph.nodes()) 
-    nodes_copy.remove(node)
-   
-    #Remove nodes already adjacent to v0 
-    for potential_node in nodes_copy: 
-        if graph.has_edge(node, potential_node):
-            nodes_copy.remove(potential_node)
-            
+def get_Vout(graph, v0):
+    Vout = []
+
+    for node in graph.nodes_iter():
+        if not graph.has_edge(v0, node) and node != v0:
+            Vout.append(node)
+
+    return Vout
+
+def rewire_weighted_select(graph, node, I):
     weights = {}
-    
-    for some_node in nodes_copy:    
+   
+    #BIG CHANGE: Don't let v0 rewire to the node it just broke with 
+    #Hopefully this doesn't screw up our other curves
+    for some_node in get_Vout(graph, node):
         weights[some_node] = rewire_pr_function(I, graph.degree(some_node), 
             graph.avg_degree)
 
-    #Select new node
-    new_node = weighted_choice(weights)      
-    graph.add_edge(node, new_node)
+    #Return selected node
+    return weighted_choice(weights)      
 
-    return weights[new_node]
 
 def iterate(graph, I, model_no):
-    #avg_degree is actually constant - just make sure it's set
+    #avg_degree is actually constant, but can get messed up when graph
+    #is in an intermediate state
     graph.avg_degree = get_avg_degree(graph)
 
     while True:
         node = random.choice(graph.nodes())
 
-        if graph.degree(node) > 1:
+        if graph.degree(node) > 0:
             break
 
     #break-function model
@@ -88,16 +90,10 @@ def iterate(graph, I, model_no):
     #rewire-function model
     else: 
         old_node = random.choice(graph.neighbors(node)) 
+        new_node = rewire_weighted_select(graph, node, I)
+
         graph.remove_edge(node, old_node) 
-
-        #this stuff for markov.py
-        R_new_node = rewire_weighted(graph, node, I)
-        R_old_node = rewire_pr_function(I, graph.degree(old_node), 
-            get_avg_degree(graph))
-
-        if R_old_node != 0:
-            return R_new_node / R_old_node
-
+        graph.add_edge(node, new_node)
 
 if __name__ == '__main__':
     try:
