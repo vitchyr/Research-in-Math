@@ -2,7 +2,6 @@ import networkx
 import simulation
 import flux
 
-
 def get_unnormalized_pi(graph, I):
     V1 = simulation.get_V1(graph)
 
@@ -30,7 +29,7 @@ if __name__ == '__main__':
     I = 0
     n_nodes = 5
     n_edges = 3
-    times = 20000
+    times = 1000000
 
     counters = {}
 
@@ -62,13 +61,10 @@ if __name__ == '__main__':
     unnormalized_pi_sum = sum(unnormalized_pi.values())
 
     for edge_set in counters:
-        obs_pi[edge_set] = counters[edge_set]/float(times)
+        obs_pi[edge_set] = counters[edge_set]/float(sum(counters.values()))
         exp_pi[edge_set] = unnormalized_pi[edge_set]/unnormalized_pi_sum
 
-        dev = abs(obs_pi[edge_set] - exp_pi[edge_set])
-        avg = (obs_pi[edge_set] + exp_pi[edge_set]) / 2
-
-        diffs.append(dev/avg)
+        diffs.append(simulation.abs_diff(obs_pi[edge_set], exp_pi[edge_set]))
 
     mean_diff = sum(diffs) / float(len(diffs))
 
