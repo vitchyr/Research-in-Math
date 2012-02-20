@@ -5,6 +5,19 @@ import sys
 import networkx
 import matplotlib
 
+def print_progress(i, times):
+    if i % (times / 10) == 0 and i != 0:
+        print('{:.0%} done'.format(float(i)/times))
+
+def get_V1(graph):
+    V1 = [] 
+
+    for node, degree in graph.degree_iter():
+        if degree > 0:
+            V1.append(node)
+
+    return V1 
+
 def weighted_choice(weights):
     totals = {}
     running_total = 0

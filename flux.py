@@ -1,5 +1,4 @@
 import simulation
-import markov
 
 import networkx
 import sys
@@ -14,7 +13,7 @@ def get_c(G, v0, I):
     return 1.0 / total
 
 def get_exp_flux(G, v0, v_H, I):
-    V1 = markov.get_V1(G)
+    V1 = simulation.get_V1(G)
     c = get_c(G, v0, I)
     R = simulation.rewire_pr_function(I, G.degree(v_H), 
         simulation.get_avg_degree(G))
@@ -25,20 +24,21 @@ def get_obs_flux(from_graph, to_set, I, times):
     hits = 0
 
     for i in range(times):
+        simulation.print_progress(i, times)
+
         temp_graph = from_graph.copy()
         simulation.iterate(temp_graph, I, 2)
         
         if(frozenset(temp_graph.edges()) == to_set):
             hits += 1
 
-    print('Hits: {0}'.format(hits))
     return float(hits) / times
 
 def main():
     n_nodes = 5
     n_edges = 3
-    I = 0.0
-    times = 10000
+    I = 0.5
+    times = 100000
     
     while True:
         G = networkx.gnm_random_graph(n_nodes, n_edges)
@@ -61,7 +61,13 @@ def main():
 
     obs_flux = get_obs_flux(G, set_H, I, times)
     exp_flux = get_exp_flux(G, v0, v_H, I)
-    print(obs_flux, exp_flux)
+
+    print('')
+    print('G = {0}\n'.format(set_G))
+    print('H = {0}\n'.format(set_H))
+
+    print('Observed flux = {0}'.format(obs_flux))
+    print('Expected flux = {0}'.format(exp_flux))
 
 if __name__ == '__main__':
     main()
