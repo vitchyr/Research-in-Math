@@ -2,7 +2,30 @@ import networkx
 import simulation
 import flux
 
-def get_unnormalized_pi(graph, I):
+def get_unnormalized_pi_break(graph, I):
+    V1 = simulation.get_V1(graph)
+
+    unnormalized_pi = 0.0
+
+    for v0 in V1:
+        product = 1.0
+        c_denom = 0.0
+
+        for v in graph.neighbors(v0):
+            B = simulation.break_pr_function(I, graph.degree(v), 
+                simulation.get_avg_degree(graph))
+
+            c_denom += B
+            product *= 1.0 / B
+
+        c = 1.0 / c_denom
+
+        Vout = simulation.get_Vout(graph, v0)
+        unnormalized_pi += product * (len(V1) * len(Vout)) / c
+
+    return unnormalized_pi
+
+def get_unnormalized_pi_rewire(graph, I):
     V1 = simulation.get_V1(graph)
 
     unnormalized_pi = 0.0
@@ -21,15 +44,16 @@ def get_unnormalized_pi(graph, I):
 
         c = 1.0 / c_denom
 
-        unnormalized_pi += product * (len(V1) * graph.degree(v0)) / c
+        unnormalized_pi += product * (len(V1) * (graph.degree(v0))) / c
 
     return unnormalized_pi
 
 if __name__ == '__main__':
     I = 0
-    n_nodes = 5
-    n_edges = 3
-    times = 1000000
+    n_nodes = 3
+    n_edges = 1
+    times = 400000
+    model_no = 1
 
     counters = {}
 
@@ -40,8 +64,7 @@ if __name__ == '__main__':
     for i in xrange(times):
         simulation.print_progress(i, times)
 
-        #Rewire-function model
-        simulation.iterate(graph, I, 2)
+        simulation.iterate(graph, I, model_no)
 
         #networkx orients the edges automatically
         edge_set = frozenset(graph.edges())
@@ -52,7 +75,13 @@ if __name__ == '__main__':
             counters[edge_set] = 1
 
         if edge_set not in unnormalized_pi:
-            unnormalized_pi[edge_set] = get_unnormalized_pi(graph, I) 
+
+            if model_no == 1:
+                unnormalized_pi[edge_set] =\
+                    get_unnormalized_pi_break(graph, I)
+            else:
+                unnormalized_pi[edge_set] =\
+                    get_unnormalized_pi_rewire(graph, I) 
        
     obs_pi = {}
     exp_pi = {}
