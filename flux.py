@@ -69,6 +69,9 @@ def main():
     print('Observed flux = {0}'.format(obs_flux))
     print('Expected flux = {0}'.format(exp_flux))
 
+    diff = simulation.abs_diff(obs_flux, exp_flux)
+    print('Difference = {:.2%}'.format(diff))
+
 if __name__ == '__main__':
     main()
 
