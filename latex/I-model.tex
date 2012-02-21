@@ -44,18 +44,18 @@ Performing these steps will always be possible, provided $|V_1| > 0$. Otherwise,
 Define the behavior of the \emph{breaking-function model} as follows.
 
 \begin{description}
- \item[The breaking step]
+ \item[The breaking choice]
 
- For an edge $e^*$ that is incident to $v_0$, let the chance that $e^*$ is broken be proportional to
+ Let the chance that some edge $\{v_0, v\} \in E$ is chosen be proportional to
 
  \begin{equation}
 \label{eqn:breaking-function}
-  \frac{I}{deg(v^*)} + \frac{1 - I}{\overline{deg}}
+ B(v) = \frac{I}{deg(v)} + \frac{1 - I}{\overline{deg}}
  \end{equation}
 
-where $v^*$ is the \emph{other} vertex that $e^*$ is incident on, and $\overline{deg}$ is the mean degree of the vertices in the graph. $I$ is in the range $[0, 1]$. This is the breaking-function. We chose to use the mean degree here because the values of the two terms of the breaking-function should be balanced. 
+where $\overline{deg}$ is the mean degree of the vertices in the graph. $I$ is in the range $[0, 1]$. This is the \emph{breaking function}. We chose to use the mean degree here because the values of the two terms of the breaking function should be balanced. Additionally, the second term should be independent of $v_0$ and $v$.
 
- \item[The rewiring step] Select uniformly from $V'$ to get $v'$.
+ \item[The rewiring choice] Randomly select a $v'$ from $V_{out}(v_0)$.
 \end{description}
 
 \subsection{Rewiring-function Model}
@@ -63,16 +63,18 @@ where $v^*$ is the \emph{other} vertex that $e^*$ is incident on, and $\overline
 Define the behavior of the \emph{rewiring-function model} as follows.
 
 \begin{description}
- \item[The breaking step] Let each edge incident on $v_0$ have the same chance of being broken.
+ \item[The breaking choice] Let each edge incident on $v_0$ have the same chance of being broken.
 
- \item[The rewiring step] For a vertex $v^* \in V'$, let the chance that $v^*$ is selected be proportional to
+ \item[The rewiring choice] For a vertex $v \in V_{out}(v_0)$, let the chance that $v$ is selected be proportional to
 
  \begin{equation}
 \label{eqn:rewiring-function}
-  I \cdot deg(v^*) + (1 - I) \cdot \overline{deg}
+ R(v) = I \cdot deg(v) + (1 - I) \cdot \overline{deg}
  \end{equation}
 
-where $\overline{deg}$ is the mean degree of the vertices in the graph. $I$ is in the range $[0, 1]$. This is the rewiring-function. We chose to use the mean degree here because the values of the two terms of the rewiring-function should be balanced. 
+where $\overline{deg}$ is the mean degree of the vertices in the graph. This is the \emph{rewiring function}. Unlike in the breaking function, $I$ is in the range $[0, 1)$. We do not allow $I$ to equal 1 in order to avoid a potential problem. If $I = 1$, and each vertex in $v \in V_{out}(v_0)$ has a degree of 0, then $R(v) = 0$ for each $v$, and the rewiring choice cannot be made. 
+  
+\paragraph{} The mean degree is used in the rewiring function because the values of the two terms should be balanced. Additionally, the second term should be independent of $v_0$ and $v^*$.
 
 \end{description}
 
