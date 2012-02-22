@@ -55,8 +55,8 @@ def get_obs_flux(from_graph, to_set, I, times, model_no):
     return float(hits) / times
 
 def main():
-    n_nodes = 5
-    n_edges = 3
+    n_nodes = 3
+    n_edges = 2
     I = 0.5
     times = 100000
     model_no = 2
@@ -65,7 +65,6 @@ def main():
         G = networkx.gnm_random_graph(n_nodes, n_edges)
         set_G = set(G.edges())
     
-        #Rewire-function
         H = G.copy()
         simulation.iterate(H, I, model_no)
         set_H = set(H.edges())
