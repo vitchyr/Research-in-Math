@@ -30,13 +30,14 @@ The process operates on a graph $G = (V, E)$.
 \begin{itemize}
  \item A vertex $v \in V$ is a member of the set $\mathbf{V_1}$ if and only if $0 < deg(v) < |V| - 1$.
  \item A vertex $v \in V$ is a member of the set $\mathbf{V_{out}(v_0)}$ if and only if $v \neq v_0$ and $\{v, v_0\} \notin E$. 
+ \item A vertex $v \in V$ is a member of the set $\mathbf{V_{in}(v_0)}$ if and only if $\{v, v_0\} \in E$. 
 \end{itemize}
 
 \paragraph{Outline} An iteration consists of the following steps. The specifics of the breaking choice and the rewiring choice are defined separately for each of the two models.
 
 \begin{enumerate}
  \item Choose a vertex $v_0$ randomly from $V_1$. 
- \item \emph{The breaking choice.} Choose an edge $\{v_0, v^*\} \in E$. 
+ \item \emph{The breaking choice.} Choose a vertex $v^* \in V_{in}(v_0)$. 
  \item \emph{The rewiring choice.} Choose a vertex $v' \in V_{out}(v_0)$.
  \item Remove the edge $\{v_0, v^*\}$ from the graph.
  \item Add an edge $\{v_0, v'\}$ to the graph.
@@ -52,7 +53,7 @@ Define the behavior of the \emph{breaking-function model} as follows.
 \begin{description}
  \item[The breaking choice]
 
- Let the chance that some edge $\{v_0, v\} \in E$ is chosen be proportional to
+ Let the chance that some vertex $v \in V_{in}(v_0)$ is chosen be proportional to
 
  \begin{equation}
 \label{eqn:breaking-function}
@@ -69,7 +70,7 @@ where $\overline{deg}$ is the mean degree of the vertices in the graph. $I$ is i
 Define the behavior of the \emph{rewiring-function model} as follows.
 
 \begin{description}
- \item[The breaking choice] Let each edge incident on $v_0$ have the same chance of being broken.
+ \item[The breaking choice] Let each vertex $v$ adjacent to $v_0$ have the same chance of being chosen.
 
  \item[The rewiring choice] For a vertex $v \in V_{out}(v_0)$, let the chance that $v$ is selected be proportional to
 
@@ -89,7 +90,7 @@ where $\overline{deg}$ is the mean degree of the vertices in the graph. This is 
 Both models are Markov Chains. That is, the probability that the current state will change from $G$ to $H$ is dependent only on $G$ and $H$, not on which states were previously visited, or the number of iterations that have been performed. Thus, the transition probability from $G$ to $H$ can be written as $P(G, H)$. To begin analyzing the models as Markov Chains, we must first define what a state is.
 
 \begin{defn}
- A graph $G = (V_G, E_G)$ and a graph $H = (V_H, E_H)$ are the same state in the Markov Chain if and only if $E_G = E_H$.
+ A graph $G = (V, E_G)$ and a graph $H = (V, E_H)$ are the same state in the Markov Chain if and only if $E_G = E_H$.
 \end{defn}
 
 This definition applies to both models. Note that, even if two graphs are isomorphic, they are not necessarily the same state; the labeling of the vertices must also be the same. Both the break-function and rewire-function models are defined such that the current state changes each iteration --- in a single iteration, one edge is removed and another, different edge is added. Thus, $P(G, G) = 0$ for any state $G$.
@@ -107,10 +108,45 @@ In this section, we determine the probability of transitioning from a state $G$ 
 \end{figure}
  \end{center}
 
-Any two states $G$ and $H$ such that $P(G, H) \neq 0$ fit the general outline given in Figure \ref{fig:example-states}. There is only one $v_0$ that can result in a transition from $G$ to $H$ or $H$ to $G$. There are 0 or more vertices --- like $v_1$ --- that are adjacent to $v_0$ in both states, and there are 0 or more vertices --- like $v_2$ --- that are not adjacent to $v_0$ in either state. Finally, $G$ has some edge $\{v_0, v_G\}$ that $H$ does not, and $H$ has some edge $\{v_0, v_H\}$ that $G$ does not.
+Any two states $G$ and $H$ such that $P(G, H) \neq 0$ fit the general outline given in Figure \ref{fig:example-states}. The \emph{pivot vertex} $v_P$ is the only possible $v_0$ that can result in a transition from $G$ to $H$ or $H$ to $G$. There are 0 or more vertices --- like $v_1$ --- that are adjacent to $v_P$ in both states, and there are 0 or more vertices --- like $v_2$ --- that are not adjacent to $v_P$ in either state. Finally, the \emph{the transition condition} must be met.
 
-\paragraph{Breaking-function model}
+\begin{defn}
+ States $G$ and $H$ meet the \textbf{transition condition} on pivot vertex $v_P$ if and only if $G$ has exactly one edge $\{v_P, v_G\}$ that $H$ does not, $H$ has exactly one edge $\{v_P, v_H\}$ that $G$ does not, and all other edges present in $G$ are also present in $H$. 
+\end{defn}
 
+\subsubsection{Breaking-function Model}
+
+For states $G$ and $H$ that satisfy the transition condition on $v_P$, the following events must occur for a transition from $G$ to $H$.
+
+\begin{enumerate}
+ \item In the first step, $v_P$ must be selected. Because $v_0$ is selected randomly from $V_1(G)$, the probability that $v_P$ is chosen as $v_0$ is $1 / |V_1(G)|$.
+ \item The vertex $v_G$ must be chosen in the breaking choice. The chance that this occurs is $c_B(v_P \in G) \cdot B(v_G \in G)$. In order to avoid ambiguous notation later on, we choose to explicitly state which graph each function is evaluated in. The factor $c_B(v_P \in G)$ is a normalizing coefficient sufficient to normalize the breaking function values for each neighbor of $v_P$. That is,
+
+   \begin{equation}
+    c_B(v_P \in G) = \frac{1}{\sum \limits_{v \in V_{in}(v_P)} B(v \in G)}.
+   \end{equation}
+
+
+ \item The vertex $v_H$ must be chosen in the rewiring choice. Since the rewiring choice is made by selecting randomly from $V_{out}(v_P \in G)$, the chance that $v_H$ is chosen is $1 / |V_{out}(v_P \in G)|$.  
+\end{enumerate}
+
+All of these events must occur for a transition from $G$ to $H$. We multiply the three probabilities from the preceding list to reach the following conclusion:
+
+\begin{theorem}
+For two states $G$ and $H$ that satisfy the transition condition on $v_P$, the transition probability from $G$ to $H$ in the breaking-function model is given by
+\begin{equation}
+\label{eqn:breaking-trans-prob}
+P(G, H) = \frac{c_B(v_P \in G) \cdot B(v_G \in G)}{|V_1(G)| \cdot |V_{out}(v_P \in G)|}.
+\end{equation}
+\end{theorem}
+
+\subsubsection{Rewiring-function Model}
+
+\subsection{Equilibrium Distribution}
+
+\subsubsection{Breaking-function model}
+
+\subsubsection{Rewiring-function Model}
 
 \section{Dependence on $I$}
 
