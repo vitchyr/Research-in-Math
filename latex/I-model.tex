@@ -3,6 +3,12 @@
 \usepackage{subfig}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsthm}
+
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{theorem}{Theorem}
 
 %opening
 \title{Degree-dependent Social Network Models}
@@ -78,56 +84,69 @@ where $\overline{deg}$ is the mean degree of the vertices in the graph. This is 
 
 \end{description}
 
+\section{Markov Chain Probabilities}
+
+Both models are Markov Chains. That is, the probability that the current state will change from $G$ to $H$ is dependent only on $G$ and $H$, not on which states were previously visited, or the number of iterations that have been performed. Thus, the transition probability from $G$ to $H$ can be written as $P(G, H)$. To begin analyzing the models as Markov Chains, we must first define what a state is.
+
+\begin{defn}
+ A graph $G = (V_G, E_G)$ and a graph $H = (V_H, E_H)$ are the same state in the Markov Chain if and only if $E_G = E_H$.
+\end{defn}
+
+This definition applies to both models. Note that, even if two graphs are isomorphic, they are not necessarily the same state; the labeling of the vertices must also be the same. Both the break-function and rewire-function models are defined such that the current state changes each iteration --- in a single iteration, one edge is removed and another, different edge is added. Thus, $P(G, G) = 0$ for any state $G$.
+
+\subsection{Transition Probabilities}
+
 \section{Empirical Results}
 
-We implemented the two variations of the model in the Python programming language. In our implementation, the initial graph is $G(n, M)$ Erdos-Renyi random graph. We wrote an additional script to run the model many times with different values of $I$ to see if the behavior of the model depended on $I$ in a significant way. For each trial, the script !!!!!!!!It then gathered several statistics on the resultant graph: number of nodes in largest component, diameter of largest component, and number of components. We predicted that the size and diameter of the largest component would increase with $I$, while the number of components would decrease with $I$. 
+We implemented the two variations of the model in the Python programming language. In our implementation, the initial graph is $G(n, M)$ Erdos-Renyi random graph. We wrote an additional script to run the model many times with different values of $I$ to see if the behavior of the model depended on $I$ in a significant way. For each trial, the script performed a large number of iterations. It then gathered several statistics on the resultant graph: number of nodes in largest component, diameter of largest component, and number of components. We predicted that the size and diameter of the largest component would increase with $I$, while the number of components would decrease with $I$. 
 
 \subsection{Breaking-function Model}
-
+\begin{comment}
 \begin{figure}[H]
 \begin{center}
-\subfloat{\includegraphics[height=4cm]{images/gc_size.png}}
-\subfloat{\includegraphics[height=4cm]{images/gc_diameter.png}}
+\subfloat{\includegraphics[height=4cm]}
+\subfloat{\includegraphics[height=4cm]{}}
 \caption{Size and diameter of the largest component, for 40 nodes, 20 edges, and 1000 iterations per trial.}
 \end{center}
 \end{figure} 
 
 \begin{figure}[H]
 \begin{center}
-\subfloat{\includegraphics[height=4cm]{images/n_components.png}}
-\subfloat{\includegraphics[height=4cm]{images/n_components_mean.png}}
+\subfloat{\includegraphics[height=4cm]{}}
+\subfloat{\includegraphics[height=4cm]{}}
 \caption{Number of components and 20-trial means for number of components --- using 40 nodes, 20 edges, and 1000 iterations per trial.}
 \end{center}
 \end{figure} 
 
-%We did not notice a substantial correlation between $I$ and the size of largest component, the diameter of the largest component, or the number of components. There appears to be a very slight negative correlation between $I$ and the 20-trial number-of-component means.
+We did not notice a substantial correlation between $I$ and the size of largest component, the diameter of the largest component, or the number of components.
 
-%In order to see why there were no correlations, we tracked the size and diameter of the largest component of the graph as iterations were performed. The following plot of size of largest component versus iteration number $i$ explains why there were no correlations. 
+In order to see why there were no correlations, we tracked the size and diameter of the largest component of the graph as iterations were performed. The following plot of size of largest component versus iteration number $i$ explains why there were no correlations. 
 
 \begin{figure}[H]
 \label{fig:gc-size-iter}
 \begin{center}
-\includegraphics[height=5cm]{images/gc_size_iter.png}
+\includegraphics[height=5cm]{}
 \caption{How the size of the largest component changes as iterations are performed. The plot for diameter of largest component was similar.}
 \end{center}
 \end{figure} 
-The plot shows that the model is not stable, i.e. the size of the largest component does not approach a specific value. This is to be expected because an edge is broken each iteration, no matter what. The previous plot shows that, often times, over half of the graph's 20 edges are in the largest component. In an iteration where one of these edges is brokeng, the size of the largest component can only decrease or remain the same. Additionally, the value of $I$ does not restrict the graph from reaching any given state; at most, the value of $I$ could make a certain state less likely to reach. With the size of the largest component ranging from 5 to 21 --- for a graph with 40 nodes and 20 edges --- the existence of a correlation between this property of the graph and $I$ seems unlikely.
 
-\subsection{Model Variations}
-In attempt to get more interesting results, we tried several changes to the model. None of the changes produced correlations between $I$ and any of the three quantities we recorded.
+The plot shows that the breaking-function model is not stable. That is, the size of the largest component does not approach a specific value. The plot shows that, often times, over half of the graph's 20 edges are in the largest component. In an iteration where one of these edges is broken, the size of the largest component can only decrease or remain the same. With the size of the largest component ranging from 5 to 21 --- for a graph with 40 nodes and 20 edges --- the existence of a correlation between this property of the graph and $I$ seems unlikely.
+\end{comment}
+\subsubsection{Breaking-function Model Variations}
+In attempt to get more interesting results, we tried several changes to the breaking-function model. None of the changes produced correlations between $I$ and any of the three quantities we recorded.
 
 \begin{itemize}
 
- \item We tried to change the probability function to increase the effect of $I$ on the breaking probabilities. For example,
+ \item We tried to change the breaking function itself to increase the effect of $I$ on the breaking probabilities. For example,
  \begin{equation}
-  \frac{I^2}{deg(v^*)} + \frac{(1 - I)^2}{deg(v_0)}
+  B(v) = \frac{I^2}{deg(v^)} + \frac{(1 - I)^2}{\overline{deg}}
  \end{equation}
 and
  \begin{equation}
-  \frac{sin(\frac{\pi}{4}I)}{deg(v^*)} + \frac{cos(\frac{\pi}{4}I)}{deg(v_0)}.
+  B(v) = \frac{sin(\frac{\pi}{4}I)}{deg(v^*)} + \frac{cos(\frac{\pi}{4}I)}{\overline{deg}}.
  \end{equation}
 
- \item Instead of using a probability function, we modified the model so that $v_0$ would always break its connection with its neighbor of least degree --- and if there were multiple neighbors of least degree, chose which one to break with randomly. 
+ \item Instead of using a breaking function, we modified the model so that $v_0$ would always break its connection with its neighbor of least degree --- and if there were multiple neighbors of least degree, chose which one to break with randomly. 
 
 \end{itemize}
  None of these changes produced correlations.
