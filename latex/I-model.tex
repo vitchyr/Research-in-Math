@@ -85,8 +85,9 @@ where $\overline{deg}$ is the mean degree of the vertices in the graph. This is 
 
 \end{description}
 
-\section{Markov Chain Probabilities}
+\section{Transition Probabilities}
 
+\subsection{Markov Chain Definition}
 Both models are Markov Chains. That is, the probability that the current state will change from $G$ to $H$ is dependent only on $G$ and $H$, not on which states were previously visited, or the number of iterations that have been performed. Thus, the transition probability from $G$ to $H$ can be written as $P(G, H)$. To begin analyzing the models as Markov Chains, we must first define what a state is.
 
 \begin{defn}
@@ -95,9 +96,8 @@ Both models are Markov Chains. That is, the probability that the current state w
 
 This definition applies to both models. Note that, even if two graphs are isomorphic, they are not necessarily the same state; the labeling of the vertices must also be the same. Both the break-function and rewire-function models are defined such that the current state changes each iteration --- in a single iteration, one edge is removed and another, different edge is added. Thus, $P(G, G) = 0$ for any state $G$.
 
-\subsection{Transition Probabilities}
-
-In this section, we determine the probability of transitioning from a state $G$ to some other state $H$.
+\subsection{Transition Condition}
+We are interested in determining the probability of transitioning from a state $G$ to some other state $H$.
 
  \begin{center}
 \begin{figure}[H]
@@ -114,9 +114,9 @@ Any two states $G$ and $H$ such that $P(G, H) \neq 0$ fit the general outline gi
  States $G$ and $H$ meet the \textbf{transition condition} on pivot vertex $v_P$ if and only if $G$ has exactly one edge $\{v_P, v_G\}$ that $H$ does not, $H$ has exactly one edge $\{v_P, v_H\}$ that $G$ does not, and all other edges present in $G$ are also present in $H$. 
 \end{defn}
 
-\subsubsection{Breaking-function Model}
+\subsection{Breaking-function Model}
 
-For states $G$ and $H$ that satisfy the transition condition on $v_P$, the following events must occur for a transition from $G$ to $H$.
+For states $G$ and $H$ that satisfy the transition condition on $v_P$, the following events must occur for a transition from $G$ to $H$ in the breaking-function model.
 
 \begin{enumerate}
  \item In the first step, $v_P$ must be selected. Because $v_0$ is selected randomly from $V_1(G)$, the probability that $v_P$ is chosen as $v_0$ is $1 / |V_1(G)|$.
@@ -133,6 +133,7 @@ For states $G$ and $H$ that satisfy the transition condition on $v_P$, the follo
 All of these events must occur for a transition from $G$ to $H$. We multiply the three probabilities from the preceding list to reach the following conclusion:
 
 \begin{theorem}
+\label{thm:breaking-trans-prob}
 For two states $G$ and $H$ that satisfy the transition condition on $v_P$, the transition probability from $G$ to $H$ in the breaking-function model is given by
 \begin{equation}
 \label{eqn:breaking-trans-prob}
@@ -140,17 +141,66 @@ P(G, H) = \frac{c_B(v_P \in G) \cdot B(v_G \in G)}{|V_1(G)| \cdot |V_{out}(v_P \
 \end{equation}
 \end{theorem}
 
-\subsubsection{Rewiring-function Model}
+\subsection{Rewiring-function Model}
 
-\subsection{Equilibrium Distribution}
+For states $G$ and $H$ that satisfy the transition condition on $v_P$, the following events must occur for a transition from $G$ to $H$ in the rewiring-function model.
 
-\subsubsection{Breaking-function model}
+\begin{enumerate}
+ \item In the first step, $v_P$ must be selected. Because $v_0$ is selected randomly from $V_1(G)$, the probability that $v_P$ is chosen as $v_0$ is $1 / |V_1(G)|$.
+ \item The vertex $v_G$ must be chosen in the breaking choice. Because a vertex is selected randomly from $V_{in}(v_P \in G)$, i.e. the set of the neighbors of $v_P$,  the chance the $v_G$ is selected is $1/|V_{in}(v_P \in G)|$. Note that this probability is equal to $1 / deg(v_P \in G)$. 
 
-\subsubsection{Rewiring-function Model}
+ \item The vertex $v_H$ must be chosen in the rewiring choice. The chance that this occurs is $c_R(v_P \in G) \cdot R(v_H \in G)$. The factor $c_R(v_P \in G)$ is a normalizing coefficient sufficient to normalize the rewiring function values for each neighbor of $v_P$. That is,
+
+   \begin{equation}
+    c_R(v_P \in G) = \frac{1}{\sum \limits_{v \in V_{out}(v_P \in G)} R(v \in G)}.
+   \end{equation}
+\end{enumerate}
+
+All of these events must occur for a transition from $G$ to $H$. We multiply the three probabilities from the preceding list to reach the following conclusion:
+
+\begin{theorem}
+\label{thm:rewiring-trans-prob}
+For two states $G$ and $H$ that satisfy the transition condition on $v_P$, the transition probability from $G$ to $H$ in the rewiring-function model is given by
+\begin{equation}
+\label{eqn:rewiring-trans-prob}
+P(G, H) = \frac{c_R(v_P \in G) \cdot R(v_G \in G)}{|V_1(G)| \cdot |V_{in}(v_P \in G)|}.
+\end{equation}
+\end{theorem}
+
+Looking back on Equation \ref{eqn:breaking-trans-prob}, we see that the rewiring-function model transition probability is the same as the breaking-function transition probability, except with $c_R$ instead of $c_B$, $R$ instead of $B$, and $|V_{in}|$ instead of $|V_{out}|$.
+
+\subsection{Verification of Results}
+
+We implemented the two models in the Python programming language. To test our proposed transition probabilities, we created an additional Python program that implements the following procedure. The procedure can be applied to either model.
+
+\begin{enumerate}
+ \item Generate a $G(n, M)$ Erdos-Renyi graph with user-specified values for the number of vertices $n$ and the number of edges $M$. Call this initial state $G$.
+ \item Make a copy $H$ of $G$. Perform a single iteration on $H$.
+ \item Determine the pivot vertex $v_P$ for which $G$ and $H$ satisfy the transition condition.
+ \item \emph{Measure} the transition probability $P(G, H)$ by repeating the following subroutine $L$ times. The counter $C$ is initially set to 0.
+
+    \begin{enumerate}
+      \item Make a copy $G'$ of $G$.
+      \item Perform an iteration on $G'$.
+      \item If $G'$ is the same state as $H$, increment the counter $C$ by 1.
+    \end{enumerate}
+
+  The observed transition probability from $G$ to $H$ is $\frac{C}{L}$.
+
+ \item Calculate the \emph{expected} transition probability, using either Theorem \ref{thm:breaking-trans-prob} for the breaking-function model or Theorem \ref{thm:rewiring-trans-prob} for the rewiring-function model.
+
+ \item Calculate and report the percent difference $\varepsilon$ between the observed and expected transition probabilities.
+\end{enumerate}  
+
+\section{Equilibrium Distribution}
+
+\subsection{Breaking-function model}
+
+\subsection{Rewiring-function Model}
 
 \section{Dependence on $I$}
 
-We implemented the two variations of the model in the Python programming language. In our implementation, the initial graph is $G(n, M)$ Erdos-Renyi random graph. We wrote an additional script to run the model many times with different values of $I$ to see if the behavior of the model depended on $I$ in a significant way. For each trial, the script performed a large number of iterations. It then gathered several statistics on the resultant graph: number of nodes in largest component, diameter of largest component, and number of components. We predicted that the size and diameter of the largest component would increase with $I$, while the number of components would decrease with $I$. 
+We wrote an additional script to run the model many times with different values of $I$ to see if the behavior of the model depended on $I$ in a significant way. For each trial, the script performed a large number of iterations. It then gathered several statistics on the resultant graph: number of nodes in largest component, diameter of largest component, and number of components. We predicted that the size and diameter of the largest component would increase with $I$, while the number of components would decrease with $I$. 
 
 \subsection{Breaking-function Model}
 \begin{comment}
