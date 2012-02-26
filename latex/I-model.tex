@@ -272,18 +272,63 @@ First, rearrange the factors of the detailed balance condition.
 Substituting in the proposed $\pi$ on the left-hand side, and the transition probability from Equation \ref{eqn:breaking-trans-prob} on the right-hand side, we have
 
 \begin{equation}
- \frac{C(H, v_P)}{C(G, v_P)} \cdot \frac{B(v_1 \in H) \cdot B(v_2 \in H) \cdots B(v_H \in H)}
+ \frac{K_B(H, v_P)}{K_B(G, v_P)} \cdot \frac{B(v_1 \in H) \cdot B(v_2 \in H) \cdots B(v_H \in H)}
 {B(v_1 \in G) \cdot B(v_2 \in G) \cdots B(v_G \in G)} = 
-\frac{C(H, v_P) B(v_H \in H)}{C(G, v_P) B(v_G \in G)}
+\frac{K_B(H, v_P) B(v_H \in H)}{K_B(G, v_P) B(v_G \in G)}
 \end{equation}
 where $v_1$, $v_2$, and so on, are members of both $V_{in}(v_P \in G)$ and $V_{in}(v_P \in H)$. However, there is a vertex $v_G$ that $v_P$ is adjacent to in $G$ but not in $H$, and a vertex $v_H$ that $v_P$ is adjacent to in $H$ but not in $G$. Furthermore, only the degrees of $v_G$ and $v_H$ differ between the two states. Therefore, $B(v \in H) = B(v \in G)$ if $v$ is a member of both $V_{in}(v_P \in G)$ and $V_{in}(v_P \in H)$. Using this, the left-hand side can be simplified drastically:
 
 \begin{equation}
-  \frac{C(H, v_P)}{C(G, v_P)} \cdot \frac{B(v_H \in H)}{B(v_G \in G)} = 
-\frac{C(H, v_P) B(v_H \in H)}{C(G, v_P) B(v_G \in G)}.
+  \frac{K_B(H, v_P)}{K_B(G, v_P)} \cdot \frac{B(v_H \in H)}{B(v_G \in G)} = 
+\frac{K_B(H, v_P) B(v_H \in H)}{K_B(G, v_P) B(v_G \in G)}.
 \end{equation}
 Thus, the detailed balance condition holds.
 
+\end{proof}
+
+\subsubsection{Rewire-function model}
+Now we modify the result and proof from the previous section to work with the rewire-function model.
+
+\begin{defn}
+ Let $K_R(G, v_P)$ be the part of the rewire-function model transition probability $P(G, H)$ that is independent of $H$. Thus,
+
+\begin{equation}
+ K_R(G, v_P) = \frac{c_R(v_P \in G)}{|V_1(G)| \cdot |V_{in}(v_P \in G)|}.
+\end{equation}
+ 
+\end{defn}
+
+\begin{prop}
+ In the rewire-function model, the detailed balance condition, restricted such that states $G$ and $H$ meet the transition condition on a certain pivot vertex $v_P$, is satisfied by
+
+ \begin{equation}
+ \label{eqn:pi-k1-rewire}
+  \pi(G, v_P) = \frac{k_1}{K_R(G, v_P)} 
+ \prod \limits_{v \in V_{out}(v_P \in G)} \frac{1}{R(v \in G)}
+ \end{equation}
+where $k_1$ is a constant.
+\end{prop}
+
+\begin{proof}
+First, rearrange the factors of the detailed balance condition. 
+
+\begin{equation}
+ \frac{\pi(G)}{\pi(H)} = \frac{P(H, G)}{P(G, H)}
+\end{equation}
+Substituting in the proposed $\pi$ on the left-hand side, and the transition probability from Equation \ref{eqn:rewiring-trans-prob} on the right-hand side, we have
+
+\begin{equation}
+ \frac{K_R(H, v_P)}{K_R(G, v_P)} \cdot \frac{R(v_1 \in H) \cdot R(v_2 \in H) \cdots R(v_G \in H)}
+{R(v_1 \in G) \cdot R(v_2 \in G) \cdots R(v_H \in G)} = 
+\frac{K_R(H, v_P) B(v_H \in H)}{K_R(G, v_P) B(v_G \in G)}
+\end{equation}
+where $v_1$, $v_2$, and so on, are members of both $V_{out}(v_P \in G)$ and $V_{out}(v_P \in H)$. However, there is a vertex $v_G$ that $v_P$ is adjacent to in $G$ but not in $H$, and a vertex $v_H$ that $v_P$ is adjacent to in $H$ but not in $G$. Furthermore, only the degrees of $v_G$ and $v_H$ differ between the two states. Therefore, $R(v \in H) = R(v \in G)$ if $v$ is a member of both $V_{out}(v_P \in G)$ and $V_{out}(v_P \in H)$. Using this, the left-hand side can be simplified drastically:
+
+\begin{equation}
+  \frac{K_R(H, v_P)}{K_R(G, v_P)} \cdot \frac{R(v_H \in H)}{R(v_G \in G)} = 
+\frac{K_R(H, v_P) R(v_H \in H)}{K_R(G, v_P) R(v_G \in G)}.
+\end{equation}
+Thus, the detailed balance condition holds.
 
 \end{proof}
 
@@ -344,5 +389,8 @@ and
 \end{itemize}
  None of these changes produced correlations.
 
+\section{Effects on Network Structure}
+
+\section{Conclusion}
 
 \end{document}
