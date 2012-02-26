@@ -241,15 +241,10 @@ We can now determine the equilibrium distribution $\pi$ using the expressions we
 We can confirm that the chains are reversible by finding the equilibrium distribution $\pi$ that satisfies the detailed balance condition for all states $G$ and $H$. Unlike in the previous section, we prove our result for both models simultaneously.
 
 \subsection{Definitions}
-
-\begin{defn}
-Let $\delta(G, v_P)$ be the set of all states $G'$ such that $G$ and $G'$ satisfy the transition condition on $v_P$.
-\end{defn}
-
 The transition probabilities $P(G, H)$ for each model can be separated into two distinct parts: the part that depends on $H$, and the part that is independent of $H$.
 
 \begin{defn} 
-For states $G$ and $H$ that meet the transition condition on $v_P$ define $C(G, v_P)$ to be the part of the transition probability $P(G, H)$ that is indepenent $H$.
+For states $G$ and $H$ that meet the transition condition on $v_P$, define $C(G, v_P)$ to be the part of the transition probability $P(G, H)$ that is independent of $H$.
 \end{defn}
 
 \begin{itemize}
@@ -266,11 +261,10 @@ For states $G$ and $H$ that meet the transition condition on $v_P$ define $C(G, 
 \end{equation}
 
 \end{itemize}
-
 Now we consider the factor we have left out.
 
 \begin{defn} 
-For states $G$ and $H$ that meet the transition condition on $v_P$ define $f(G, H)$ to be the part of the transition probability $P(G, H)$ that does depend on $H$.
+For states $G$ and $H$ that meet the transition condition on $v_P$, define $f(G, H)$ to be the part of the transition probability $P(G, H)$ that does depend on $H$.
 \end{defn}
 
 \begin{itemize}
@@ -288,12 +282,35 @@ While $H$ is not explicitly mentioned in the right-hand side of this equation, r
 \end{equation}
 
 \end{itemize}
-
 Thus, a transition probability in either model can be expressed as
 
 \begin{equation}
  P(G, H) = C(G, v_P) \cdot f(G, H).
 \end{equation}
+
+\begin{prop}
+ Let there be three states $G$, $H$, and $J$ such that each pair of states meets the transition condition on $v_P$. Then,
+
+ \begin{equation}
+  f(G, J) = f(H, J).
+ \end{equation}
+ 
+\end{prop}
+
+\begin{proof}
+ For the break-function model, 
+
+ For the rewire-function model, $f(G, J) = R(v_J \in G)$.
+\end{proof}
+
+
+
+Now we make one final definition:
+
+\begin{defn}
+Let $\delta(G, v_P)$ be the set of all states $G'$ such that $G$ and $G'$ satisfy the transition condition on $v_P$.
+\end{defn}
+
 
 \subsection{Restricted Case}
 
@@ -302,7 +319,7 @@ Thus, a transition probability in either model can be expressed as
 
  \begin{equation}
 \label{eqn:pi-k1}
-  \pi(G, v_P) = k_1 \prod \limits_{H \in \delta(G, v_P)} \frac{1}{F(G, H)}
+  \pi(G, v_P) = \frac{k_1}{C(G, v_P)} \prod \limits_{H \in \delta(G, v_P)} \frac{1}{f(G, H)}
  \end{equation}
 where $k_1$ is a constant.
 \end{prop}
@@ -327,8 +344,8 @@ Now, we rearrange the factors of the detailed balance condition.
 Substituting the equilibrium probabilities $\pi$ proposed in Equation \ref{eqn:pi-k1}, we have
 
 \begin{equation}
- \frac{P(H, J_0) \cdot P(H, J_1) \cdot P(H, J_2) \cdots P(H, G)}
-{P(G, J_0) \cdot P(G, J_1) \cdot P(G, J_2) \cdots P(G, H)} = 
+ \frac{C(H, v_P)}{C(G, v_P)} \cdot \frac{f(H, J_0) \cdot f(H, J_1) \cdot f(H, J_2) \cdots f(H, G)}
+{f(G, J_0) \cdot f(G, J_1) \cdot f(G, J_2) \cdots f(G, H)} = 
 \frac{P(H, G)}{P(G, H)}
 \end{equation}
 where $J_0$, $J_1$, $J_2$, and so on, are members of both $\delta(G, v_P)$ and $\delta(H, v_P)$. From Equations \ref{eqn:deltaG} and \ref{eqn:deltaH}, we know that the 
