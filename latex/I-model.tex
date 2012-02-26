@@ -137,8 +137,9 @@ All of these events must occur for a transition from $G$ to $H$. We multiply the
 For two states $G$ and $H$ that satisfy the transition condition on $v_P$, the transition probability from $G$ to $H$ in the breaking-function model is given by
 \begin{equation}
 \label{eqn:breaking-trans-prob}
-P(G, H) = \frac{c_B(v_P \in G) \cdot B(v_G \in G)}{|V_1(G)| \cdot |V_{out}(v_P \in G)|}.
+P(G, H) = \frac{c_B(v_P \in G) \cdot B(v_G \in G)}{|V_1(G)| \cdot |V_{out}(v_P \in G)|}
 \end{equation}
+where $v_G$ is the vertex that is adjacent to $v_P$ in $G$ but not $H$.
 \end{theorem}
 
 \subsection{Rewiring-function Model}
@@ -163,8 +164,9 @@ All of these events must occur for a transition from $G$ to $H$. We multiply the
 For two states $G$ and $H$ that satisfy the transition condition on $v_P$, the transition probability from $G$ to $H$ in the rewiring-function model is given by
 \begin{equation}
 \label{eqn:rewiring-trans-prob}
-P(G, H) = \frac{c_R(v_P \in G) \cdot R(v_G \in G)}{|V_1(G)| \cdot |V_{in}(v_P \in G)|}.
+P(G, H) = \frac{c_R(v_P \in G) \cdot R(v_H \in G)}{|V_1(G)| \cdot |V_{in}(v_P \in G)|}
 \end{equation}
+where $v_H$ is the vertex that is adjacent to $v_P$ in $H$ but not $G$.
 \end{theorem}
 
 Looking back on Equation \ref{eqn:breaking-trans-prob}, we see that the rewiring-function model transition probability is the same as the breaking-function transition probability, except with $c_R$ instead of $c_B$, $R$ instead of $B$, and $|V_{in}|$ instead of $|V_{out}|$.
@@ -228,11 +230,33 @@ Trials $L$ & Relative difference $\varepsilon$ \\
 \end{table}
 
 
-
-
 \section{Equilibrium Distribution}
 
+We can now determine the equilibrium distribution $\pi$ using the expressions we derived for the transition probabilities $P(G, H)$. If a transition from state $G$ to state $H$ is possible, a transition from state $H$ to state $G$ is also possible; because of this, we suspect both models are \emph{reversible} Markov chains. That is, that both models satisfy the \emph{detailed balance condition}:
+
+\begin{equation}
+ \pi(G) P(G, H) = \pi(H) P(H, G).
+\end{equation}
+
+We can confirm that the chains are reversible by finding the equilibrium distribution $\pi$ that satisfies the detailed balance condition for all states $G$ and $H$. The first step of the derivation is the same for both models. Consider the detailed balance condition for a certain pivot vertex $v_P$. 
+
+\begin{defn}
+Let $\delta(G, v_P)$ be the set of all states $G'$ such that $G$ and $G'$ satisfy the transition condition on $v_P$.
+\end{defn}
+
+For states $G$ and $H$ that satisfy the transition condition on $v_P$, $G$ can transition to $H$ while $H$ cannot, and $H$ can transition to $G$ while $G$ cannot. That is,
+
+\begin{equation}
+ \delta(G, v_P) \setminus \delta(H, v_P) = \{H\}
+\end{equation}
+and
+\begin{equation}
+ \delta(H, v_P) \setminus \delta(G, v_P) = \{G\}.
+\end{equation}
+
+
 \subsection{Breaking-function model}
+
 
 \subsection{Rewiring-function Model}
 
