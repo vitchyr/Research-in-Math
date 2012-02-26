@@ -238,122 +238,53 @@ We can now determine the equilibrium distribution $\pi$ using the expressions we
  \pi(G) P(G, H) = \pi(H) P(H, G).
 \end{equation}
 
-We can confirm that the chains are reversible by finding the equilibrium distribution $\pi$ that satisfies the detailed balance condition for all states $G$ and $H$. Unlike in the previous section, we prove our result for both models simultaneously.
-
-\subsection{Definitions}
-The transition probabilities $P(G, H)$ for each model can be separated into two distinct parts: the part that depends on $H$, and the part that is independent of $H$.
-
-\begin{defn} 
-For states $G$ and $H$ that meet the transition condition on $v_P$, define $C(G, v_P)$ to be the part of the transition probability $P(G, H)$ that is independent of $H$.
-\end{defn}
-
-\begin{itemize}
- \item For the break-function model,
-
-\begin{equation}
- C(G, v_P) = \frac{c_B(v_P \in G)}{|V_1(G)| \cdot |V_{out}(v_P \in G)|}.
-\end{equation}
-
- \item For the rewire-function model,
-
-\begin{equation}
- C(G, v_P) = \frac{c_R(v_P \in G)}{|V_1(G)| \cdot |V_{in}(v_P \in G)|}.
-\end{equation}
-
-\end{itemize}
-Now we consider the factor we have left out.
-
-\begin{defn} 
-For states $G$ and $H$ that meet the transition condition on $v_P$, define $f(G, H)$ to be the part of the transition probability $P(G, H)$ that does depend on $H$.
-\end{defn}
-
-\begin{itemize}
- \item For the break-function model,
-
-\begin{equation}
- f(G, H) = B(v_G \in G).
-\end{equation}
-While $H$ is not explicitly mentioned in the right-hand side of this equation, recall that $v_G$ is the vertex that is adjacent to $v_P$ in $G$ but not $H$.
-
- \item For the rewire-function model,
-
-\begin{equation}
- f(G, H) = R(v_H \in G).
-\end{equation}
-
-\end{itemize}
-Thus, a transition probability in either model can be expressed as
-
-\begin{equation}
- P(G, H) = C(G, v_P) \cdot f(G, H).
-\end{equation}
-
-\begin{prop}
- Let there be three states $G$, $H$, and $J$ such that each pair of states meets the transition condition on $v_P$. Then,
-
- \begin{equation}
-  f(G, J) = f(H, J).
- \end{equation}
- 
-\end{prop}
-
-\begin{proof}
- For the break-function model, 
-
- For the rewire-function model, $f(G, J) = R(v_J \in G)$.
-\end{proof}
-
-
-
-Now we make one final definition:
-
-\begin{defn}
-Let $\delta(G, v_P)$ be the set of all states $G'$ such that $G$ and $G'$ satisfy the transition condition on $v_P$.
-\end{defn}
-
+We can confirm that the chains are reversible by finding the equilibrium distribution $\pi$ that satisfies the detailed balance condition for all states $G$ and $H$. 
 
 \subsection{Restricted Case}
 
+\subsubsection{Break-function model}
+\begin{defn}
+ Let $K_B(G, v_P)$ be the part of the break-function model transition probability $P(G, H)$ that is independent of $H$. Thus,
+
+\begin{equation}
+ K_B(G, v_P) = \frac{c_B(v_P \in G)}{|V_1(G)| \cdot |V_{out}(v_P \in G)|}.
+\end{equation}
+ 
+\end{defn}
+
 \begin{prop}
- The detailed balance condition, restricted such that states $G$ and $H$ meet the transition condition on a certain pivot vertex $v_P$, is satisfied by
+ In the break-function model, the detailed balance condition, restricted such that states $G$ and $H$ meet the transition condition on a certain pivot vertex $v_P$, is satisfied by
 
  \begin{equation}
-\label{eqn:pi-k1}
-  \pi(G, v_P) = \frac{k_1}{C(G, v_P)} \prod \limits_{H \in \delta(G, v_P)} \frac{1}{f(G, H)}
+ \label{eqn:pi-k1-break}
+  \pi(G, v_P) = \frac{k_1}{K_B(G, v_P)} 
+ \prod \limits_{v \in V_{in}(v_P \in G)} \frac{1}{B(v \in G)}
  \end{equation}
 where $k_1$ is a constant.
 \end{prop}
 
 \begin{proof}
-For states $G$ and $H$ that satisfy the transition condition on $v_P$, $G$ can transition to $H$ while $H$ cannot, and $H$ can transition to $G$ while $G$ cannot. There are no other differences in the states that $G$ and $H$ can transition to. That is,
-
-\begin{equation}
-\label{eqn:deltaG}
- \delta(G, v_P) \setminus \delta(H, v_P) = \{H\}
-\end{equation}
-and
-\begin{equation}
-\label{eqn:deltaH}
- \delta(H, v_P) \setminus \delta(G, v_P) = \{G\}.
-\end{equation}
-Now, we rearrange the factors of the detailed balance condition. 
+First, rearrange the factors of the detailed balance condition. 
 
 \begin{equation}
  \frac{\pi(G)}{\pi(H)} = \frac{P(H, G)}{P(G, H)}
 \end{equation}
-Substituting the equilibrium probabilities $\pi$ proposed in Equation \ref{eqn:pi-k1}, we have
+Substituting in the proposed $\pi$ on the left-hand side, and the transition probability from Equation \ref{eqn:breaking-trans-prob} on the right-hand side, we have
 
 \begin{equation}
- \frac{C(H, v_P)}{C(G, v_P)} \cdot \frac{f(H, J_0) \cdot f(H, J_1) \cdot f(H, J_2) \cdots f(H, G)}
-{f(G, J_0) \cdot f(G, J_1) \cdot f(G, J_2) \cdots f(G, H)} = 
-\frac{P(H, G)}{P(G, H)}
+ \frac{C(H, v_P)}{C(G, v_P)} \cdot \frac{B(v_1 \in H) \cdot B(v_2 \in H) \cdots B(v_H \in H)}
+{B(v_1 \in G) \cdot B(v_2 \in G) \cdots B(v_G \in G)} = 
+\frac{C(H, v_P) B(v_H \in H)}{C(G, v_P) B(v_G \in G)}
 \end{equation}
-where $J_0$, $J_1$, $J_2$, and so on, are members of both $\delta(G, v_P)$ and $\delta(H, v_P)$. From Equations \ref{eqn:deltaG} and \ref{eqn:deltaH}, we know that the 
+where $v_1$, $v_2$, and so on, are members of both $V_{in}(v_P \in G)$ and $V_{in}(v_P \in H)$. However, there is a vertex $v_G$ that $v_P$ is adjacent to in $G$ but not in $H$, and a vertex $v_H$ that $v_P$ is adjacent to in $H$ but not in $G$. Furthermore, only the degrees of $v_G$ and $v_H$ differ between the two states. Therefore, $B(v \in H) = B(v \in G)$ if $v$ is a member of both $V_{in}(v_P \in G)$ and $V_{in}(v_P \in H)$. Using this, the left-hand side can be simplified drastically:
 
 \begin{equation}
- \frac{P(H, G)}{P(G, H)} = \frac{P(H, G)}{P(G, H)}.
+  \frac{C(H, v_P)}{C(G, v_P)} \cdot \frac{B(v_H \in H)}{B(v_G \in G)} = 
+\frac{C(H, v_P) B(v_H \in H)}{C(G, v_P) B(v_G \in G)}.
 \end{equation}
 Thus, the detailed balance condition holds.
+
+
 \end{proof}
 
 \subsection{General Case}
