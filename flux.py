@@ -58,15 +58,23 @@ def main():
     n_nodes = 3
     n_edges = 2
     I = 0.5
-    times = 100000
+    times = 10**5 
     model_no = 2
     
     while True:
-        G = networkx.gnm_random_graph(n_nodes, n_edges)
+        #G = networkx.gnm_random_graph(n_nodes, n_edges)
+        G = networkx.Graph()
+        G.add_edge(1, 2)
+        G.add_edge(3, 4)
+
         set_G = set(G.edges())
     
-        H = G.copy()
-        simulation.iterate(H, I, model_no)
+        H = networkx.Graph()
+        H.add_edge(1, 2)
+        H.add_edge(2, 4)
+        H.add_node(3)
+        #H = G.copy()
+        #simulation.iterate(H, I, model_no)
         set_H = set(H.edges())
         
         if set_G != set_H:
