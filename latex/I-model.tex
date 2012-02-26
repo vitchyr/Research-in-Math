@@ -238,27 +238,108 @@ We can now determine the equilibrium distribution $\pi$ using the expressions we
  \pi(G) P(G, H) = \pi(H) P(H, G).
 \end{equation}
 
-We can confirm that the chains are reversible by finding the equilibrium distribution $\pi$ that satisfies the detailed balance condition for all states $G$ and $H$. The first step of the derivation is the same for both models. Consider the detailed balance condition for a certain pivot vertex $v_P$. 
+We can confirm that the chains are reversible by finding the equilibrium distribution $\pi$ that satisfies the detailed balance condition for all states $G$ and $H$. Unlike in the previous section, we prove our result for both models simultaneously.
+
+\subsection{Definitions}
 
 \begin{defn}
 Let $\delta(G, v_P)$ be the set of all states $G'$ such that $G$ and $G'$ satisfy the transition condition on $v_P$.
 \end{defn}
 
-For states $G$ and $H$ that satisfy the transition condition on $v_P$, $G$ can transition to $H$ while $H$ cannot, and $H$ can transition to $G$ while $G$ cannot. That is,
+The transition probabilities $P(G, H)$ for each model can be separated into two distinct parts: the part that depends on $H$, and the part that is independent of $H$.
+
+\begin{defn} 
+For states $G$ and $H$ that meet the transition condition on $v_P$ define $C(G, v_P)$ to be the part of the transition probability $P(G, H)$ that is indepenent $H$.
+\end{defn}
+
+\begin{itemize}
+ \item For the break-function model,
 
 \begin{equation}
+ C(G, v_P) = \frac{c_B(v_P \in G)}{|V_1(G)| \cdot |V_{out}(v_P \in G)|}.
+\end{equation}
+
+ \item For the rewire-function model,
+
+\begin{equation}
+ C(G, v_P) = \frac{c_R(v_P \in G)}{|V_1(G)| \cdot |V_{in}(v_P \in G)|}.
+\end{equation}
+
+\end{itemize}
+
+Now we consider the factor we have left out.
+
+\begin{defn} 
+For states $G$ and $H$ that meet the transition condition on $v_P$ define $f(G, H)$ to be the part of the transition probability $P(G, H)$ that does depend on $H$.
+\end{defn}
+
+\begin{itemize}
+ \item For the break-function model,
+
+\begin{equation}
+ f(G, H) = B(v_G \in G).
+\end{equation}
+While $H$ is not explicitly mentioned in the right-hand side of this equation, recall that $v_G$ is the vertex that is adjacent to $v_P$ in $G$ but not $H$.
+
+ \item For the rewire-function model,
+
+\begin{equation}
+ f(G, H) = R(v_H \in G).
+\end{equation}
+
+\end{itemize}
+
+Thus, a transition probability in either model can be expressed as
+
+\begin{equation}
+ P(G, H) = C(G, v_P) \cdot f(G, H).
+\end{equation}
+
+\subsection{Restricted Case}
+
+\begin{prop}
+ The detailed balance condition, restricted such that states $G$ and $H$ meet the transition condition on a certain pivot vertex $v_P$, is satisfied by
+
+ \begin{equation}
+\label{eqn:pi-k1}
+  \pi(G, v_P) = k_1 \prod \limits_{H \in \delta(G, v_P)} \frac{1}{F(G, H)}
+ \end{equation}
+where $k_1$ is a constant.
+\end{prop}
+
+\begin{proof}
+For states $G$ and $H$ that satisfy the transition condition on $v_P$, $G$ can transition to $H$ while $H$ cannot, and $H$ can transition to $G$ while $G$ cannot. There are no other differences in the states that $G$ and $H$ can transition to. That is,
+
+\begin{equation}
+\label{eqn:deltaG}
  \delta(G, v_P) \setminus \delta(H, v_P) = \{H\}
 \end{equation}
 and
 \begin{equation}
+\label{eqn:deltaH}
  \delta(H, v_P) \setminus \delta(G, v_P) = \{G\}.
 \end{equation}
+Now, we rearrange the factors of the detailed balance condition. 
 
+\begin{equation}
+ \frac{\pi(G)}{\pi(H)} = \frac{P(H, G)}{P(G, H)}
+\end{equation}
+Substituting the equilibrium probabilities $\pi$ proposed in Equation \ref{eqn:pi-k1}, we have
 
-\subsection{Breaking-function model}
+\begin{equation}
+ \frac{P(H, J_0) \cdot P(H, J_1) \cdot P(H, J_2) \cdots P(H, G)}
+{P(G, J_0) \cdot P(G, J_1) \cdot P(G, J_2) \cdots P(G, H)} = 
+\frac{P(H, G)}{P(G, H)}
+\end{equation}
+where $J_0$, $J_1$, $J_2$, and so on, are members of both $\delta(G, v_P)$ and $\delta(H, v_P)$. From Equations \ref{eqn:deltaG} and \ref{eqn:deltaH}, we know that the 
 
+\begin{equation}
+ \frac{P(H, G)}{P(G, H)} = \frac{P(H, G)}{P(G, H)}.
+\end{equation}
+Thus, the detailed balance condition holds.
+\end{proof}
 
-\subsection{Rewiring-function Model}
+\subsection{General Case}
 
 \section{Dependence on $I$}
 
