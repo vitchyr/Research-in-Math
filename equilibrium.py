@@ -23,7 +23,7 @@ def get_unnormalized_pi_break(graph, I):
         Vout = simulation.get_Vout(graph, v0)
         unnormalized_pi += product * (len(V1) * len(Vout)) / c
 
-    return unnormalized_pi
+    return unnormalized_pi / len(V1)
 
 def get_unnormalized_pi_rewire(graph, I):
     V1 = simulation.get_V1(graph)
@@ -46,12 +46,12 @@ def get_unnormalized_pi_rewire(graph, I):
 
         unnormalized_pi += product * (len(V1) * (graph.degree(v0))) / c
 
-    return unnormalized_pi
+    return unnormalized_pi / len(V1)
 
 if __name__ == '__main__':
     I = 0
-    n_nodes = 3
-    n_edges = 1
+    n_nodes = 4
+    n_edges = 2
     times = 400000
     model_no = 1
 
