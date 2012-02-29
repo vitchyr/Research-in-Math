@@ -194,6 +194,7 @@ We implemented the two models in the Python programming language. To test our pr
  \item Calculate and report the relative difference $\varepsilon$ between the observed and expected transition probabilities. To calculate relative difference between values $A$ and $B$, we use
 
  \begin{equation}
+  \label{eqn:relative-difference}
   \varepsilon = \frac{|A - B|}{(\frac{A + B}{2})}.
  \end{equation}
 
@@ -409,6 +410,34 @@ In both models, the constant $k$ is chosen so that the equilibrium probabilities
  \sum\limits_{G \in S} \pi(G) = 1
 \end{equation}
 where $S$ is the state-space, the set of all possible states.
+
+\subsection{Verification of results}
+
+We wrote another Python program to test our proposed equilibrium distributions. The program implemented the following procedure.
+
+\begin{enumerate}
+ \item Create an $G(n, M)$ random graph with user-specified values for number of vertices $n$ and number of edges $M$. Let this graph be the initial state.
+ \item Let there be an empty set $S_{sub}$.
+ \item Repeat for a user-specified number of times $L$: 
+  \begin{enumerate}
+   \item Perform an iteration on the graph.
+   \item If a counter for the new state has been initialized:
+      \begin{enumerate} 
+       \item Increase the counter's value by 1.
+      \end{enumerate} 
+      Else:
+      \begin{enumerate}
+       \item Create the counter and set its value to 1.
+       \item Insert a copy of the graph into $S_{sub}$.
+      \end{enumerate}
+  \end{enumerate}
+ \item For each state in $S_{sub}$, compute the state's \emph{unnormalized equilibrium probability}. This done using either Equation \ref{eqn:pi-break} for the breaking-function model or Equation \ref{eqn:pi-rewire} for the rewire-function model. As this is an unnormalized probability, $k$ is ignored during the calculation.
+ \item \label{item:calculate-k} Compute the sum $D$ of the unnormalized equilibrium probabilities that were calculated in the previous step. The value of the normalization coefficient $k$ is $\frac{1}{D}$.
+ \item Use the value for $k$ to compute the normalized equilibrium probabilities for each state in $S_{sub}$. These equilibrium probabilities are expected values.
+ \item Calculate the observed equilibrium probabilities for each state in $S_{sub}$. A state's observed equilibrium probability is the value of the state's counter divided by the number of iterations $L$.
+ \item For each graph in $S_{sub}$, compute the relative difference between the expected and observed equilibrium probabilities. (Our definition of relative difference is given by Equation \ref{eqn:relative-difference}.)
+ \item Return the mean $\overline\varepsilon$ of these relative differences.
+\end{enumerate}
 
 \section{Dependence on $I$}
 
