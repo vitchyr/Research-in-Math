@@ -253,14 +253,15 @@ We can confirm that the chains are reversible by finding the equilibrium distrib
 \end{defn}
 
 \begin{prop}
+\label{prop:break-restricted}
  In the break-function model, the detailed balance condition, restricted such that states $G$ and $H$ meet the transition condition on a certain pivot vertex $v_P$, is satisfied by
 
  \begin{equation}
  \label{eqn:pi-k1-break}
-  \pi(G, v_P) = \frac{k_1}{K_B(G, v_P)} 
+  \pi(G, v_P) = \frac{k}{K_B(G, v_P)} 
  \prod \limits_{v \in V_{in}(v_P \in G)} \frac{1}{B(v \in G)}
  \end{equation}
-where $k_1$ is a constant.
+where $k$ is a constant.
 \end{prop}
 
 \begin{proof}
@@ -299,14 +300,15 @@ Now we modify the result and proof from the previous section to work with the re
 \end{defn}
 
 \begin{prop}
+\label{prop:rewire-restricted}
  In the rewire-function model, the detailed balance condition, restricted such that states $G$ and $H$ meet the transition condition on a certain pivot vertex $v_P$, is satisfied by
 
  \begin{equation}
  \label{eqn:pi-k1-rewire}
-  \pi(G, v_P) = \frac{k_1}{K_R(G, v_P)} 
+  \pi(G, v_P) = \frac{k}{K_R(G, v_P)} 
  \prod \limits_{v \in V_{out}(v_P \in G)} \frac{1}{R(v \in G)}
  \end{equation}
-where $k_1$ is a constant.
+where $k$ is a constant.
 \end{prop}
 
 \begin{proof}
@@ -333,6 +335,80 @@ Thus, the detailed balance condition holds.
 \end{proof}
 
 \subsection{General Case}
+
+Now we use the results from the previous section --- the equilibrium probabilities when restricted to a certain pivot vertex --- to find an expression for the equilibrium distribution when there is no such restriction.
+
+\subsubsection{Break-function model}
+\begin{theorem} 
+In the break-function model, the equilibrium distribution is given by 
+
+ \begin{equation}
+ \label{eqn:pi-break}
+  \pi(G) = \frac{k}{|V_1(G)|} \sum\limits_{v_0 \in V_1(G)} 
+\frac{1}{K_B(G, v_0)} 
+ \prod \limits_{v \in V_{in}(v_0 \in G)} \frac{1}{B(v \in G)}
+ \end{equation}
+where $k$ is a constant.
+\end{theorem}
+
+\begin{proof}
+Recall that the equilibrium probability of $G$ with the model restricted to pivot vertex $v_P$ is
+ \begin{equation}
+ \label{eqn:pi-k1-break-2}
+  \pi(G, v_P) = \frac{k}{K_B(G, v_P)} 
+ \prod \limits_{v \in V_{in}(v_P \in G)} \frac{1}{B(v \in G)},
+ \end{equation}
+as stated by Proposition \ref{prop:break-restricted}.
+
+Now that we are no longer directly considering the detailed balance condition for two states $G$ and $H$ that meet the transition condition on a certain $v_P$, we will replace the symbol $v_P$ with the more general $v_0$. Because each vertex in $V_1(G)$ has an equal probability of being selected as $v_0$, the equilibrium probability of $G$ in the unrestricted case is the mean of $\pi(G, v_0)$ over all $v_0 \in V_1(G)$:
+
+\begin{equation}
+   \pi(G) = \frac{1}{|V_1(G)|} \sum\limits_{v_0 \in V_1(G)} 
+ \pi(G, v_0)
+\end{equation}
+Substitute the expression $\pi(G, v_0)$ from Equation \ref{eqn:pi-k1-break-2} to complete the derivation.
+
+\end{proof}
+
+\subsubsection{Rewire-function model}
+\begin{theorem} 
+In the rewire-function model, the equilibrium distribution is given by 
+
+ \begin{equation}
+ \label{eqn:pi-rewire}
+  \pi(G) = \frac{k}{|V_1(G)|} \sum\limits_{v_0 \in V_1(G)} 
+\frac{1}{K_R(G, v_0)} 
+ \prod \limits_{v \in V_{out}(v_0 \in G)} \frac{1}{R(v \in G)}
+ \end{equation}
+where $k$ is a constant.
+\end{theorem}
+
+\begin{proof}
+Recall that the equilibrium probability of $G$ with the model restricted to pivot vertex $v_P$ is
+ \begin{equation}
+ \label{eqn:pi-k1-rewire-2}
+  \pi(G, v_P) = \frac{k}{K_R(G, v_P)} 
+ \prod \limits_{v \in V_{out}(v_P \in G)} \frac{1}{R(v \in G)},
+ \end{equation}
+as stated by Proposition \ref{prop:rewire-restricted}.
+
+Now that we are no longer directly considering the detailed balance condition for two states $G$ and $H$ that meet the transition condition on a certain $v_P$, we will replace the symbol $v_P$ with the more general $v_0$. Because each vertex in $V_1(G)$ has an equal probability of being selected as $v_0$, the equilibrium probability of $G$ in the unrestricted case is the mean of $\pi(G, v_0)$ over all $v_0 \in V_1(G)$:
+
+\begin{equation}
+   \pi(G) = \frac{1}{|V_1(G)|} \sum\limits_{v_0 \in V_1(G)} 
+ \pi(G, v_0)
+\end{equation}
+Substitute the expression $\pi(G, v_0)$ from Equation \ref{eqn:pi-k1-rewire-2} to complete the derivation.
+
+\end{proof}
+
+\paragraph{Normalization coefficient}
+In both models, the constant $k$ is chosen so that the equilibrium probabilities sum to 1. That is, such that
+
+\begin{equation}
+ \sum\limits_{G \in S} \pi(G) = 1
+\end{equation}
+where $S$ is the state-space, the set of all possible states.
 
 \section{Dependence on $I$}
 
