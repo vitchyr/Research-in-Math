@@ -9,6 +9,7 @@ def print_progress(i, times):
     if i % (times / 10) == 0 and i != 0:
         print('{:.0%} done'.format(float(i)/times))
 
+#absolute-valued relative difference
 def abs_diff(n1, n2):
     return abs(n1 - n2) / ((n1 + n2) / 2)
 
@@ -36,10 +37,10 @@ def weighted_choice(weights):
             return key
 
 def break_pr_function(I, d_neighbor, avg_degree):
-    return float(I) / d_neighbor + float(1 - I) / avg_degree
+    return float(I) / d_neighbor + float(1.0 - I) / avg_degree
 
 def rewire_pr_function(I, d_someNode, avg_degree):
-    return I * d_someNode + (1-I) * avg_degree
+    return I * d_someNode + (1.0 -I) * avg_degree
 
 def get_avg_degree(graph):
     return 2 * graph.number_of_edges() / float(graph.number_of_nodes()) 

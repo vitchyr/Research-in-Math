@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{verbatim}
 \usepackage{amsthm}
+\usepackage{amsmath}
 
 \newtheorem{defn}{Definition}
 \newtheorem{prop}{Proposition}
@@ -208,7 +209,7 @@ This procedure can be used to verify our proposed transition probabilities becau
 
 However, because only a finite number of trials $L$ is possible, some sampling error is unavoidable --- $\frac{C}{L}$ will (except in rare cases) not be exactly equal to $P(G, H)$. We can only expect the relative difference between the observed and expected transition probabilities $\varepsilon$ to have a negative correlation with the number of trials $L$. A smaller graph will typically result in smaller $\varepsilon$, because the number of states $G'$ for which a certain state $G$ can transition to increases as the numbers of vertices and edges increase. The following table shows the results of the procedure. 
 
-\begin{table}[ht]
+\begin{table}[H]
 \centering
 \subfloat[Break-function model]{
 \begin{tabular}{c | c}
@@ -367,7 +368,7 @@ Now that we are no longer directly considering the detailed balance condition fo
    \pi(G) = \frac{1}{|V_1(G)|} \sum\limits_{v_0 \in V_1(G)} 
  \pi(G, v_0)
 \end{equation}
-Substitute the expression $\pi(G, v_0)$ from Equation \ref{eqn:pi-k1-break-2} to complete the derivation.
+Substitute the expression for $\pi(G, v_0)$ from Equation \ref{eqn:pi-k1-break-2} to complete the derivation.
 
 \end{proof}
 
@@ -399,7 +400,7 @@ Now that we are no longer directly considering the detailed balance condition fo
    \pi(G) = \frac{1}{|V_1(G)|} \sum\limits_{v_0 \in V_1(G)} 
  \pi(G, v_0)
 \end{equation}
-Substitute the expression $\pi(G, v_0)$ from Equation \ref{eqn:pi-k1-rewire-2} to complete the derivation.
+Substitute the expression for $\pi(G, v_0)$ from Equation \ref{eqn:pi-k1-rewire-2} to complete the derivation.
 
 \end{proof}
 
@@ -438,6 +439,40 @@ We wrote another Python program to test our proposed equilibrium distributions. 
  \item For each graph in $S_{sub}$, compute the relative difference between the expected and observed equilibrium probabilities. (Our definition of relative difference is given by Equation \ref{eqn:relative-difference}.)
  \item Return the mean $\overline\varepsilon$ of these relative differences.
 \end{enumerate}
+
+\paragraph{States considered} The set $S_{sub}$ is a subset of the state-space. While the equilibrium coefficient $k$ should be such to normalize $\pi(G)$ for each $G \in S$, we choose it --- in Step \ref{item:calculate-k} --- to normalize $\pi(G)$ for only $G \in S_{sub}$. We decided to limit the number of states that are considered in this procedure because computing the expected equilibrium probability for each state in $S$ is unfeasible for all but the smallest graphs. 
+
+The size of the state-space when there are $n$ vertices and $M$ edges is
+\begin{equation}
+ |S| = {{n \choose 2} \choose M}
+\end{equation}
+because there are $n \choose 2$ possible edges, and each state consists of $M$ edges. Because a state is defined such that the labeling of the vertices matters, we do not need to consider which of these graphs are isomorphic. Evaluating the equation for the situation where each graph has 40 vertices and 20 edges --- still rather small in the context of social networks --- we find the size of the state-space is on the order of $10^{39}$.  
+
+\paragraph{Results} The negative correlation between $\overline\varepsilon$ and $L$ and the small $\overline\varepsilon$ values for $L = 10^6$ support our equilibrium distribution results.
+
+\begin{table}[H]
+\centering
+\subfloat[Break-function model]{
+\begin{tabular}{c | c}
+Iterations $L$ & Mean difference $\overline\varepsilon$ \\
+\hline
+ $10^3$ & 9.48\% \\
+ $10^4$ & 3.87\% \\
+ $10^5$ & 0.93\% \\
+ $10^6$ & 0.42\% \\
+\end{tabular}}
+\qquad
+\subfloat[Rewire-function model]{
+\begin{tabular}{c | c}
+ Iterations $L$ & Mean difference $\overline\varepsilon$ \\
+\hline
+ $10^3$ & \% \\
+ $10^4$ & \% \\
+ $10^5$ & \% \\
+ $10^6$ & \% \\
+\end{tabular}}
+\caption{The results of several executions of the procedure on states with 4 vertices and 2 edges. An arbitrarily chosen $I$-value of $0.5$ was used.}
+\end{table}
 
 \section{Dependence on $I$}
 
