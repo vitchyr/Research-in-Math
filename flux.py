@@ -55,24 +55,25 @@ def get_obs_flux(from_graph, to_set, I, times, model_no):
     return float(hits) / times
 
 def main():
-    n_nodes = 3
+    n_nodes = 4
     n_edges = 2
-    I = 0.5
-    times = 10**5 
-    model_no = 2
+    I = .99
+    times = 5*10**5 
+    model_no = 'R'
     
     while True:
         #G = networkx.gnm_random_graph(n_nodes, n_edges)
         G = networkx.Graph()
         G.add_edge(1, 2)
-        G.add_edge(3, 4)
+        G.add_edge(0, 3)
 
         set_G = set(G.edges())
     
         H = networkx.Graph()
         H.add_edge(1, 2)
-        H.add_edge(2, 4)
-        H.add_node(3)
+        H.add_edge(3, 2)
+        H.add_node(0)
+
         #H = G.copy()
         #simulation.iterate(H, I, model_no)
         set_H = set(H.edges())
@@ -89,9 +90,9 @@ def main():
 
     obs_flux = get_obs_flux(G, set_H, I, times, model_no)
 
-    if model_no == 1:
+    if model_no == 'B':
         exp_flux = get_exp_flux_break(G, v0, v_G, I)
-    else:
+    elif model_no =='R':
         exp_flux = get_exp_flux_rewire(G, v0, v_H, I)
 
     print('')
@@ -101,7 +102,7 @@ def main():
     print('Observed flux = {0}'.format(obs_flux))
     print('Expected flux = {0}'.format(exp_flux))
 
-    diff = simulation.abs_diff(obs_flux, exp_flux)
+    diff = simulation.rel_diff(obs_flux, exp_flux)
     print('Difference = {:.2%}'.format(diff))
 
 if __name__ == '__main__':
