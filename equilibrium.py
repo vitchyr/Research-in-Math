@@ -25,8 +25,18 @@ def get_unnormalized_pi_break(graph, I):
 
     return unnormalized_pi / len(V1)
 
+def get_delta_nodes(graph):
+    delta_nodes = {}
+
+    for v0 in simulation.get_V1(graph):
+        delta_nodes[v0] = graph.degree(v0) *len(simulation.get_Vout(graph, v0)) 
+
+    return delta_nodes
+
 def get_unnormalized_pi_rewire(graph, I):
     V1 = simulation.get_V1(graph)
+    delta_nodes = get_delta_nodes(graph)
+    delta_graph = sum(delta_nodes.values())
 
     unnormalized_pi = 0.0
 
@@ -43,17 +53,18 @@ def get_unnormalized_pi_rewire(graph, I):
             product *= 1.0 / R
 
         c = 1.0 / c_denom
+        K_R = c / (len(V1) * graph.degree(v0))         
+        delta_ratio = float(delta_nodes[v0]) / delta_graph
+        unnormalized_pi += delta_ratio * product / K_R
 
-        unnormalized_pi += product * (len(V1) * (graph.degree(v0))) / c
-
-    return unnormalized_pi / len(V1)
+    return unnormalized_pi
 
 if __name__ == '__main__':
-    I = 0
+    I = .99
     n_nodes = 4
     n_edges = 2
-    times = 400000
-    model_no = 1
+    times = 10**5
+    model_no = 2
 
     counters = {}
 
@@ -93,7 +104,10 @@ if __name__ == '__main__':
         obs_pi[edge_set] = counters[edge_set]/float(sum(counters.values()))
         exp_pi[edge_set] = unnormalized_pi[edge_set]/unnormalized_pi_sum
 
-        diffs.append(simulation.abs_diff(obs_pi[edge_set], exp_pi[edge_set]))
+        diff = simulation.abs_diff(obs_pi[edge_set], exp_pi[edge_set])
+        print(edge_set, obs_pi[edge_set], exp_pi[edge_set], diff)
+
+        diffs.append(diff)
 
     mean_diff = sum(diffs) / float(len(diffs))
 
