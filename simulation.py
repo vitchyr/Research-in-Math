@@ -10,15 +10,15 @@ def print_progress(i, times):
         print('{:.0%} done'.format(float(i)/times))
 
 #absolute-valued relative difference
-def abs_diff(n1, n2):
-    return abs(n1 - n2) / ((n1 + n2) / 2)
+def rel_diff(n1, n2):
+    return abs(n1 - n2) / (float(n1 + n2) / 2)
 
 def get_V1(graph):
     V1 = [] 
 
-    for node, degree in graph.degree_iter():
+    for v, degree in graph.degree_iter():
         if degree > 0 and degree < graph.number_of_nodes() - 1:
-            V1.append(node)
+            V1.append(v)
 
     return V1 
 
@@ -36,89 +36,83 @@ def weighted_choice(weights):
         if rnd < totals[key]:
             return key
 
-def break_pr_function(I, d_neighbor, avg_degree):
-    return float(I) / d_neighbor + float(1.0 - I) / avg_degree
+def break_pr_function(I, deg_v, avg_degree):
+    return float(I) / deg_v + float(1.0 - I) / avg_degree
 
-def rewire_pr_function(I, d_someNode, avg_degree):
-    return I * d_someNode + (1.0 -I) * avg_degree
+def rewire_pr_function(I, deg_v, avg_degree):
+    return I * deg_v + (1.0 -I) * avg_degree
 
 def get_avg_degree(graph):
     return 2 * graph.number_of_edges() / float(graph.number_of_nodes()) 
 
-def break_weighted_select(graph, I, node):
+def break_weighted_select(graph, I, v0):
     weights = {}
 
-    for neighbor in graph.neighbors(node):    
-        weights[neighbor] = break_pr_function(I, graph.degree(neighbor), 
-            graph.avg_degree)   
+    for v in graph.neighbors(node):
+        weights[v] = break_pr_function(I, graph.degree(v),
+            get_avg_degree(graph))   
 
     return weighted_choice(weights)
 
-def rewire_randomly(graph, node):
-    other_nodes = copy.copy(graph.nodes())
-    other_nodes.remove(node)
-    while True:
-        new_node = random.choice(other_nodes)
-        if graph.has_edge(new_node, node):
-            other_nodes.remove(new_node)
-        else:
-            graph.add_edge(node, new_node)
-            break
+def rewire_randomly_select(graph, v0):
+    Vout = get_Vout(graph, v0)
+    return random.choice(Vout)
 
 def get_Vout(graph, v0):
     Vout = []
 
-    for node in graph.nodes_iter():
-        if not graph.has_edge(v0, node) and node != v0:
-            Vout.append(node)
+    for v in graph.nodes_iter():
+        if not graph.has_edge(v0, v) and v != v0:
+            Vout.append(v)
 
     return Vout
 
-def rewire_weighted_select(graph, node, I):
+def rewire_weighted_select(graph, v0, I):
     weights = {}
    
     #BIG CHANGE: Don't let v0 rewire to the node it just broke with 
     #Hopefully this doesn't screw up our other curves
-    for some_node in get_Vout(graph, node):
-        weights[some_node] = rewire_pr_function(I, graph.degree(some_node), 
-            graph.avg_degree)
+    for v in get_Vout(graph, v0):
+        weights[v] = rewire_pr_function(I, graph.degree(v),
+            get_avg_degree(graph))
 
     #Return selected node
     return weighted_choice(weights)      
 
 
 def iterate(graph, I, model_no):
-    #avg_degree is actually constant, but can get messed up when graph
-    #is in an intermediate state
-    graph.avg_degree = get_avg_degree(graph)
+    if 'restricted_vP' in graph.__dict__:
+        v0 = restricted_vP
+    else:
+        while True:
+            v0 = random.choice(graph.nodes())
 
-    while True:
-        node = random.choice(graph.nodes())
-
-        if(graph.degree(node) > 0 and
-            graph.degree(node) < graph.number_of_nodes() - 1):
-            break
+            if(graph.degree(v0) > 0 and
+                graph.degree(v0) < graph.number_of_nodes() - 1):
+                break
 
     #break-function model
-    if model_no == 1: 
-        old_node = break_weighted_select(graph, I, node)
-        rewire_randomly(graph, node)
-        graph.remove_edge(old_node, node)
+    if model_no[0] == 'B': 
+        old_node = break_weighted_select(graph, I, v0)
+        new_node = rewire_randomly_select(graph, v0)
         
     #rewire-function model
-    else: 
-        old_node = random.choice(graph.neighbors(node)) 
-        new_node = rewire_weighted_select(graph, node, I)
+    elif model_no[0] == 'R': 
+        old_node = random.choice(graph.neighbors(v0)) 
+        new_node = rewire_weighted_select(graph, v0, I)
 
-        graph.remove_edge(node, old_node) 
-        graph.add_edge(node, new_node)
+    else:
+        raise ValueError("Unsupported model!")
+
+    graph.remove_edge(v0, old_node) 
+    graph.add_edge(v0, new_node)
 
 if __name__ == '__main__':
     try:
         n_nodes = input("How many nodes? ")
         n_edges = input("How many edges? ")
         I = float(input("What I value? "))
-        model_no = input("Model number? (1/2) ")
+        model_no = raw_input("Model number? (R/B) ")
         times = input("How many iterations? ")
     except:
         print("Invalid input. Exiting...")

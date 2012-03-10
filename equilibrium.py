@@ -1,6 +1,5 @@
 import networkx
 import simulation
-import flux
 
 def get_unnormalized_pi_break(graph, I):
     V1 = simulation.get_V1(graph)
@@ -104,7 +103,7 @@ if __name__ == '__main__':
         obs_pi[edge_set] = counters[edge_set]/float(sum(counters.values()))
         exp_pi[edge_set] = unnormalized_pi[edge_set]/unnormalized_pi_sum
 
-        diff = simulation.abs_diff(obs_pi[edge_set], exp_pi[edge_set])
+        diff = simulation.rel_diff(obs_pi[edge_set], exp_pi[edge_set])
         print(edge_set, obs_pi[edge_set], exp_pi[edge_set], diff)
 
         diffs.append(diff)
