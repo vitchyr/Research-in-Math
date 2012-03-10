@@ -45,10 +45,10 @@ def rewire_pr_function(I, deg_v, avg_degree):
 def get_avg_degree(graph):
     return 2 * graph.number_of_edges() / float(graph.number_of_nodes()) 
 
-def break_weighted_select(graph, I, v0):
+def break_weighted_select(graph, v0, I):
     weights = {}
 
-    for v in graph.neighbors(node):
+    for v in graph.neighbors(v0):
         weights[v] = break_pr_function(I, graph.degree(v),
             get_avg_degree(graph))   
 
@@ -82,7 +82,7 @@ def rewire_weighted_select(graph, v0, I):
 
 def iterate(graph, I, model_no):
     if 'restricted_vP' in graph.__dict__:
-        v0 = restricted_vP
+        v0 = graph.restricted_vP
     else:
         while True:
             v0 = random.choice(graph.nodes())
@@ -93,7 +93,7 @@ def iterate(graph, I, model_no):
 
     #break-function model
     if model_no[0] == 'B': 
-        old_node = break_weighted_select(graph, I, v0)
+        old_node = break_weighted_select(graph, v0, I)
         new_node = rewire_randomly_select(graph, v0)
         
     #rewire-function model
