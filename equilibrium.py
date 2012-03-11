@@ -2,6 +2,10 @@ import networkx
 import simulation
 import random
 
+from numpy import array
+from scipy.stats.stats import chisquare
+from collections import OrderedDict
+
 def get_unnormalized_pi_break_restricted(graph, I):
     vP = graph.restricted_vP
 
@@ -94,7 +98,7 @@ def get_unnormalized_pi_rewire(graph, I):
             product *= 1.0 / R
 
         c = 1.0 / c_denom
-        K_R = c / (len(V1) * graph.degree(v0))         
+        K_R = c / (graph.degree(v0))         
         delta_ratio = float(delta_nodes[v0]) / delta_graph
         unnormalized_pi += delta_ratio * product / K_R
 
@@ -104,18 +108,15 @@ if __name__ == '__main__':
     I = .99
     n_nodes = 4
     n_edges = 2
-    times = 10**5
+    times = 10**6
     model_no = 'R'
-    restricted = True
+    restricted = False
     verbose = True
 
-    counters = {}
+    obs_freq = OrderedDict()
     unnormalized_pi = {}
 
-    #graph = networkx.gnm_random_graph(n_nodes, n_edges) 
-    graph = networkx.Graph()
-    graph.add_edge(0, 1)
-    graph.add_edge(2, 3)
+    graph = networkx.gnm_random_graph(n_nodes, n_edges) 
 
     if restricted:
         graph.restricted_vP = random.choice(simulation.get_V1(graph))
@@ -128,10 +129,10 @@ if __name__ == '__main__':
         #networkx orients the edges automatically
         edge_set = frozenset(graph.edges())
 
-        if edge_set in counters:
-            counters[edge_set] += 1
+        if edge_set in obs_freq:
+            obs_freq[edge_set] += 1
         else:
-            counters[edge_set] = 1
+            obs_freq[edge_set] = 1
 
         if edge_set not in unnormalized_pi:
 
@@ -153,24 +154,29 @@ if __name__ == '__main__':
                     unnormalized_pi[edge_set] =\
                         get_unnormalized_pi_rewire(graph, I)
        
-    obs_pi = {}
-    exp_pi = {}
-    diffs = []
-
     unnormalized_pi_sum = sum(unnormalized_pi.values())
+    exp_freq = []
 
-    for edge_set in counters:
-        obs_pi[edge_set] = counters[edge_set]/float(sum(counters.values()))
-        exp_pi[edge_set] = unnormalized_pi[edge_set]/unnormalized_pi_sum
+    for edge_set in obs_freq:
+        exp_pi = unnormalized_pi[edge_set]/unnormalized_pi_sum
+        exp_freq.append(exp_pi * times)
 
-        diff = simulation.rel_diff(obs_pi[edge_set], exp_pi[edge_set])
+        print(obs_freq[edge_set], exp_freq[-1:][0])
 
-        if verbose:
-            print(edge_set, obs_pi[edge_set], exp_pi[edge_set], diff)
+        #diff = simulation.rel_diff(obs_pi[edge_set], exp_pi[edge_set])
 
-        diffs.append(diff)
+        #if verbose:
+        #    print(edge_set, obs_pi[edge_set], exp_pi[edge_set], diff)
 
-    mean_diff = sum(diffs) / float(len(diffs))
+        #diffs.append(diff)
+
+    exp_freq_np = array(exp_freq)
+    obs_freq_np = array(obs_freq.values())
+
+    p_value = chisquare(obs_freq_np, exp_freq_np)[1]
+
+    #mean_diff = sum(diffs) / float(len(diffs))
 
     print('')
-    print('Mean difference = {:.2%}'.format(mean_diff))
+    print('p_value = {:.2%}'.format(float(p_value)))
+    #print('Mean difference = {:.2%}'.format(mean_diff))
