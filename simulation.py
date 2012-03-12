@@ -9,6 +9,14 @@ def print_progress(i, times):
     if i % (times / 10) == 0 and i != 0:
         print('{:.0%} done'.format(float(i)/times))
 
+def get_degree_distro(graph):
+    distro = [0] * (graph.number_of_nodes() - 1)
+
+    for v, deg in graph.degree_iter():
+        distro[deg] += 1 
+
+    return distro
+
 #absolute-valued relative difference
 def rel_diff(n1, n2):
     return abs(n1 - n2) / (float(n1 + n2) / 2)
@@ -37,10 +45,10 @@ def weighted_choice(weights):
             return key
 
 def break_pr_function(I, deg_v, avg_degree):
-    return float(I) / deg_v + float(1.0 - I) / avg_degree
+    return float(I) / deg_v + (1.0 - I) / avg_degree
 
 def rewire_pr_function(I, deg_v, avg_degree):
-    return I * deg_v + (1.0 -I) * avg_degree
+    return I * deg_v + (1.0 - I) * avg_degree
 
 def get_avg_degree(graph):
     return 2 * graph.number_of_edges() / float(graph.number_of_nodes()) 
@@ -108,6 +116,9 @@ def iterate(graph, I, model_no):
     graph.add_edge(v0, new_node)
 
 if __name__ == '__main__':
+    write_deg_distro = True
+    display_graph = False
+
     try:
         n_nodes = input("How many nodes? ")
         n_edges = input("How many edges? ")
@@ -123,5 +134,18 @@ if __name__ == '__main__':
     for i in range(times):
         iterate(graph, I, model_no)
 
-    networkx.draw(graph)
-    matplotlib.pyplot.show()
+    if display_graph:
+        networkx.draw(graph)
+        matplotlib.pyplot.show()
+
+    if write_deg_distro:
+        distro = get_degree_distro(graph)
+        outstring = ''
+
+        for i in range(len(distro)):
+            outstring += '{0}\t{1}\n'.format(i, distro[i])
+
+        filename = 'degree_distro_{0}_{1}_{2}.dat'.format(model_no,
+            n_nodes, n_edges)
+        outfile = open(filename, 'w')
+        outfile.write(outstring)
