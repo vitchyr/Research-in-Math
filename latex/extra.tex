@@ -1,0 +1,80 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsthm}
+\usepackage{amsmath}
+
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{theorem}{Theorem}
+
+%opening
+\title{}
+\author{}
+
+\begin{document}
+
+\maketitle
+
+\subsection{Verification of Results}
+
+We implemented the two models in the Python programming language. We created an additional program to test our proposed transition probabilities, we created an additional Python program that implements the following procedure. The procedure can be applied to either model.
+
+\begin{enumerate}
+ \item Generate a $G(n, M)$ Erdos-Renyi graph with user-specified values for the number of vertices $n$ and the number of edges $M$. Call this initial state $G$.
+ \item Make a copy $H$ of $G$. Perform a single iteration on $H$.
+ \item Determine the pivot vertex $v_P$ for which $G$ and $H$ satisfy the transition condition.
+ \item \emph{Measure} the transition probability $P(G, H)$ by repeating the following subroutine $L$ times. The counter $C$ is initially set to 0.
+
+    \begin{enumerate}
+      \item Make a copy $G'$ of $G$.
+      \item Perform an iteration on $G'$.
+      \item If $G'$ is the same state as $H$, increment the counter $C$ by 1.
+    \end{enumerate}
+
+  The observed transition probability from $G$ to $H$ is $\frac{C}{L}$.
+
+ \item Calculate the \emph{expected} transition probability, using either Theorem \ref{thm:breaking-trans-prob} for the breaking-function model or Theorem \ref{thm:rewiring-trans-prob} for the rewiring-function model.
+
+ \item Calculate and report the relative difference $\varepsilon$ between the observed and expected transition probabilities. To calculate relative difference between values $A$ and $B$, we use
+
+ \begin{equation}
+  \label{eqn:relative-difference}
+  \varepsilon = \frac{|A - B|}{(\frac{A + B}{2})}.
+ \end{equation}
+
+\end{enumerate}
+
+This procedure can be used to verify our proposed transition probabilities because
+
+\begin{equation}
+ \lim_{L \to \infty} \frac{C}{L} = P(G, H).
+\end{equation}
+
+However, because only a finite number of trials $L$ is possible, some sampling error is unavoidable --- $\frac{C}{L}$ will (except in rare cases) not be exactly equal to $P(G, H)$. We can only expect the relative difference between the observed and expected transition probabilities $\varepsilon$ to have a negative correlation with the number of trials $L$. A smaller graph will typically result in smaller $\varepsilon$, because the number of states $G'$ for which a certain state $G$ can transition to increases as the numbers of vertices and edges increase. The following table shows the results of the procedure. 
+
+\begin{table}[H]
+\centering
+\subfloat[Break-function model]{
+\begin{tabular}{c | c}
+Trials $L$ & Relative difference $\varepsilon$ \\
+\hline
+ $10^3$ & 10.08\% \\
+ $10^4$ & 1.35\% \\
+ $10^5$ & 0.11\% \\
+\end{tabular}}
+\qquad
+\subfloat[Rewire-function model]{
+\begin{tabular}{c | c}
+ Trials $L$ & Relative difference $\varepsilon$ \\
+\hline
+ $10^3$ & 13.68\% \\
+ $10^4$ & 1.33\% \\
+ $10^5$ & 0.22\% \\
+\end{tabular}}
+\caption{The results of several executions of the procedure on states with 4 vertices and 2 edges. An arbitrarily chosen $I$-value of $0.5$ was used. The same states $G$ and $H$ were used for each execution. The very low $\varepsilon$ values for $L = 10^5$ and the negative correlation between $\varepsilon$ and $L$ provide evidence that the expressions we derived for $P(G, H)$ are valid.}
+\end{table}
+
+\end{document}
