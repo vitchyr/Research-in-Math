@@ -21,43 +21,7 @@ def get_unnormalized_pi_break_restricted(graph, I):
 
     c = 1.0 / c_denom
 
-    V1 = simulation.get_V1(graph)
-    Vout = simulation.get_Vout(graph, vP)
-    K_restricted = c / len(Vout)
-
-    return product / K_restricted 
-
-def get_unnormalized_pi_break(graph, I):
-    V1 = simulation.get_V1(graph)
-
-    unnormalized_pi = 0.0
-
-    for v0 in V1:
-        product = 1.0
-        c_denom = 0.0
-
-        for v in graph.neighbors(v0):
-            B = simulation.break_pr_function(I, graph.degree(v), 
-                simulation.get_avg_degree(graph))
-
-            c_denom += B
-            product *= 1.0 / B
-
-        c = 1.0 / c_denom
-
-        Vout = simulation.get_Vout(graph, v0)
-        unnormalized_pi += product * (len(V1) * len(Vout)) / c
-
-    return unnormalized_pi / len(V1)
-
-def get_delta_nodes(graph):
-    delta_nodes = {}
-
-    for v0 in simulation.get_V1(graph):
-        delta_nodes[v0] = graph.degree(v0) *\
-            len(simulation.get_Vout(graph, v0)) 
-
-    return delta_nodes
+    return product / c 
 
 def get_unnormalized_pi_rewire_restricted(graph, I):
     vP = graph.restricted_vP
@@ -74,43 +38,17 @@ def get_unnormalized_pi_rewire_restricted(graph, I):
         product *= 1.0 / R
 
     c = 1.0 / c_denom
-    K_restricted = c / (graph.degree(vP))         
 
-    return product / K_restricted
+    return product / c 
 
-def get_unnormalized_pi_rewire(graph, I):
-    V1 = simulation.get_V1(graph)
-    delta_nodes = get_delta_nodes(graph)
-    delta_graph = sum(delta_nodes.values())
-
-    unnormalized_pi = 0.0
-
-    for v0 in V1:
-        Vout = simulation.get_Vout(graph, v0)
-        product = 1.0
-        c_denom = 0.0
-
-        for v in Vout:
-            R = simulation.rewire_pr_function(I, graph.degree(v), 
-                simulation.get_avg_degree(graph))
-
-            c_denom += R
-            product *= 1.0 / R
-
-        c = 1.0 / c_denom
-        K_R = c / (graph.degree(v0))         
-        delta_ratio = float(delta_nodes[v0]) / delta_graph
-        unnormalized_pi += delta_ratio * product / K_R
-
-    return unnormalized_pi
 
 if __name__ == '__main__':
-    I = .99
-    n_nodes = 4
-    n_edges = 2
-    times = 10**6
+    I = .6
+    n_nodes = 15
+    n_edges = 25
+    times = 10**4
     model_no = 'R'
-    restricted = False
+    restricted = True
     verbose = True
 
     obs_freq = OrderedDict()
@@ -142,8 +80,7 @@ if __name__ == '__main__':
                     unnormalized_pi[edge_set] =\
                         get_unnormalized_pi_break_restricted(graph, I)
                 else:
-                    unnormalized_pi[edge_set] =\
-                        get_unnormalized_pi_break(graph, I)
+                    raise ValueError
 
             elif model_no == 'R':
 
@@ -151,8 +88,7 @@ if __name__ == '__main__':
                     unnormalized_pi[edge_set] =\
                         get_unnormalized_pi_rewire_restricted(graph, I)
                 else:
-                    unnormalized_pi[edge_set] =\
-                        get_unnormalized_pi_rewire(graph, I)
+                    raise ValueError
        
     unnormalized_pi_sum = sum(unnormalized_pi.values())
     exp_freq = []
@@ -161,22 +97,14 @@ if __name__ == '__main__':
         exp_pi = unnormalized_pi[edge_set]/unnormalized_pi_sum
         exp_freq.append(exp_pi * times)
 
-        print(obs_freq[edge_set], exp_freq[-1:][0])
-
-        #diff = simulation.rel_diff(obs_pi[edge_set], exp_pi[edge_set])
-
-        #if verbose:
-        #    print(edge_set, obs_pi[edge_set], exp_pi[edge_set], diff)
-
-        #diffs.append(diff)
+        if verbose:
+            diff = simulation.rel_diff(obs_freq[edge_set], exp_freq[-1])
+            print(obs_freq[edge_set], exp_freq[-1:][0], diff)
 
     exp_freq_np = array(exp_freq)
     obs_freq_np = array(obs_freq.values())
 
     p_value = chisquare(obs_freq_np, exp_freq_np)[1]
 
-    #mean_diff = sum(diffs) / float(len(diffs))
-
     print('')
     print('p_value = {:.2%}'.format(float(p_value)))
-    #print('Mean difference = {:.2%}'.format(mean_diff))

@@ -3,7 +3,14 @@ import copy
 import sys
 
 import networkx
-import matplotlib
+
+modules = {}
+
+try:
+    import matplotlib
+    modules['matplotlib'] = True
+except ImportError:
+    modules['matplotlib'] = False
 
 def print_progress(i, times):
     if i % (times / 10) == 0 and i != 0:
@@ -117,7 +124,7 @@ def iterate(graph, I, model_no):
 
 if __name__ == '__main__':
     write_deg_distro = True
-    display_graph = False
+    display_graph = True
 
     try:
         n_nodes = input("How many nodes? ")
@@ -135,8 +142,11 @@ if __name__ == '__main__':
         iterate(graph, I, model_no)
 
     if display_graph:
-        networkx.draw(graph)
-        matplotlib.pyplot.show()
+        if modules['matplotlib']:
+            networkx.draw(graph)
+            matplotlib.pyplot.show()
+        else:
+            print 'Error: no matplotlib!'
 
     if write_deg_distro:
         distro = get_degree_distro(graph)
@@ -149,3 +159,4 @@ if __name__ == '__main__':
             n_nodes, n_edges)
         outfile = open(filename, 'w')
         outfile.write(outstring)
+        print('Wrote file: {0}'.format(filename))

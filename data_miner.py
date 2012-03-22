@@ -77,10 +77,15 @@ What model do you want to use? ")
         iterBuf.n_components = len(components)
    
         output2 += '%s\n' % iterBuf
-        
-    outfile1 = open('avgResults_gnm_%sm_%dn_%de.dat' % (model_no, n_nodes, n_edges), 'w')
+       
+    filename1 = 'avgResults_gnm_%s_%dn_%de.dat' % (model_no, n_nodes, n_edges) 
+    outfile1 = open(filename1, 'w')
     outfile1.write(output1)
     outfile1.close()
-    outfile2 = open('iterResults_gnm_%sm_%dn_%de.dat' % (model_no, n_nodes, n_edges), 'w')
+    print('Wrote file: {0}'.format(filename1))
+
+    filename2 = 'iterResults_gnm_%s_%dn_%de.dat' % (model_no, n_nodes, n_edges)
+    outfile2 = open(filename2, 'w')
     outfile2.write(output2)
     outfile2.close()
+    print('Wrote file: {0}'.format(filename2))

@@ -2,6 +2,7 @@ import simulation
 
 import networkx
 import sys
+import random
 
 from numpy import array
 from scipy.stats.stats import chisquare
@@ -15,14 +16,17 @@ def get_c_rewire(G, v0, I):
 
     return 1.0 / total
 
-def get_exp_flux_rewire(G, v0, v_H, I):
+def get_exp_flux_rewire(G, v0, v_H, I, restricted):
     V1 = simulation.get_V1(G)
 
     c = get_c_rewire(G, v0, I)
     R = simulation.rewire_pr_function(I, G.degree(v_H), 
         simulation.get_avg_degree(G))
 
-    return c * R / (len(V1) * G.degree(v0))
+    if restricted:
+        return c * R / G.degree(v0)
+    else:
+        return c * R / (len(V1) * G.degree(v0))
 
 def get_c_break(G, v0, I):
     total = 0.0
@@ -33,7 +37,7 @@ def get_c_break(G, v0, I):
 
     return 1.0 / total
 
-def get_exp_flux_break(G, v0, v_G, I):
+def get_exp_flux_break(G, v0, v_G, I, restricted):
     V1 = simulation.get_V1(G)
     Vout = simulation.get_Vout(G, v0)
 
@@ -41,7 +45,10 @@ def get_exp_flux_break(G, v0, v_G, I):
     B = simulation.break_pr_function(I, G.degree(v_G),
         simulation.get_avg_degree(G))
 
-    return c * B / (len(V1) * len(Vout))
+    if restricted:
+        return c * B / len(Vout)
+    else:
+        return c * B / (len(Vout) * len(V1))
 
 def get_obs_freq(from_graph, to_set, I, times, model_no):
     hits = 0
@@ -58,29 +65,27 @@ def get_obs_freq(from_graph, to_set, I, times, model_no):
     return (times - hits, hits)
 
 def main():
-    n_nodes = 4
-    n_edges = 2
-    I = .99
-    times = 10**5 
+    n_nodes = 10
+    n_edges = 12
+    I = .6
+    times = 10**4 
     model_no = 'R'
+    restricted = True
+
     
     while True:
-        #G = networkx.gnm_random_graph(n_nodes, n_edges)
-        G = networkx.Graph()
-        G.add_edge(1, 2)
-        G.add_edge(0, 3)
+        G = networkx.gnm_random_graph(n_nodes, n_edges)
+
+        if restricted:
+            G.restricted_vP = random.choice(simulation.get_V1(G))
 
         set_G = set(G.edges())
     
-        H = networkx.Graph()
-        H.add_edge(1, 2)
-        H.add_edge(3, 2)
-        H.add_node(0)
-
-        #H = G.copy()
-        #simulation.iterate(H, I, model_no)
+        H = G.copy()
+        simulation.iterate(H, I, model_no)
         set_H = set(H.edges())
-        
+
+        #??        
         if set_G != set_H:
             break
 
@@ -94,12 +99,9 @@ def main():
     obs_freq = get_obs_freq(G, set_H, I, times, model_no)
 
     if model_no == 'B':
-        exp_flux = get_exp_flux_break(G, v0, v_G, I)
+        exp_flux = get_exp_flux_break(G, v0, v_G, I, restricted)
     elif model_no =='R':
-        exp_flux = get_exp_flux_rewire(G, v0, v_H, I)
-
-    obs_freq_np = array(obs_freq)
-    exp_freq_np = array((times * (1.0 - exp_flux), times * exp_flux))
+        exp_flux = get_exp_flux_rewire(G, v0, v_H, I, restricted)
 
     print('')
     print('G = {0}\n'.format(set_G))
@@ -108,8 +110,8 @@ def main():
     print('Observed freq = {0}'.format(obs_freq[1]))
     print('Expected freq = {0}'.format(times * exp_flux))
 
-    p_value = chisquare(obs_freq_np, exp_freq_np)[1]
-    print('p_value = {:.2%}'.format(float(p_value)))
+    diff = simulation.rel_diff(obs_freq[1], float(times*exp_flux))
+    print('diff = {:.2%}'.format(diff))
 
 if __name__ == '__main__':
     main()
