@@ -1,19 +1,5 @@
 import simulation
-import matplotlib
 import networkx
-
-
-##This plots average ____ vs. I
-##Note: n_something = number of something
-##
-##Model Options
-##1. Pick v_0 random & Break with probability
-##2. Pick v_0 randomly & Rewire with probability
-##3. Pick v_0 via e_0 & Break with probability
-##4. Pick v_0 via e_0 & Rewire with probability
-##To change which model you use, change simulation# that is imported
-##and used in the nested for-loop ("for j in range(n_iterations):") ~line 50
-##You will also want to edit the output file name.
 
 class IterEntry:
     def __str__(self):
@@ -34,11 +20,9 @@ if __name__ == '__main__':
         n_steps = input("Use how many different I values? ")
         n_simulations = input("Average how many simulations per I value? ")
         n_iterations = input("Use how many iterations per I simulations? ")
-        model = input("Model Options:\n\
-    1: Pick v_0 random & Break with probability\n\
-    2: Pick v_0 randomly & Rewire with probability\n\
-    3: Pick v_0 via e_0 & Break with probability\n\
-    4: Pick v_0 via e_0 & Rewire with probability\n\
+        model_no = raw_input("Model Options:\n\
+    B: Break-function model\n\
+    R: Rewire-function model\n\
 What model do you want to use? ")
     except (ValueError, SyntaxError):
         print "Please enter integers.\n"
@@ -63,7 +47,7 @@ What model do you want to use? ")
             graph = networkx.gnm_random_graph(n_nodes, n_edges)
 
             for j in range(n_iterations):
-                simulation.iterate(graph, I, model)
+                simulation.iterate(graph, I, model_no)
 
             components = networkx.connected_component_subgraphs(graph)
             gc_n_nodes_list.append(components[0].number_of_nodes())
@@ -83,7 +67,7 @@ What model do you want to use? ")
     #Comparing iterations
     G = networkx.gnm_random_graph(n_nodes, n_edges)
     for k in range(n_iterations):
-        simulation.iterate(G, I, model)
+        simulation.iterate(G, I, model_no)
         components = networkx.connected_component_subgraphs(G)
    
         iterBuf = IterEntry()
@@ -94,9 +78,9 @@ What model do you want to use? ")
    
         output2 += '%s\n' % iterBuf
         
-    outfile1 = open('avgResults_gnm_%dm_%dn_%de.dat' % (model, n_nodes, n_edges), 'w')
+    outfile1 = open('avgResults_gnm_%sm_%dn_%de.dat' % (model_no, n_nodes, n_edges), 'w')
     outfile1.write(output1)
     outfile1.close()
-    outfile2 = open('iterResults_gnm_%dm_%dn_%de.dat' % (model, n_nodes, n_edges), 'w')
+    outfile2 = open('iterResults_gnm_%sm_%dn_%de.dat' % (model_no, n_nodes, n_edges), 'w')
     outfile2.write(output2)
     outfile2.close()
