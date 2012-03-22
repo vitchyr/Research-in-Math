@@ -6,6 +6,7 @@
 \usepackage{verbatim}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage[margin=2.5cm]{geometry}
 
 \newtheorem{defn}{Definition}
 \newtheorem{prop}{Proposition}
@@ -173,29 +174,17 @@ where $v_H$ is the vertex that is adjacent to $v_P$ in $H$ but not $G$.
 Looking back on Equation \ref{eqn:breaking-trans-prob}, we see that the rewiring-function model transition probability is the same as the breaking-function transition probability, except with $c_R$ instead of $c_B$, $R$ instead of $B$, and $|V_{in}|$ instead of $|V_{out}|$.
 
 
+\section{Restricted Case Equilibrium Distribution}
 
-
-\section{Equilibrium Distribution}
-
-We can now determine the equilibrium distribution $\pi$ using the expressions we derived for the transition probabilities $P(G, H)$. If a transition from state $G$ to state $H$ is possible, a transition from state $H$ to state $G$ is also possible; because of this, we suspect both models are \emph{reversible} Markov chains. That is, that both models satisfy the \emph{detailed balance condition}:
+\begin{comment}We can now determine the equilibrium distribution $\pi$ using the expressions we derived for the transition probabilities $P(G, H)$. If a transition from state $G$ to state $H$ is possible, a transition from state $H$ to state $G$ is also possible; because of this, we suspect both models are \emph{reversible} Markov chains. That is, that both models satisfy the \emph{detailed balance condition}:
 
 \begin{equation}
  \pi(G) P(G, H) = \pi(H) P(H, G).
 \end{equation}
 
-We can confirm that the chains are reversible by finding the equilibrium distribution $\pi$ that satisfies the detailed balance condition for all states $G$ and $H$. 
+We can confirm that the chains are reversible by finding the equilibrium distribution $\pi$ that satisfies the detailed balance condition for all states $G$ and $H$. \end
 
-\subsection{Restricted Case}
-
-\subsubsection{Break-function model}
-\begin{defn}
- Let $K_B(G, v_P)$ be the part of the break-function model transition probability $P(G, H)$ that is independent of $H$. Thus,
-
-\begin{equation}
- K_B(G, v_P) = \frac{c_B(v_P \in G)}{|V_1(G)| \cdot |V_{out}(v_P \in G)|}.
-\end{equation}
- 
-\end{defn}
+\subsection{Break-function model}\end{comment}
 
 \begin{prop}
 \label{prop:break-restricted}
@@ -203,7 +192,7 @@ We can confirm that the chains are reversible by finding the equilibrium distrib
 
  \begin{equation}
  \label{eqn:pi-k1-break}
-  \pi(G, v_P) = \frac{k}{K_B(G, v_P)} 
+  \pi(G, v_P) =  \frac{k}{c_B(v_P \in G)} 
  \prod \limits_{v \in V_{in}(v_P \in G)} \frac{1}{B(v \in G)}
  \end{equation}
 where $k$ is a constant.
@@ -215,34 +204,28 @@ First, rearrange the factors of the detailed balance condition.
 \begin{equation}
  \frac{\pi(G)}{\pi(H)} = \frac{P(H, G)}{P(G, H)}
 \end{equation}
-Substituting in the proposed $\pi$ on the left-hand side, and the transition probability from Equation \ref{eqn:breaking-trans-prob} on the right-hand side, we have
+Substituting in the proposed $\pi$ on the left-hand side, and the transition probability from Equation \ref{eqn:breaking-trans-prob} --- without $|V_1(G)|$ in the denominator, since $v_P$ is always chosen --- on the right-hand side, we have
 
 \begin{equation}
- \frac{K_B(H, v_P)}{K_B(G, v_P)} \cdot \frac{B(v_1 \in H) \cdot B(v_2 \in H) \cdots B(v_H \in H)}
-{B(v_1 \in G) \cdot B(v_2 \in G) \cdots B(v_G \in G)} = 
-\frac{K_B(H, v_P) B(v_H \in H)}{K_B(G, v_P) B(v_G \in G)}
+\begin{split}
+&\frac{c_B(v_P \in H)}{c_B(v_P \in G)} \cdot\frac{B(v_1 \in H) \cdot B(v_2 \in H) \cdots B(v_H \in H)}
+{B(v_1 \in G) \cdot B(v_2 \in G) \cdots B(v_G \in G)} = \\
+ &\frac{c_B(v_P \in H) \cdot B(v_H \in H)}{|V_{out}(v_P \in H)|} \cdot \frac{|V_{out}(v_P \in G)|}{c_B(v_P \in G) \cdot B(v_G \in G)} 
+\end{split} 
 \end{equation}
+
 where $v_1$, $v_2$, and so on, are members of both $V_{in}(v_P \in G)$ and $V_{in}(v_P \in H)$. However, there is a vertex $v_G$ that $v_P$ is adjacent to in $G$ but not in $H$, and a vertex $v_H$ that $v_P$ is adjacent to in $H$ but not in $G$. Furthermore, only the degrees of $v_G$ and $v_H$ differ between the two states. Therefore, $B(v \in H) = B(v \in G)$ if $v$ is a member of both $V_{in}(v_P \in G)$ and $V_{in}(v_P \in H)$. Using this, the left-hand side can be simplified drastically:
 
 \begin{equation}
-  \frac{K_B(H, v_P)}{K_B(G, v_P)} \cdot \frac{B(v_H \in H)}{B(v_G \in G)} = 
-\frac{K_B(H, v_P) B(v_H \in H)}{K_B(G, v_P) B(v_G \in G)}.
+ \frac{c_B(v_P \in H) \cdot B(v_H \in H)}{c_B(v_P \in G) \cdot B(v_G \in G)} = 
+\frac{c_B(v_P \in H) \cdot B(v_H \in H)}{c_B(v_P \in G) \cdot B(v_G \in G)}.
 \end{equation}
 Thus, the detailed balance condition holds.
 
 \end{proof}
 
-\subsubsection{Rewire-function model}
+\subsection{Rewire-function model}
 Now we modify the result and proof from the previous section to work with the rewire-function model.
-
-\begin{defn}
- Let $K_R(G, v_P)$ be the part of the rewire-function model transition probability $P(G, H)$ that is independent of $H$. Thus,
-
-\begin{equation}
- K_R(G, v_P) = \frac{c_R(v_P \in G)}{|V_1(G)| \cdot |V_{in}(v_P \in G)|}.
-\end{equation}
- 
-\end{defn}
 
 \begin{prop}
 \label{prop:rewire-restricted}
@@ -250,7 +233,7 @@ Now we modify the result and proof from the previous section to work with the re
 
  \begin{equation}
  \label{eqn:pi-k1-rewire}
-  \pi(G, v_P) = \frac{k}{K_R(G, v_P)} 
+  \pi(G, v_P) = \frac{k}{c_R(v_P \in G)} 
  \prod \limits_{v \in V_{out}(v_P \in G)} \frac{1}{R(v \in G)}
  \end{equation}
 where $k$ is a constant.
@@ -262,22 +245,45 @@ First, rearrange the factors of the detailed balance condition.
 \begin{equation}
  \frac{\pi(G)}{\pi(H)} = \frac{P(H, G)}{P(G, H)}
 \end{equation}
-Substituting in the proposed $\pi$ on the left-hand side, and the transition probability from Equation \ref{eqn:rewiring-trans-prob} on the right-hand side, we have
+Substituting in the proposed $\pi$ on the left-hand side, and the transition probability from Equation \ref{eqn:rewiring-trans-prob} --- without $|V_1(G)|$ in the denominator, since $v_P$ is always chosen --- on the right-hand side, we have
 
 \begin{equation}
- \frac{K_R(H, v_P)}{K_R(G, v_P)} \cdot \frac{R(v_1 \in H) \cdot R(v_2 \in H) \cdots R(v_G \in H)}
-{R(v_1 \in G) \cdot R(v_2 \in G) \cdots R(v_H \in G)} = 
-\frac{K_R(H, v_P) B(v_H \in H)}{K_R(G, v_P) B(v_G \in G)}
+\begin{split}
+&\frac{c_R(v_P \in H)}{c_R(v_P \in G)} \cdot\frac{R(v_1 \in H) \cdot R(v_2 \in H) \cdots R(v_G \in H)}
+{R(v_1 \in G) \cdot R(v_2 \in G) \cdots R(v_H \in G)} = \\
+ &\frac{c_R(v_P \in H) \cdot R(v_G \in H)}{|V_{in}(v_P \in H)|} \cdot \frac{|V_{in}(v_P \in G)|}{c_R(v_P \in G) \cdot R(v_H \in G)} 
+\end{split} 
 \end{equation}
 where $v_1$, $v_2$, and so on, are members of both $V_{out}(v_P \in G)$ and $V_{out}(v_P \in H)$. However, there is a vertex $v_G$ that $v_P$ is adjacent to in $G$ but not in $H$, and a vertex $v_H$ that $v_P$ is adjacent to in $H$ but not in $G$. Furthermore, only the degrees of $v_G$ and $v_H$ differ between the two states. Therefore, $R(v \in H) = R(v \in G)$ if $v$ is a member of both $V_{out}(v_P \in G)$ and $V_{out}(v_P \in H)$. Using this, the left-hand side can be simplified drastically:
 
 \begin{equation}
-  \frac{K_R(H, v_P)}{K_R(G, v_P)} \cdot \frac{R(v_H \in H)}{R(v_G \in G)} = 
-\frac{K_R(H, v_P) R(v_H \in H)}{K_R(G, v_P) R(v_G \in G)}.
+ \frac{c_R(v_P \in H) \cdot R(v_G \in H)}{c_R(v_P \in G) \cdot B(v_H \in G)} = 
+ \frac{c_R(v_P \in H) \cdot R(v_G \in H)}{c_R(v_P \in G) \cdot B(v_H \in G)}.
 \end{equation}
 Thus, the detailed balance condition holds.
 
 \end{proof}
+
+\subsection{Verification}
+Both transition probabilities verified experimentally. Rewire-function restricted case equilibrium distribution verified. Simulations have refuted the break-function restricted case equilibrium distribution. (Math error or programming error?)
+\begin{comment}\begin{table}[H]
+\centering
+\subfloat[Break-function model]{
+\begin{tabular}{c | c | c | c | c}
+$I$ & Nodes & Edges & Trials & $p$-value \\
+\hline
+ & & & & \\
+\end{tabular}}
+\qquad
+\subfloat[Rewire-function model]{
+\begin{tabular}{c | c | c | c | c}
+$I$ & Nodes & Edges & Trials & $p$-value \\
+\hline
+ & & & & \\
+\end{tabular}}
+\caption{}
+\end{table}
+\end{comment}
 
 \section{Dependence on $I$}
 
