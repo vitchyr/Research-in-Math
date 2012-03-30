@@ -1,0 +1,38 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{geometry}
+
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{theorem}{Theorem}
+
+%opening
+\title{Degree-dependent Rewiring Model}
+\author{Sam Magura, Vitchyr Pong}
+
+\begin{document}
+
+\maketitle
+
+\section{Model Definition}
+
+The process operates on a graph $G = (V, E)$. Each iteration:
+
+\begin{enumerate}
+ \item Randomly select an oriented edge $(x, y)$.
+ \item Randomly select a vertex $z$ from $V \setminus \{x, y\}$.
+ \item Create an edge $\{x, z\}$ with probability
+\begin{equation}
+ \frac{\theta}{d(z)} + \frac{1 - \theta}{\overline{d}}.
+\end{equation}
+ \item If an edge was created in the previous step, remove the edge $\{x, y\}$.
+\end{enumerate}
+
+
+\end{document}
