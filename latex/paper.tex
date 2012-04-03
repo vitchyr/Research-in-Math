@@ -29,7 +29,7 @@ The process operates on a graph $G = (V, E)$. Each iteration:
  \item Randomly select a vertex $z$ from $V \setminus \{x, y\}$.
  \item Create an edge $\{x, z\}$ with probability
 \begin{equation}
- \frac{\theta}{d(z)} + \frac{1 - \theta}{\overline{d}}.
+\theta (1 - e^{-c \, d}) + (1 - \theta) (1 - e^{-c  \, \overline{d}}).
 \end{equation}
  \item If an edge was created in the previous step, remove the edge $\{x, y\}$.
 \end{enumerate}
