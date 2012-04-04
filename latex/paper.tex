@@ -25,15 +25,64 @@
 The process operates on a graph $G = (V, E)$. Each iteration:
 
 \begin{enumerate}
- \item Randomly select an oriented edge $(x, y)$.
- \item Randomly select a vertex $z$ from $V \setminus \{x, y\}$.
- \item Create an edge $\{x, z\}$ with probability
+ \item Randomly select an edge from $E$. 
+ \item Select a random orientation $(x, y)$ for the edge.
+ \item \label{item:z} Randomly select a vertex $z$ from $V \setminus \{x, y\}$.
+ \item \label{item:pr} Create an edge $\{x, z\}$ with probability
 \begin{equation}
-\theta (1 - e^{-c \, d}) + (1 - \theta) (1 - e^{-c  \, \overline{d}}).
+1 - e^{-(\theta \: d(z) + (1 - \theta) \: \overline{d})}
 \end{equation}
+where $d(z)$ gives the degree of $z$, $\overline{d}$ is the mean degree of the graph, and $\theta$ is a parameter.
  \item If an edge was created in the previous step, remove the edge $\{x, y\}$.
 \end{enumerate}
 
 \section{Equilibrium Distribution}
+Consider states $G$ and $H$ such that $\{x, y\}$ is in $G$ but not $H$, and $\{x, z\}$ is in $H$ but not $G$. 
+
+\paragraph{Defintions} 
+\begin{itemize}
+ \item Let $n$ be the number of vertices let $m$ be the number of edges. Niether $n$ nor $m$ can change during an iteration, since for every new edge that is created, another is removed.
+ \item  Let the degree of $x$, which is the same in both states, be given by $i$. Let the degree of $y$ in $G$ be $j$ and the degree of $z$ in $H$ by $k$. Thus the degree of $y$ in $H$ is $j - 1$, and the degree of $z$ in $G$ is $k - 1$.
+ \item Let the probability of rewiring to a vertex of degree $i$ in step \ref{item:pr} of the model be given by $f(i)$. Thus,
+\begin{equation}
+ f(i) = 1 - e^{-(\theta \: i + (1 - \theta) \: \overline{d})}.
+\end{equation}
+ \item Let
+ \begin{equation}
+  F(i) = \left(\frac{1}{f(i)}\right)^i.
+ \end{equation}
+
+\end{itemize}
+
+\paragraph{Transition probability} For a transition from $G$ to $H$, the following must occur.
+\begin{enumerate}
+ \item The edge $\{x, y\}$ is selected. This occurs with probability $\frac{1}{m}$.
+ \item The orientation $(x, y)$ is chosen. This occurs with probability $\frac{1}{2}$.
+ \item Vertex $z$ is selected in step \ref{item:z}. Since this vertex is chosen randomly from $V \setminus \{x, y\}$, the probability that $z$ is selected is $\frac{1}{m - 2}$.
+ \item The rewiring is accepted in step \ref{item:pr}. This occurs with probability $f(k - 1)$.
+\end{enumerate}
+
+\noindent Therefore the transition probability is 
+
+\begin{equation}
+ P(G, H) = \frac{1}{2m} \: \frac{1}{m - 2} \: f(k - 1).
+\end{equation}
+
+\noindent By considering this argument for a transition from $H$ to $G$, we find that
+
+\begin{equation}
+ P(H, G) = \frac{1}{2m} \: \frac{1}{m - 2} \: f(j - 1).
+\end{equation}
+
+\paragraph{Detailed balance}
+\begin{theorem}
+ The detailed balance condition is satisfied by
+
+\begin{equation}
+ \pi(G) = \prod_{x = 1}^{n} F(d(x))
+\end{equation}
+where $d(x)$ gives the degree of $x$ in $G$. Therefore, $\pi$ is the equilibrium distribution.
+
+\end{theorem}
 
 \end{document}
