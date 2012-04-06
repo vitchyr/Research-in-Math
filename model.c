@@ -74,6 +74,15 @@ void iterate(igraph_t *graph, float th)
     } 
 }
 
+void iterate_many(igraph_t *graph, float th, int times)
+{
+    int i;
+    for(i = 0; i < times; i++)
+    {
+        iterate(graph, th); 
+    }
+}
+
 void main()
 {
     unsigned int seed = (unsigned int)time(NULL);
@@ -83,11 +92,7 @@ void main()
     igraph_erdos_renyi_game(graph, IGRAPH_ERDOS_RENYI_GNM, 10, 20,
                              IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
 
-    int i;
-    for(i = 0; i < pow(10, 5); i++)
-    {
-        iterate(graph, .5); 
-    }
+    iterate_many(graph, .5, pow(10,5));    
 
     igraph_write_graph_edgelist(graph, stdout);
     igraph_destroy(graph);
