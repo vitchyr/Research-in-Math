@@ -1,9 +1,0 @@
-simulation.py --- run a single trial of the process with option to display
-final graph. Also can write degree distribution. Additional options within file
-
-data_miner.py --- compute the means of many trials, for different I values
-
-flux.py --- verify transition probabilities
-
-equilibrium.py --- verify restricted case equilibrium distributions.
-Break-function model proposed equilibrium distribution seems to be incorrect.
