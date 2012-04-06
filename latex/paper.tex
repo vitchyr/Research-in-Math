@@ -30,9 +30,9 @@ The process operates on a graph $G = (V, E)$. Each iteration:
  \item \label{item:z} Randomly select a vertex $z$ from $V \setminus \{x, y\}$.
  \item \label{item:pr} Create an edge $\{x, z\}$ with probability
 \begin{equation}
-1 - e^{-(\theta \: d(z) + (1 - \theta) \: \overline{d})}
+ 1 - e^{-c\,(\theta \: d(z) / \overline{d}\; + (1 - \theta))}
 \end{equation}
-where $d(z)$ gives the degree of $z$, $\overline{d}$ is the mean degree of the graph, and $\theta$ is a parameter.
+where $d(z)$ gives the degree of $z$, $\overline{d}$ is the mean degree of the graph, $\theta$ is an adjustable parameter, and $c$ is some constant.
  \item If an edge was created in the previous step, remove the edge $\{x, y\}$.
 \end{enumerate}
 
@@ -45,7 +45,7 @@ Consider states $G$ and $H$ such that $\{x, y\}$ is in $G$ but not $H$, and $\{x
  \item  Let the degree of $x$, which is the same in both states, be given by $i$. Let the degree of $y$ in $G$ be $j$ and the degree of $z$ in $H$ by $k$. Thus the degree of $y$ in $H$ is $j - 1$, and the degree of $z$ in $G$ is $k - 1$.
  \item Let the probability of rewiring to a vertex of degree $i$ in step \ref{item:pr} of the model be given by $f(i)$. Thus,
 \begin{equation}
- f(i) = 1 - e^{-(\theta \: i + (1 - \theta) \: \overline{d})}.
+ f(i) = 1 - e^{-c\,(\theta \: i / \overline{d}\; + (1 - \theta))}.
 \end{equation}
  \item Let
  \begin{equation}
