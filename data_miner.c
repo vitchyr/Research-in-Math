@@ -7,25 +7,42 @@
 
 #include "model.h"
 
-void dd(int *distro, igraph_t *graph)
+void dd(int *distro, igraph_t *graph, int n)
 {
     int i;
-    for(i = 0; i < 20; i++)
+    for(i = 0; i < n; i++)
     {
-    distro[i] = i;
+        distro[i] = 0;
     }
+
+    igraph_vector_t deg_vector;
+    igraph_vector_init(&deg_vector, 1);
+
+    igraph_vs_t vs;
+    igraph_vs_all(&vs);
+
+    igraph_degree(graph, &deg_vector, vs, IGRAPH_ALL, 1);
+
+    int deg;
+    for(i = 0; i < igraph_vector_size(&deg_vector); i++)
+    {
+        deg = VECTOR(deg_vector)[i];
+        distro[deg] = 1 + distro[deg]; 
+    }
+
+    igraph_vs_destroy(&vs);
+    igraph_vector_destroy(&deg_vector);
 }
 
 void dd_procedure(int n, int m, int times, float th_min, float th_step, float th_max)
 {
-    int *distro;
-
     int n_lines = n * (int) ((th_max - th_min) / th_step);
     int max_line_length = 200;
     char outstring[n_lines * max_line_length];
     strcpy(outstring, "th\tdeg\tfreq\n");
 
     igraph_t graph;
+    int distro[n];
 
     float th;
     for(th = th_min; th <= th_max + .001; th += th_step)
@@ -34,8 +51,7 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
             IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
         iterate_many(&graph, th, times);    
 
-        int distro[n];
-        dd(distro, &graph); 
+        dd(distro, &graph, n); 
 
         int i;
         for(i = 0; i < n; i++)
@@ -44,10 +60,18 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
             sprintf(buffer, "%f\t%d\t%d\n", th, i, distro[i]);
             strcat(outstring, buffer);
         }
+
     }
 
     igraph_destroy(&graph);
-    printf("%s\n", outstring);
+
+    char filename[200];
+    sprintf(filename, "dd_%d_%d_%d%%_%d%%.dat", n, m,
+        (int) (100 * th_min), (int) (100 * th_max));
+    
+    FILE *outfile = fopen(filename, "w");
+    fputs(outstring, outfile);
+    fclose(outfile);
 }
 
 void main(int argc, char *argv[])
