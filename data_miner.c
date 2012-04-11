@@ -66,8 +66,108 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
     igraph_destroy(&graph);
 
     char filename[200];
-    sprintf(filename, "dd_%d_%d_%d%%_%d%%.dat", n, m,
-        (int) (100 * th_min), (int) (100 * th_max));
+    sprintf(filename, "dd_%d_%d_%d_%d%%_%d%%_%d%%.dat", n, m, times,
+        (int) (100 * th_min), (int) (100 * th_step), (int) (100 * th_max));
+    
+    FILE *outfile = fopen(filename, "w");
+    fputs(outstring, outfile);
+    fclose(outfile);
+}
+
+struct stats_task_result {
+    float lc_frac;
+    int lc_diameter;
+    int n_components;
+};
+
+struct stats_task_descriptor {
+    int n;
+    int m;
+    int times;
+    float th;
+    struct stats_task_result res;
+};
+
+void * stats_task(void *ptr)
+{
+    struct stats_task_descriptor *desc = (struct stats_task_descriptor * )ptr;
+
+    desc->res.lc_frac = .01;
+    desc->res.lc_diameter = 2;
+    desc->res.n_components = 5;
+
+    //igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
+      //  IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
+    //iterate_many(&graph, th, times);    
+}
+
+void stats_procedure_loop(struct stats_task_result *result_array,
+    int n, int m, int times, float th, int stats_size)
+{
+    int n_threads = 4;
+    pthread_t threads[n_threads];
+    int thread_id, task_count;
+
+    struct stats_task_descriptor desc_array[n_threads];
+
+    task_count = 0;
+    while(task_count != stats_size)
+    {
+        for(thread_id = 0; thread_id < n_threads; thread_id++)
+        {
+            desc_array[thread_id].n = n;
+            desc_array[thread_id].m = m;
+            desc_array[thread_id].times = times;
+            desc_array[thread_id].th = th;
+
+            if(task_count < stats_size)
+            {
+                pthread_create(&threads[thread_id], NULL, stats_task,
+                    (void *) &desc_array[thread_id]);  
+                task_count++;
+            } 
+        }
+
+
+        for(thread_id = 0; thread_id < n_threads; thread_id++)
+        {
+            pthread_join(threads[thread_id], NULL);
+
+            result_array[task_count - thread_id - 1] =
+                desc_array[thread_id].res;
+        }
+    }
+}
+
+void stats_procedure(int n, int m, int times, float th_min,
+    float th_step, float th_max, int stats_size)
+{
+    int n_lines = n * (int) ((th_max - th_min) / th_step);
+    int max_line_length = 200;
+    char outstring[n_lines * max_line_length];
+    strcpy(outstring, "th\tlc_frac\tlc_diameter\tn_components\n");
+
+
+    struct stats_task_result result_array[stats_size];
+    float th;
+    for(th = th_min; th <= th_max + .001; th += th_step)
+    {
+        stats_procedure_loop(result_array, n, m, times, th, stats_size);    
+        int i;
+        for(i = 0; i < stats_size; i++)
+        {
+            printf("%f\n", result_array[i].lc_frac);
+            //char buffer[max_line_length]; 
+            //sprintf(buffer, "%f\t%d\t%d\n", th, i, distro[i]);
+            //strcat(outstring, buffer);
+        }
+
+    }
+
+    char filename[200];
+    sprintf(filename, "stats_%d_%d_%d_%d%%_%d%%_%d%%_%d.dat", n, m, times,
+        (int) (100 * th_min), (int) (100 * th_step),
+        (int) (100 * th_max), stats_size);
     
     FILE *outfile = fopen(filename, "w");
     fputs(outstring, outfile);
@@ -105,6 +205,6 @@ void main(int argc, char *argv[])
     {
         dd_procedure(n, m, times, th_min, th_step, th_max);
     } else {
-
+        stats_procedure(n, m, times, th_min, th_step, th_max, stats_size);
     }
 }
