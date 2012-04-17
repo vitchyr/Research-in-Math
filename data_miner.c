@@ -47,7 +47,7 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
     float th;
     for(th = th_min; th <= th_max + .001; th += th_step)
     {
-        printf("Starting th = %f\n", th);
+        printf("th = %f\n", th);
         igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
             IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
         iterate_many(&graph, th, times);    
@@ -98,26 +98,23 @@ float get_lc_frac(igraph_t *graph)
     return (float) max_size / (float) igraph_vcount(graph);
 } 
 
-struct stats_task_result {
-    float lc_frac;
-};
-
-void stats_procedure_loop(struct stats_task_result *result_array,
-    int n, int m, int times, float th, int stats_size)
+float stats_procedure_loop(int n, int m, int times, float th, int stats_size)
 {
     int i;
+    float lc_frac_sum = 0.0;
+    
     for(i = 0; i < stats_size; i++)
     {
-        struct stats_task_result res;
         igraph_t graph;
 
         igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
             IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
         iterate_many(&graph, th, times);    
-        res.lc_frac = get_lc_frac(&graph);
 
-        result_array[i] = res;
+        lc_frac_sum += get_lc_frac(&graph);
     }
+
+    return lc_frac_sum / (float) stats_size;
 }
 
 void stats_procedure(int n, int m, int times, float th_min,
@@ -128,20 +125,15 @@ void stats_procedure(int n, int m, int times, float th_min,
     char outstring[n_lines * max_line_length];
     strcpy(outstring, "th\tlc_frac\n");
 
-
-    struct stats_task_result result_array[stats_size];
-    float th;
+    float th, lc_frac;
     for(th = th_min; th <= th_max + .001; th += th_step)
     {
-        stats_procedure_loop(result_array, n, m, times, th, stats_size);    
-        int i;
-        for(i = 0; i < stats_size; i++)
-        {
-            char buffer[max_line_length]; 
-            sprintf(buffer, "%f\t%f\n", th, result_array[i].lc_frac);
-            strcat(outstring, buffer);
-        }
+        printf("th = %f\n", th);
+        lc_frac = stats_procedure_loop(n, m, times, th, stats_size);    
 
+        char buffer[max_line_length]; 
+        sprintf(buffer, "%f\t%f\n", th, lc_frac);
+        strcat(outstring, buffer);
     }
 
     char filename[200];
