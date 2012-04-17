@@ -75,18 +75,6 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
     fclose(outfile);
 }
 
-struct stats_task_result {
-    float lc_frac;
-};
-
-struct stats_task_descriptor {
-    int n;
-    int m;
-    int times;
-    float th;
-    struct stats_task_result res;
-};
-
 float get_lc_frac(igraph_t *graph)
 {
     igraph_vector_ptr_t components;
@@ -110,56 +98,25 @@ float get_lc_frac(igraph_t *graph)
     return (float) max_size / (float) igraph_vcount(graph);
 } 
 
-void * stats_task(void *ptr)
-{
-    struct stats_task_descriptor *desc = (struct stats_task_descriptor * )ptr;
-    igraph_t graph;
-
-
-    igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, desc->n, desc->m,
-        IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
-    iterate_many(&graph, desc->th, desc->times);    
- 
-    desc->res.lc_frac = get_lc_frac(&graph);
-}
+struct stats_task_result {
+    float lc_frac;
+};
 
 void stats_procedure_loop(struct stats_task_result *result_array,
     int n, int m, int times, float th, int stats_size)
 {
-    int n_threads = 4;
-    pthread_t threads[n_threads];
-    int thread_id, task_count = 0, join_count = 0;
-
-    struct stats_task_descriptor desc_array[n_threads];
-
-    while(task_count != stats_size)
+    int i;
+    for(i = 0; i < stats_size; i++)
     {
-        for(thread_id = 0; thread_id < n_threads; thread_id++)
-        {
-            if(task_count < stats_size)
-            {
-                desc_array[thread_id].n = n;
-                desc_array[thread_id].m = m;
-                desc_array[thread_id].times = times;
-                desc_array[thread_id].th = th;
+        struct stats_task_result res;
+        igraph_t graph;
 
-                pthread_create(&threads[thread_id], NULL, stats_task,
-                    (void *) &desc_array[thread_id]);  
-                task_count++;
-            } 
-        }
+        igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
+            IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
+        iterate_many(&graph, th, times);    
+        res.lc_frac = get_lc_frac(&graph);
 
-        for(thread_id = 0; thread_id < n_threads; thread_id++)
-        {
-            if(join_count < stats_size)
-            {
-                pthread_join(threads[thread_id], NULL);
-
-                result_array[task_count - thread_id - 1] =
-                    desc_array[thread_id].res;
-                join_count++;
-            }
-        }
+        result_array[i] = res;
     }
 }
 
@@ -169,7 +126,7 @@ void stats_procedure(int n, int m, int times, float th_min,
     int n_lines = n * (int) ((th_max - th_min) / th_step);
     int max_line_length = 200;
     char outstring[n_lines * max_line_length];
-    strcpy(outstring, "th\tlc_frac\tlc_diameter\tn_components\n");
+    strcpy(outstring, "th\tlc_frac\n");
 
 
     struct stats_task_result result_array[stats_size];
@@ -180,10 +137,9 @@ void stats_procedure(int n, int m, int times, float th_min,
         int i;
         for(i = 0; i < stats_size; i++)
         {
-            printf("%f\n", result_array[i].lc_frac);
-            //char buffer[max_line_length]; 
-            //sprintf(buffer, "%f\t%d\t%d\n", th, i, distro[i]);
-            //strcat(outstring, buffer);
+            char buffer[max_line_length]; 
+            sprintf(buffer, "%f\t%f\n", th, result_array[i].lc_frac);
+            strcat(outstring, buffer);
         }
 
     }
