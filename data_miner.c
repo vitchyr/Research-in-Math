@@ -47,6 +47,7 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
     float th;
     for(th = th_min; th <= th_max + .001; th += th_step)
     {
+        printf("Starting th = %f\n", th);
         igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
             IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
         iterate_many(&graph, th, times);    
@@ -76,8 +77,6 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
 
 struct stats_task_result {
     float lc_frac;
-    int lc_diameter;
-    int n_components;
 };
 
 struct stats_task_descriptor {
@@ -88,17 +87,40 @@ struct stats_task_descriptor {
     struct stats_task_result res;
 };
 
+float get_lc_frac(igraph_t *graph)
+{
+    igraph_vector_ptr_t components;
+    igraph_vector_ptr_init(&components, 1);
+
+    //ignore lone vertices
+    igraph_decompose(graph, &components, IGRAPH_WEAK, -1, 2);
+
+    igraph_t *component;
+    int i, max_size = 0;
+    for(i = 0; i < igraph_vector_ptr_size(&components); i++)
+    {
+        component = (igraph_t *)igraph_vector_ptr_e(&components, i);
+        if(igraph_vcount(component) > max_size)
+        {
+            max_size = igraph_vcount(component);
+        }
+    }
+
+    igraph_decompose_destroy(&components);
+    return (float) max_size / (float) igraph_vcount(graph);
+} 
+
 void * stats_task(void *ptr)
 {
     struct stats_task_descriptor *desc = (struct stats_task_descriptor * )ptr;
+    igraph_t graph;
 
-    desc->res.lc_frac = .01;
-    desc->res.lc_diameter = 2;
-    desc->res.n_components = 5;
 
-    //igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
-      //  IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
-    //iterate_many(&graph, th, times);    
+    igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, desc->n, desc->m,
+        IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
+    iterate_many(&graph, desc->th, desc->times);    
+ 
+    desc->res.lc_frac = get_lc_frac(&graph);
 }
 
 void stats_procedure_loop(struct stats_task_result *result_array,
@@ -106,35 +128,37 @@ void stats_procedure_loop(struct stats_task_result *result_array,
 {
     int n_threads = 4;
     pthread_t threads[n_threads];
-    int thread_id, task_count;
+    int thread_id, task_count = 0, join_count = 0;
 
     struct stats_task_descriptor desc_array[n_threads];
 
-    task_count = 0;
     while(task_count != stats_size)
     {
         for(thread_id = 0; thread_id < n_threads; thread_id++)
         {
-            desc_array[thread_id].n = n;
-            desc_array[thread_id].m = m;
-            desc_array[thread_id].times = times;
-            desc_array[thread_id].th = th;
-
             if(task_count < stats_size)
             {
+                desc_array[thread_id].n = n;
+                desc_array[thread_id].m = m;
+                desc_array[thread_id].times = times;
+                desc_array[thread_id].th = th;
+
                 pthread_create(&threads[thread_id], NULL, stats_task,
                     (void *) &desc_array[thread_id]);  
                 task_count++;
             } 
         }
 
-
         for(thread_id = 0; thread_id < n_threads; thread_id++)
         {
-            pthread_join(threads[thread_id], NULL);
+            if(join_count < stats_size)
+            {
+                pthread_join(threads[thread_id], NULL);
 
-            result_array[task_count - thread_id - 1] =
-                desc_array[thread_id].res;
+                result_array[task_count - thread_id - 1] =
+                    desc_array[thread_id].res;
+                join_count++;
+            }
         }
     }
 }
