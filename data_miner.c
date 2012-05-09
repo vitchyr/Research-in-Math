@@ -37,6 +37,12 @@ void dd(int *distro, igraph_t *graph, int n)
 void dd_procedure(int n, int m, int times, float th_min, float th_step, float th_max)
 {
     int n_lines = n * (int) ((th_max - th_min) / th_step);
+
+    if(n_lines < n)
+    {
+        n_lines = n;
+    }
+
     int max_line_length = 200;
     char outstring[n_lines * max_line_length];
     strcpy(outstring, "th\tdeg\tfreq\n");

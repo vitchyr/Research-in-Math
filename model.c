@@ -7,7 +7,7 @@
 
 float f(int d, float d_mean, float th)
 {
-    float c = log(2.0);
+    float c = log(4);
     return 1.0 - exp(-c * (th * d / d_mean + (1.0 - th)));
 }
 
