@@ -5,15 +5,14 @@
 
 #include "model.h"
 
-float f(int d, float d_mean, float th)
+double f(int d, double d_mean, double th)
 {
-    float c = log(4);
-    return 1.0 - exp(-c * (th * d / d_mean + (1.0 - th)));
+    return th * ((double) d + 1.0) + (1.0 - th)*(d_mean + 1.0);
 }
 
-float d_mean(igraph_t *graph)
+double d_mean(igraph_t *graph)
 {
-    return 2.0 * igraph_ecount(graph) / (float) igraph_vcount(graph);
+    return 2.0 * igraph_ecount(graph) / (double) igraph_vcount(graph);
 }
 
 igraph_integer_t d(igraph_t *graph, igraph_integer_t v)
@@ -32,9 +31,18 @@ igraph_integer_t d(igraph_t *graph, igraph_integer_t v)
     return d_v;
 }
 
-void iterate(igraph_t *graph, float th)
+igraph_integer_t all_degrees(igraph_t *graph, igraph_vector_t *degrees)
 {
-    igraph_integer_t x, y, z, xy;
+    igraph_vs_t vs;
+    igraph_vs_all(&vs);
+
+    igraph_degree(graph, degrees, vs, IGRAPH_ALL, IGRAPH_LOOPS); 
+    igraph_vs_destroy(&vs);
+}
+
+void iterate(igraph_t *graph, double th)
+{
+    igraph_integer_t x, y, z = -1.0, xy;
     
     xy = rand() % (int) igraph_ecount(graph);
     igraph_edge(graph, xy, &x, &y);
@@ -47,22 +55,32 @@ void iterate(igraph_t *graph, float th)
         x = buffer;
     }
 
-    //condition to start while loop
-    z = x;
+    igraph_vector_t degrees;
+    igraph_vector_init(&degrees, 1); 
+    all_degrees(graph, &degrees);
 
-    while((int) z == (int) x || (int) z == (int) y)
+    double random = 1.0 * rand() / RAND_MAX;
+    int w;
+    double total = 0.0;
+    double denom = (double)(2 * igraph_ecount(graph) + igraph_vcount(graph));
+
+    for(w = 0; w < igraph_vector_size(&degrees); w++)
     {
-        z = rand() % (int) igraph_vcount(graph);
+        if(w != (int) x && w != (int) y)
+        {
+            total += f(VECTOR(degrees)[w], d_mean(graph), th) / denom; 
+
+            if(random < total)
+            {
+                z = (igraph_integer_t) w;
+                break;
+            }
+        }
     }
 
-    if(d(graph, x) < 1 || d(graph, y) < 1 || d(graph, z) < 0)
-    {
-        
-        exit(1);
-    }
+    igraph_vector_destroy(&degrees);
 
-    int d_z = d(graph, z);
-    if(1.0 * rand() / RAND_MAX < f(d_z, d_mean(graph), th))
+    if(z > -.5)
     {
         igraph_es_t es;
 
@@ -70,12 +88,11 @@ void iterate(igraph_t *graph, float th)
         igraph_delete_edges(graph, es);
         igraph_es_destroy(&es);
 
-        igraph_add_edge(graph, (int)x, (int)z);
-        
+        igraph_add_edge(graph, x, z);
     } 
 }
 
-void iterate_many(igraph_t *graph, float th, int times)
+void iterate_many(igraph_t *graph, double th, int times)
 {
     int i;
     for(i = 0; i < times; i++)

@@ -34,7 +34,7 @@ void dd(int *distro, igraph_t *graph, int n)
     igraph_vector_destroy(&deg_vector);
 }
 
-void dd_procedure(int n, int m, int times, float th_min, float th_step, float th_max)
+void dd_procedure(int n, int m, int times, double th_min, double th_step, double th_max)
 {
     int n_lines = n * (int) ((th_max - th_min) / th_step);
 
@@ -50,7 +50,7 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
     igraph_t graph;
     int distro[n];
 
-    float th;
+    double th;
     for(th = th_min; th <= th_max + .001; th += th_step)
     {
         printf("th = %f\n", th);
@@ -67,7 +67,6 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
             sprintf(buffer, "%f\t%d\t%d\n", th, i, distro[i]);
             strcat(outstring, buffer);
         }
-
     }
 
     igraph_destroy(&graph);
@@ -81,7 +80,7 @@ void dd_procedure(int n, int m, int times, float th_min, float th_step, float th
     fclose(outfile);
 }
 
-float get_lc_frac(igraph_t *graph)
+double get_lc_frac(igraph_t *graph)
 {
     igraph_vector_ptr_t components;
     igraph_vector_ptr_init(&components, 1);
@@ -101,13 +100,13 @@ float get_lc_frac(igraph_t *graph)
     }
 
     igraph_decompose_destroy(&components);
-    return (float) max_size / (float) igraph_vcount(graph);
+    return (double) max_size / (double) igraph_vcount(graph);
 } 
 
-float stats_procedure_loop(int n, int m, int times, float th, int stats_size)
+double stats_procedure_loop(int n, int m, int times, double th, int stats_size)
 {
     int i;
-    float lc_frac_sum = 0.0;
+    double lc_frac_sum = 0.0;
     
     for(i = 0; i < stats_size; i++)
     {
@@ -120,18 +119,18 @@ float stats_procedure_loop(int n, int m, int times, float th, int stats_size)
         lc_frac_sum += get_lc_frac(&graph);
     }
 
-    return lc_frac_sum / (float) stats_size;
+    return lc_frac_sum / (double) stats_size;
 }
 
-void stats_procedure(int n, int m, int times, float th_min,
-    float th_step, float th_max, int stats_size)
+void stats_procedure(int n, int m, int times, double th_min,
+    double th_step, double th_max, int stats_size)
 {
     int n_lines = n * (int) ((th_max - th_min) / th_step);
     int max_line_length = 200;
     char outstring[n_lines * max_line_length];
     strcpy(outstring, "th\tlc_frac\n");
 
-    float th, lc_frac;
+    double th, lc_frac;
     for(th = th_min; th <= th_max + .001; th += th_step)
     {
         printf("th = %f\n", th);
@@ -155,7 +154,7 @@ void stats_procedure(int n, int m, int times, float th_min,
 void main(int argc, char *argv[])
 {
     int n, m, times, stats_size = 0;
-    float th_min, th_step, th_max;
+    double th_min, th_step, th_max;
 
     if(argc > 6)
     {
