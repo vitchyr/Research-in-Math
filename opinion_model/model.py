@@ -17,12 +17,37 @@ def d(G, x, y):
 
     return dn(vec_x, vec_y)
 
+def k(G, m=0):
+    total = 0.0
+
+    for (u, u_data) in G.nodes_iter(True):
+        for (v, v_data) in G.nodes_iter(True):
+            if u < v:
+                total += (dn(u_data['op'], v_data['op'])**2 + 1.0)**-1
+
+    if m == 0:
+        m = G.number_of_edges()
+
+    G.k = m / total
+    print G.k
+    return G.k
+
 def random_opinions(G):
     for v in G.nodes_iter():
         G.node[v]['op'] = []
 
         for i in range(G.D):
             G.node[v]['op'].append(random.random())
+
+def construct(G, d_mean):
+    k(G, .5 * G.number_of_nodes() * d_mean) 
+    for (u, u_data) in G.nodes_iter(True):
+        for (v, v_data) in G.nodes_iter(True):
+
+            if(u < v and 
+                random.random() <
+                G.k * (dn(u_data['op'], v_data['op'])**2 + 1.0)**-1):
+                G.add_edge(u, v)
 
 def iterate(G):
     if '_edges' not in G.__dict__:
@@ -72,40 +97,6 @@ def draw_graph(G):
         networkx.draw(G, pos)
         matplotlib.pyplot.show()
 
-def write_deg(G, dist_step):
-    dist_data = []
-    deg_data = []
-
-    for v, deg in G.degree_iter():
-        dist = dn(G.node[v]['op'], [.5]*G.D)
-        dist_data.append(dist)
-        deg_data.append(deg)
-
-    import numpy
-    bins = []
-    dist = 0.0
-
-    while dist < .5 * G.D + .001:
-        bins.append(dist)
-        dist += dist_step
-
-    bins_np = numpy.array(bins)
-    bin_indices = numpy.digitize(dist_data, bins_np)
-    histogram = numpy.histogram(dist_data, bins_np)[0]
-
-    mean_degree_data = [0.0] * (len(bins) - 1)
-    for i in range(0, len(dist_data) - 1):
-        mean_degree_data[bin_indices[i] - 1] += float(deg_data[i]) /\
-            histogram[bin_indices[i] - 1] 
-
-    outstring = ''
-    for i in range(0, len(bins) - 1):
-        outstring += '{0}\t{1}\n'.format(bins[i], mean_degree_data[i])
-
-    k = 2 * G.number_of_edges() / G.number_of_nodes()
-    outfile = open('opdegdist_{0}_{1}.dat'.format(k, G.D), 'w')
-    outfile.write(outstring)
-
 def make_graph(n, m, D):
     G = networkx.gnm_random_graph(n, m)
     G.D = D
@@ -113,15 +104,15 @@ def make_graph(n, m, D):
     return G
 
 if __name__ == '__main__':
-    n = 1000 
+    n = 50000
     k = 4
-    times = 10**6
-    D = 3
+    times = 10**7
+    D = 1
 
     G = make_graph(n, .5 * n * k, D)
 
     for i in range(times):
         iterate(G)
 
-    write_deg(G, .1)
+    write_deg(G, .04)
     #draw_graph(G)
