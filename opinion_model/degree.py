@@ -34,6 +34,7 @@ def write_deg(G, dist_step):
     k = 2 * G.number_of_edges() / G.number_of_nodes()
     outfile = open('opdegdist_{0}_{1}.dat'.format(k, G.D), 'w')
     outfile.write(outstring)
+    outfile.close()
 
 def f(x1):
     return (1 - 2 * x1)**2 / ((x1 - 1) * x1) 

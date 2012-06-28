@@ -17,6 +17,7 @@ def d(G, x, y):
 
     return dn(vec_x, vec_y)
 
+#returns c in Theorem 2
 def k(G, m=0):
     total = 0.0
 
@@ -58,7 +59,10 @@ def iterate(G):
     if random.random() < .5:
         x, y = y, x
 
-    p = G.D**-.5
+    #For geometric distance, use: 
+    #p = G.D**-.5
+    #For step distance, use:
+    p = G.D
     d_xy = d(G, x, y)
 
     if random.random() > p * d(G, x, y):
