@@ -17,6 +17,11 @@ def d(G, x, y):
 
     return dn(vec_x, vec_y)
 
+def length(G, edge):
+    vec_x = G.node[edge[0]]['op']
+    vec_y = G.node[edge[1]]['op']
+    return dn(vec_x, vec_y)
+
 #returns c in Theorem 2
 def k(G, m=0):
     total = 0.0
@@ -69,8 +74,14 @@ def iterate(G):
         return
 
     z = x
+    times = 0
     while z == x or z == y or G.has_edge(x, z):
-        z = random.randint(0, G.number_of_nodes() - 1) 
+        z = random.randint(0, G.number_of_nodes() - 1)
+        times += 1
+        if times % 30 == 0:
+            print "Looked for z %d times!" % times
+            print x
+            print G.edges()
 
     d_xz = d(G, x, z)
 

@@ -30,6 +30,7 @@ Let the constant $p = 1 / D$ so that $p \; d(x, y) \leq 1$ for any possible $\{x
 \begin{enumerate}
  \item Randomly choose an edge from the graph.
  \item Apply a random orientation $(x, y)$ to the edge.
+ \item If the degree of $x = m - 1$, do nothing this iteration.
  \item \label{item:z} Randomly choose a vertex $z$ from the set of all vertices that are neither $x$ nor adjacent to $x$.
  \item With probability
  \begin{equation}
@@ -184,7 +185,7 @@ Evaluating the integral yields our result.
 \begin{prop}
  For $D=1$, the expected degree distribution is given by
  \begin{equation}
-  N(k) = n \,\frac{dx}{dk}.
+  N(k) = 2n \,\frac{dx}{dk}.
  \end{equation}
 \end{prop}
 \begin{proof}
@@ -193,15 +194,15 @@ With $\Delta k \to 0$, all vertices in the interval $[x(k), x(k + \Delta k)]$ ha
 \begin{equation}
  N(k) = a \lim\limits_{\Delta k \to 0} \frac{x(k + \Delta k) - x(k)}{\Delta k} = a \, \frac{dx}{dk}
 \end{equation}
-for constant $a$. To determine $a$, we note that the relationship 
+for some constant $a$. To determine $a$, we note that the relationship 
 \begin{equation}
 \label{eqn:Nsum}
  \int\limits_{0}^\infty N(k)\, dk = n
 \end{equation}
-must hold. Substituting $a \, \frac{dx}{dk}$ for $N(k)$ gives us 
+must hold. Substituting $2n \, \frac{dx}{dk}$ for $N(k)$ gives us 
 \begin{equation}
- a\int\limits_{0}^\infty \frac{dx}{dk} \, dk = a\int\limits_{0}^1 dx = a.
+ 2n\int\limits_{0}^\infty \frac{dx}{dk} \, dk = 2n\int\limits_{0}^{\frac{1}{2}} dx = n.
 \end{equation}
-Thus $a = n$.
+Thus $a = 2n$.
 \end{proof}
 \end{document}
