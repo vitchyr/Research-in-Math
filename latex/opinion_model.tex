@@ -12,6 +12,7 @@
 \newtheorem{defn}{Definition}
 \newtheorem{prop}{Proposition}
 \newtheorem{theorem}{Theorem}
+\newtheorem{cor}{Corollary}
 
 %opening
 \title{Opinion-dependent Rewiring Model}
@@ -182,18 +183,22 @@ When $D=1$, Theorem \ref{thm:kx} reduces to
 Evaluating the integral yields our result.
 \end{proof}
 \begin{prop}
+\label{prop:R1}
+ For $D=1$, $k(x) \in R_1 = [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2}]$ for any $x$.
+ \end{prop}
+
+\begin{prop}
  For $D=1$, the expected degree distribution is given by
  \begin{equation}
-  N(k) = n \,\frac{dx}{dk}.
+  N(k) = n \,\frac{dx}{dk}
  \end{equation}
-\end{prop}
+when $k \in [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2}]$ and $N(k) = 0$ otherwise. \end{prop}
 \begin{proof}
-Let $x(k)$ give the opinion of a vertex with expected degree $k$ and always return an a value in $[0, 1/2]$.  
-With $\Delta k \to 0$, all vertices in the interval $[x(k), x(k + \Delta k)]$ have expected degree $k$. Because vertices are spread evenly within the opinion space, the number of vertices that have degree $k$ is proportional to $x(k + \Delta k) - x(k)$. Therefore
+$N(k)$ is obviously 0 when $k$ is not in the range of possible expected degrees, $R_1$. Let $x(k)$ give the opinion of a vertex with expected degree $k$ and always return a value in $[0, 1/2]$. With $\Delta k \to 0$, all vertices in the interval $[x(k), x(k + \Delta k)]$ have expected degree $k$. Because vertices are spread evenly within the opinion space, the number of vertices that have degree $k$ is proportional to $x(k + \Delta k) - x(k)$. Therefore
 \begin{equation}
  N(k) = a \lim\limits_{\Delta k \to 0} \frac{x(k + \Delta k) - x(k)}{\Delta k} = a \, \frac{dx}{dk}
 \end{equation}
-for constant $a$. To determine $a$, we note that the relationship 
+for constant $a$. However, recall from the proof for Proposition \ref{prop:R1} that $\frac{dk}{dx} = 0$ at the maximum of $k(x)$ at $x=1/2$. Thus $N(k) = a \, \frac{dx}{dk}$ only when $k \in  [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2})$. Because the number of real numbers in $[0, 1]$ is infinite, the probability that a vertex $x$ is exactly $1/2$ is 0; thus $N(2\,c\,n \tan^{-1}\frac{1}{2}) = 0$. To determine $a$, we note that the relationship 
 \begin{equation}
 \label{eqn:Nsum}
  \int\limits_{0}^\infty N(k)\, dk = n
