@@ -55,9 +55,12 @@ def construct(G, d_mean):
                 G.k * (dn(u_data['op'], v_data['op'])**2 + 1.0)**-1):
                 G.add_edge(u, v)
 
+def reconstruct(G, d_mean):
+    G.remove_edges_from(G.edges())
+    construct(G, d_mean)
+
 def iterate(G):
-    if '_edges' not in G.__dict__:
-        G._edges = G.edges()
+    G._edges = G.edges()
 
     x, y = random.choice(G._edges)
 
@@ -74,14 +77,11 @@ def iterate(G):
         return
 
     z = x
-    times = 0
+    if G.degree(x) == G.number_of_nodes() - 1:
+        return
+    
     while z == x or z == y or G.has_edge(x, z):
         z = random.randint(0, G.number_of_nodes() - 1)
-        times += 1
-        if times % 30 == 0:
-            print "Looked for z %d times!" % times
-            print x
-            print G.edges()
 
     d_xz = d(G, x, z)
 
