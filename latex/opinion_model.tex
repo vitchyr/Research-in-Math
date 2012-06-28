@@ -159,53 +159,69 @@ We evaluate this integral to reach our result.
 
 \section{Expected Degree}
 \begin{theorem}
-\label{thm:kx}
+\label{thm:lambdax}
 The expected degree of a vertex $x$ is
  \begin{equation}
- k(x) = c\,n\int\limits_\Omega \frac{du}{d(x, u)^2 + 1}.
+ \lambda(x) = c\,n\int\limits_\Omega \frac{du}{d(x, u)^2 + 1}.
 \end{equation}
 \end{theorem}
 \begin{proof}
-The expected number of vertices in an interval $I$ with dimensions $du_1, du_2, \ldots, du_D$  is $n \cdot du_1 \cdot du_2 \cdots du_D$ because $n$ vertices are evenly distrbuted within $\Omega$. From Theorem \ref{thm:perc}, we see that expected number of edges $\{x, u\}$ where $u \in I$ is $\frac{k}{d(x, u)^2 + 1} \, n \, du$. Thus the expected degree of $x$ is this function integrated over $\Omega$.
+The expected number of vertices in an interval $I$ with dimensions $du_1, du_2, \ldots, du_D$  is $n \cdot du_1 \cdot du_2 \cdots du_D$ because $n$ vertices are evenly distrbuted within $\Omega$. From Theorem \ref{thm:perc}, we see that expected number of edges $\{x, u\}$ where $u \in I$ is $\frac{c}{d(x, u)^2 + 1} \, n \, du$. Thus the expected degree of $x$ is this function integrated over $\Omega$.
 \end{proof}
 
 \begin{prop}
 For $D = 1$, The expected degree of a vertex $x = x_1$ is
  \begin{equation}
- k(x) = c\,n\left(\tan^{-1} x + \tan^{-1} (1-x)\,\right).
+ \lambda(x) = c\,n\left(\tan^{-1} x + \tan^{-1} (1-x)\,\right).
 \end{equation}
 \end{prop}
 \begin{proof}
-When $D=1$, Theorem \ref{thm:kx} reduces to
+When $D=1$, Theorem \ref{thm:lambdax} reduces to
 \begin{equation}
- k(x) = c\,n\;\int\limits_{0}^{1} \frac{du}{(x - u)^2 + 1}.
+ \lambda(x) = c\,n\;\int\limits_{0}^{1} \frac{du}{(x - u)^2 + 1}.
 \end{equation}
 Evaluating the integral yields our result.
 \end{proof}
-\begin{prop}
-\label{prop:R1}
- For $D=1$, $k(x) \in R_1 = [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2}]$ for any $x$.
- \end{prop}
+
+\begin{figure}
+ \centering
+ \includegraphics{images/lambdaofx.pdf}
+ \caption{A plot of expected degree $\lambda(x)$ vs. opinion $x$ when the mean degree is 4. The curve has reflectional symmetry across $x = \frac{1}{2}$ as expected.}
+ \label{fig:lambdaofx}
+\end{figure}
+
 
 \begin{prop}
- For $D=1$, the expected degree distribution is given by
- \begin{equation}
-  N(k) = n \,\frac{dx}{dk}
- \end{equation}
-when $k \in [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2}]$ and $N(k) = 0$ otherwise. \end{prop}
+\label{prop:R1}
+ For $D=1$, $\lambda(x) \in R_1 = [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2}]$ for any $x$.
+ \end{prop}
 \begin{proof}
-$N(k)$ is obviously 0 when $k$ is not in the range of possible expected degrees, $R_1$. Let $x(k)$ give the opinion of a vertex with expected degree $k$ and always return a value in $[0, 1/2]$. With $\Delta k \to 0$, all vertices in the interval $[x(k), x(k + \Delta k)]$ have expected degree $k$. Because vertices are spread evenly within the opinion space, the number of vertices that have degree $k$ is proportional to $x(k + \Delta k) - x(k)$. Therefore
+First we determine the critical values of $\lambda(x)$ with $x \in [0, 1]$. The derivative is
 \begin{equation}
- N(k) = a \lim\limits_{\Delta k \to 0} \frac{x(k + \Delta k) - x(k)}{\Delta k} = a \, \frac{dx}{dk}
+ \frac{d\lambda}{dx} = c\,n\left(\frac{1}{1+x^2} - \frac{1}{1+(1-x)^2} \right).
 \end{equation}
-for constant $a$. However, recall from the proof for Proposition \ref{prop:R1} that $\frac{dk}{dx} = 0$ at the maximum of $k(x)$ at $x=1/2$. Thus $N(k) = a \, \frac{dx}{dk}$ only when $k \in  [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2})$. Because the number of real numbers in $[0, 1]$ is infinite, the probability that a vertex $x$ is exactly $1/2$ is 0; thus $N(2\,c\,n \tan^{-1}\frac{1}{2}) = 0$. To determine $a$, we note that the relationship 
+Thus $\frac{d\lambda}{dx} = 0$ if and only if $x^2 = (1 - x)^2$, and $x=\frac{1}{2}$ is the one critical value. From Figure \ref{fig:lambdaofx}, we see that $\lambda(\frac{1}{2}) = 2\,c\,n \tan^{-1}\frac{1}{2}$ is the maximum expected degree. From the figure, it is also clear that the minima of $\lambda(x)$ lie at the endpoints of the interval. The minimum expected degree is $\lambda(0) = \lambda(1) = c\,n\,\frac{\pi}{4}.$
+\end{proof}
+
+\begin{prop}
+ For $D=1$, the distribution of expected degrees is given by
+ \begin{equation}
+  M(\lambda) = n \,\frac{dx}{d\lambda}
+ \end{equation}
+when $\lambda \in [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2}]$ and $M(\lambda) = 0$ otherwise. \end{prop}
+\begin{proof}
+$M(\lambda)$ is obviously 0 when $k$ is not in the range of possible expected degrees, $R_1$. Let $x(\lambda)$ give the opinion of a vertex with expected degree $\lambda$ and always return a value in $[0, 1/2]$. With $\Delta \lambda \to 0$, all vertices in the interval $[x(\lambda), x(\lambda + \Delta \lambda)]$ have expected degree $\lambda$. Because vertices are spread evenly within the opinion space, the number of vertices that have degree $\lambda$ is proportional to $x(\lambda + \Delta \lambda) - x(\lambda)$. Therefore
 \begin{equation}
-\label{eqn:Nsum}
- \int\limits_{0}^\infty N(k)\, dk = n
+ M(\lambda) = a \lim\limits_{\Delta \lambda \to 0} \frac{x(\lambda + \Delta \lambda) - x(\lambda)}{\Delta \lambda} = a \, \frac{dx}{d\lambda}
 \end{equation}
-must hold. Substituting $a \, \frac{dx}{dk}$ for $N(k)$ gives us 
+for constant $a$. However, recall from the proof for Proposition \ref{prop:R1} that $\frac{d\lambda}{dx} = 0$ at the maximum of $\lambda(x)$ at $x=1/2$. Thus $M(\lambda) = a \, \frac{dx}{d\lambda}$ only when $\lambda \in  [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2})$. Because the number of real numbers in $[0, 1]$ is infinite, the probability that a vertex $x$ is exactly $1/2$ is 0; thus $M(2\,c\,n \tan^{-1}\frac{1}{2}) = 0$. To determine $a$, we note that the relationship 
 \begin{equation}
- a\int\limits_{0}^\infty \frac{dx}{dk} \, dk = a\int\limits_{0}^1 dx = a.
+\label{eqn:Msum}
+ \int\limits_{0}^\infty M(\lambda)\, d\lambda = n
+\end{equation}
+must hold. Substituting $a \, \frac{dx}{d\lambda}$ for $M(\lambda)$ gives us 
+\begin{equation}
+ a\int\limits_{0}^\infty \frac{dx}{d\lambda} \, d\lambda = a\int\limits_{0}^1 dx = a.
 \end{equation}
 Thus $a = n$.
 \end{proof}
