@@ -1,0 +1,130 @@
+\documentclass[11pt,letterpaper]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{bbm}
+\usepackage{subfigure}
+
+\pagestyle{plain}                                                     
+
+%%%%%%%%%% MARGINS %%%%%%%   
+\setlength{\textwidth}{6.5in}     %%
+\setlength{\oddsidemargin}{0in}   %%
+\setlength{\evensidemargin}{0in}  %%
+\setlength{\textheight}{8.5in}    %%  
+\setlength{\topmargin}{0in}       %%  
+\setlength{\headheight}{0in}      %%  
+\setlength{\headsep}{0in}         %%                           
+\setlength{\footskip}{.5in}       %%                                   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                  
+
+\newtheorem{thm}{Theorem}
+\newtheorem{con}{Conjecture}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem*{theorem}{Theorem}
+\newtheorem*{lemma}{Lemma}
+
+    %For norms use \norm{a} this writes ||a||, for absolute value use \abs
+     \newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+     \newcommand{\abs}[1]{\left|#1\right|}
+
+     \newcommand{\prob}[1]{\mathbb{P}\left(#1\right)}
+     \newcommand{\eps}[0]{\epsilon}
+     \newcommand{\cluster}[0]{\mathcal{C}}
+     \newcommand{\E}[0]{\mathbb{E}}
+     \newcommand{\tab}[0]{\hspace{1.5em}}
+     \newcommand{\I}[1]{\mathbbm{1}_{#1}}
+     \newcommand{\floor}[1]{\left\lfloor#1\right \rfloor}
+     \newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
+     \newcommand{\vect}[1]{{\bf #1}}
+     \newcommand{\D}{\mathcal{D}}
+            
+\renewcommand{\refname}{\hfil References Cited\hfil}                   
+\bibliographystyle{abbrv}                                              
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\begin{center}
+{\LARGE Long Range Percolation} \\
+\today
+\end{center}
+
+Papers on long range percolation, in which an edge is drawn independently between vertices $i$ and $j$ with probability $p_{ij} = f(d(i,j))$, where $f: \mathbb{Z}_+ \to [0,1)$ is such that $f(d)d^s \to \beta>0$ as $d \to \infty$.
+
+\begin{enumerate}
+\item {\bf Schulman, 1983~\cite{Schulman:1983}}: He studies LRP on $\mathbb{Z}$ where $f(d) = \beta/d^s$ for $\beta \in (0,1)$.
+\begin{enumerate}
+\item For $1<s\leq 2$, if $\beta < 1/2\zeta(s)$ there is no infinite component.
+\item For $s>2$ there is never an infinite component.
+\end{enumerate}
+
+\item {\bf Newman and Schulman, 1986~\cite{NS:1986}}: They study LRP on $\mathbb{Z}$ where $f(1)<1$.
+\begin{enumerate}
+\item If $\displaystyle \liminf_{d\to\infty} d^s f(d) >0$ for some $s<2$ then an infinite component exists if $f(1)$ is sufficiently close to $1$.
+\item If $\displaystyle \liminf_{d\to\infty} d^2 f(d) >1$ then an infinite component exists if $f(1)$ is sufficiently close to $1$.
+\end{enumerate}
+
+
+\item {\bf Benjamini and Berger, 2001~\cite{BB:2001}}:  They study the diameter $\D(N)$ of LRP on the finite cycle $\mathbb{Z}/N\mathbb{Z}$, where $f(1) = 1$ (so nearest neighbors are connected) and $f(d) = 1 -\exp(-\beta d^{-s})$ otherwise.
+\begin{enumerate}
+\item If $s>2$ then there is $C$ such that
+$$\prob{\D(N)\geq CN} \to 1 $$
+and $\D(N)/N \to \eta \in (0,1]$ in distribution.
+
+\item If $s<1$ then there is a constant $C$ such that
+$$ \prob{\D(N)\leq C} \to 1. $$
+
+\item If $1<s<2$ then there are constants $\delta$ and $C$ such that
+$$ \prob{C \log N \leq \D(N) \leq (\log N)^\delta} \to 1.$$
+(Another proof of the upper bound is in~\cite{CGS:2002})
+
+\item The authors also prove an upper bound for the Cheeger constant of $N^{-a}$ ($a<s-1$) when $1<s<2$, and mention a result in~\cite{Berger:2002} that bounds the Cheeger constant for $s=2$ by $C\log N / N$.
+\end{enumerate}
+
+%%%%%%%%%%%%
+\item {\bf Coppersmith, Gamarnik and Sviridenko, 2002~\cite{CGS:2002}}: They study the diameter $\D(N)$ of LRP on the $d$-dimensional finite grid $[N]^d$, where nearest neighbors are connected ($f(1)=1$).
+
+\begin{enumerate}
+\item For $s>2d$ and $\delta < \frac{s-2d}{s-d-1}$
+$$\prob{\D(N) \geq N^\delta} \to 1.$$
+
+\item For $s = 2d$ there exist $0<\eta_1<\eta_2<1$ such that
+$$ \prob{\D(N) \leq N^{\eta_2}} \to 1,$$
+and when $d=1, s=2, \beta<1$
+$$ \prob{\D(N) \geq N^{\eta_1}}\to 1.$$
+
+\item For $d<s<2d$ they extend the results of Benjamini and Berger to $d>1$, though their approach is different.  Their results are of course trumped by those of Biskup~\cite{Biskup:2004}.
+
+\item For $s=d$
+$$ \prob{\frac{C_1 \log N}{\log \log N} \leq \D(N) \leq \frac{C_2 \log N}{\log \log N}} \to 1$$
+
+\end{enumerate}
+
+%%%%%%%%
+\item {\bf Biskup, 2004 and 2011~\cite{Biskup:2004, Biskup:2011}}: He studies LRP on $\mathbb{Z}^d$ and $[N]^d$.  On $\mathbb{Z}^d$ he studies the scaling of $D(x,y)$, the graph distance between $x$ and $y$, while on $[N]^d$ he studies the diameter $\D(N)$.  For $d<s<2d$, if $\Delta = \frac{\log 2}{\log(2d/s)}$ then
+\begin{align*}
+D(x,y) &= (\log d(x,y))^{\Delta + o(1)}  &\text{as } d(x,y) \to \infty,\\
+\D(N) &= (\log N)^{\Delta + o(1)} &\text{as } N \to \infty,
+\end{align*}
+where $o(1)$ is a term that goes to zero in probability.
+
+
+\item {\bf Apparently Still Open}: 
+\begin{enumerate}
+\item For $s=2d$ is it true that $\D(N) \sim N^{\eta}$?
+\item What is the precise percolation threshold in terms of $\beta$?  Size the giant component in finite graphs?
+\item What happens outside the range $s\in (d,2d)$ if the assumption of nearest neighbor connections is relaxed?
+\end{enumerate}
+
+\end{enumerate}
+
+\bibstyle{siam}
+\bibliographystyle{siam}
+\bibliography{references}
+
+\end{document}  
