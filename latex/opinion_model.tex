@@ -202,7 +202,7 @@ First we determine the critical values of $\lambda(x)$ with $x \in [0, 1]$. The 
 \begin{equation}
  \frac{d\lambda}{dx} = n\left(\frac{1}{1+\frac{x^2}{c}} - \frac{1}{1+\frac{(1-x)^2}{c}} \right).
 \end{equation}
-Thus $\frac{d\lambda}{dx} = 0$ if and only if $x^2 = (1 - x)^2$, and $x=\frac{1}{2}$ is the one critical value. From Figure \ref{fig:lambdaofx}, we see that $\lambda(\frac{1}{2})$ is the maximum expected degree. From the figure, it is also clear that the minima of $\lambda(x)$ lie at the endpoints of the interval. Thus the range of possible expected degrees is 
+Thus $\frac{d\lambda}{dx} = 0$ if and only if $x^2 = (1 - x)^2$; so $x=\frac{1}{2}$ is the one critical value. From Figure \ref{fig:lambdaofx}, we see that $\lambda(\frac{1}{2})$ is the maximum expected degree. From the figure, it is also clear that the minima of $\lambda(x)$ lie at the endpoints of the interval. Thus the range of possible expected degrees is 
 $[\lambda(0)=\lambda(1), \lambda(\frac{1}{2})] = \left[n \sqrt{c}\, \tan^{-1}\left(\frac{1}{\sqrt{c}}\right),2 n\sqrt{c}\,  \tan^{-1}\left(\frac{1}{2 \sqrt{c}}\right)\right]$. 
 \end{proof}
 
@@ -211,34 +211,26 @@ $[\lambda(0)=\lambda(1), \lambda(\frac{1}{2})] = \left[n \sqrt{c}\, \tan^{-1}\le
  \begin{equation}
  f_\Lambda(\lambda) = \left\{
      \begin{array}{lr}
-  n \,\frac{dx}{d\lambda} & : \lambda \in R_1 \\
+  \,\frac{dx}{d\lambda} & : \lambda \in R_1 \\
   0 & : \lambda \notin R_1
      \end{array}
    \right..
 \end{equation}
 \end{prop}
 \begin{proof}
-$f_\Lambda(\lambda)$ is obviously 0 when $k$ is not in the range of possible expected degrees, $R_1$. Let $x(\lambda)$ give the opinion of a vertex with expected degree $\lambda$ and always return a value in $[0, 1/2]$. With $\Delta \lambda \to 0$, all vertices in the interval $[x(\lambda), x(\lambda + \Delta \lambda)]$ have expected degree $\lambda$. Because vertices are spread evenly within the opinion space, the number of vertices that have degree $\lambda$ is proportional to $x(\lambda + \Delta \lambda) - x(\lambda)$. Therefore
+$f_\Lambda(\lambda)$ is obviously 0 when $k$ is not in the range of possible expected degrees, $R_1$. Let $x(\lambda)$ give the opinion of a vertex with expected degree $\lambda$ and always return a value in $[0, 1/2]$. With $\Delta \lambda \to 0$, all vertices in the interval $[x(\lambda), x(\lambda + \Delta \lambda)]$ have expected degree $\lambda$. Because vertices are spread evenly within the opinion space, the number of vertices that have expected degree $\lambda$ is proportional to $x(\lambda + \Delta \lambda) - x(\lambda)$. Therefore
 \begin{equation}
  f_\Lambda(\lambda) = a \lim\limits_{\Delta \lambda \to 0} \frac{x(\lambda + \Delta \lambda) - x(\lambda)}{\Delta \lambda} = a \, \frac{dx}{d\lambda}
 \end{equation}
 for some constant $a$. To determine $a$, we note that the relationship 
 \begin{equation}
- \int\limits_{0}^\infty f_\Lambda(\lambda)\, d\lambda = n
+ \int\limits_{0}^\infty f_\Lambda(\lambda)\, d\lambda = 1
 \end{equation}
-must hold. However, it is only necessary to integrate over $R_1$ since $f_\Lambda(\lambda) = 0$ for $\lambda \notin R_1$. Thus we can substitute $a \, \frac{dx}{d\lambda}$ for $f_\Lambda(\lambda)$ and evaluate the integral.
+must hold. However, it is only necessary to integrate over $R_1$, since $f_\Lambda(\lambda) = 0$ for $\lambda \notin R_1$. Thus we can substitute $a \, \frac{dx}{d\lambda}$ for $f_\Lambda(\lambda)$ and evaluate the integral.
 \begin{equation}
  a\int\limits_{R_1} \frac{dx}{d\lambda} \, d\lambda = a\int\limits_{0}^1 dx = a.
 \end{equation}
-Thus $a = n$.
-\end{proof}
-
-\begin{prop}
- The degree distribution is given by
- \begin{equation}
-  N(k) = n \int\limits_\Omega f_K(k, \lambda(x))\, dx
- \end{equation}
- where $f_K(k, \lambda) = Pr(k(x) = x)$ where $\lambda(x) = \lambda$. 
-\end{prop}
+So $a = 1$.
+\end{proof}z
 
 \end{document}
