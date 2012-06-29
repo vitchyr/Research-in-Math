@@ -31,7 +31,7 @@ Let the constant $p = 1 / D$ so that $p \; d(x, y) \leq 1$ for any possible $\{x
 \begin{enumerate}
  \item Randomly choose an edge from the graph.
  \item Apply a random orientation $(x, y)$ to the edge.
- \item Let $k(x)$ give the degree of $x$. If $k(x) = m - 1$, do nothing this iteration.
+ \item Let $k(x)$ give the degree of $x$. If $k(x) = n - 1$, do nothing this iteration.
  \item \label{item:z} Randomly choose a vertex $z$ from the set of all vertices that are neither $x$ nor adjacent to $x$.
  \item With probability
  \begin{equation}
@@ -99,9 +99,14 @@ since the degree of $x$ does not change. Because the only difference between $G$
 \label{thm:perc}
 When the rewiring model has reached the steady state, the probability that an edge $e^*$ is present is approximately
 \begin{equation*}
- \frac{c}{d(e^*)^2 + 1} \mbox{\;\;\;with\;\;\; } c =\frac{m}{\sum\limits_{e \in K_n} \frac{1}{d(e)^2 + 1}}
+ \frac{c}{d(e^*)^2 + c}
 \end{equation*}
-where $n = |V|$, $m = |E|$, and $K_n$ is the complete graph on $n$ vertices.
+where $c$ is the constant that satisfies
+\begin{equation}
+\label{eqn:c}
+ \sum_{e \in K_n} \frac{c}{d(e)^2 + c} = m.
+\end{equation}
+$K_n$ is the complete graph on $n$ vertices, $n = |V|$, and $m = |E|$.
 \end{theorem}
 \begin{proof}
 For a constructive model in which each edge $e$ is independently present with probability $P(e)$, the probability that a particular graph $G$ is produced is
@@ -111,53 +116,50 @@ For a constructive model in which each edge $e$ is independently present with pr
 We want to find the function $P(e)$ such that $\mu(G)$ is approximately equal to $\pi(G)$. Because the expressions for $\mu(G)$ and $\pi(G)$ both contain a product over all edges $e \in G$ multiplied by some factor which is independent of $G$, we can write
 \begin{equation}
 \label{eqn:proportional}
- \frac{P(e)}{1-P(e)} \propto \frac{1}{d(e)^2} \;\;\;\;\longrightarrow\;\;\;\; P(e) = \frac{c}{d(e)^2 + 1}.
+ \frac{P(e)}{1-P(e)} \propto \frac{1}{d(e)^2} \;\;\;\;\longrightarrow\;\;\;\; P(e) = \frac{c}{d(e)^2 + c}.
 \end{equation}
 Since each state in the rewiring model contains exactly $m$ edges, the expected the number of edges of a graph produced by the constructive model should be $m$:
 \begin{equation}
 \label{eqn:sum-to-m}
  \sum_{e \in K_n} P(e) = m.
 \end{equation}
-By substituting Equation \ref{eqn:proportional} into Equation \ref{eqn:sum-to-m}, we reach an expression for the coefficient $c$:
-\begin{equation}
-\label{eqn:c}
- c = \frac{m}{\sum\limits_{e \in K_n} \frac{1}{d(e)^2 + 1}}.
-\end{equation}
+We reach our criterion for $c$ by substituting Equation \ref{eqn:proportional} into Equation \ref{eqn:sum-to-m}.
 \end{proof}
 
-\begin{theorem}
-\label{thm:c}
-For large $n$,
+\begin{prop}
+\label{prop:c}
+For large $n$, $c$ satisfies
  \begin{equation}
-  c = \frac{2\, m}{n^2} \; \left[\,\int\limits_\Omega \int\limits_\Omega \frac{du\, dv}{d(u, v)^2 + 1}\right]^{-1}
+  \frac{c\,n^2}{2} \int\limits_\Omega \int\limits_\Omega \frac{du \, dv}{d(u, v)^2 + c} = m.
  \end{equation}
 where $\Omega$ is the opinion space $[0, 1]^D$.
-\end{theorem}
+\end{prop}
 \begin{proof}
- The sum in the denominator of our expression for $c$ (Equation \ref{eqn:c}) can be rewritten as
+ Equation \ref{eqn:c} can be rewritten as
  \begin{equation}
  \label{eqn:double-sum}
-  \frac{1}{2} \sum\limits_{u}\sum\limits_{v \neq u} \frac{1}{d(u, v)^2 + 1}
+  \frac{1}{2} \sum\limits_{u}\sum\limits_{v \neq u} \frac{c}{d(u, v)^2 + c} = m
  \end{equation}
  where $u$ and $v$ are any vertices in the graph. For large $n$, vertices are evenly distrbuted within the opinion space since they are placed randomly. Therefore, there are $n \,du$ vertices in an interval $du$ with dimensions $du_1, du_2, \ldots, du_D$, and $\frac{1}{2}(n\, du)(n\, dv)$ edges between vertices in $du$ and vertices in $dv$. Because the sums in Expression \ref{eqn:double-sum} are computed over $n$ and $n - 1$ vertices respectively, and $n$ is large, we can express the two sums as a double integral:
  \begin{equation}
-  \frac{1}{2}\, n^2 \int\limits_\Omega \int\limits_\Omega \frac{du \, dv}{d(u, v)^2 + 1}.
+  \frac{c\,n^2}{2} \int\limits_\Omega \int\limits_\Omega \frac{du \, dv}{d(u, v)^2 + c} = m.
  \end{equation}
 \end{proof}
 \begin{prop}
+\label{prop:c1D}
  For $D=1$ and large $n$,
  \begin{equation*}
-  c = \frac{4 \,m}{n^2 \,(\pi - \ln 4)}.
+  \frac{2}{\sqrt{c}}\,tan^{-1} \frac{1}{\sqrt{c}} + \ln\frac{c}{c+1} = \frac{2m}{c\,n^2}.
  \end{equation*}
 \end{prop}
 \begin{proof}
-For $D=1$, the double integral in Theorem \ref{thm:c} reduces to
+For $D=1$, the double integral in Theorem \ref{prop:c} reduces to
  \begin{equation}
-  \frac{1}{2}\, n^2 \int\limits_0^1 \int\limits_0^1 \frac{du_1 \, dv_1}{(u_1 - v_1)^2 + 1}.
+  \frac{c\,n^2}{2} \int\limits_0^1 \int\limits_0^1 \frac{du \, dv}{(u - v)^2 + c}.
  \end{equation}
 We evaluate this integral to reach our result.
 \end{proof}
-
+Proposition $\ref{prop:c1D}$ is useful because it allows us to numerically solve for $c$ in the one-dimensional case.
 \section{Expected Degree}
 \begin{theorem}
 \label{thm:lambdax}
@@ -218,7 +220,6 @@ for some constant $a$. However, recall from the proof for Proposition \ref{prop:
 \begin{equation}
  \int\limits_{0}^\infty f_\Lambda(\lambda)\, d\lambda = n
 \end{equation}
-<<<<<<< HEAD
 must hold. Substituting $a \, \frac{dx}{d\lambda}$ for $M(\lambda)$ gives us 
 \begin{equation}
  a\int\limits_{0}^\infty \frac{dx}{d\lambda} \, d\lambda = a\int\limits_{0}^1 dx = a.
