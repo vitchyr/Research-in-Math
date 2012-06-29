@@ -1,0 +1,6 @@
+*.dat
+*.aux
+*.log
+*.synctex.gz
+*.xlsx
+*.pyc

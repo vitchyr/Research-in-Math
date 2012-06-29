@@ -17,6 +17,12 @@ def d(G, x, y):
 
     return dn(vec_x, vec_y)
 
+def length(G, edge):
+    vec_x = G.node[edge[0]]['op']
+    vec_y = G.node[edge[1]]['op']
+    return dn(vec_x, vec_y)
+
+#returns c in Theorem 2
 def k(G, m=0):
     total = 0.0
 
@@ -49,24 +55,33 @@ def construct(G, d_mean):
                 G.k * (dn(u_data['op'], v_data['op'])**2 + 1.0)**-1):
                 G.add_edge(u, v)
 
+def reconstruct(G, d_mean):
+    G.remove_edges_from(G.edges())
+    construct(G, d_mean)
+
 def iterate(G):
-    if '_edges' not in G.__dict__:
-        G._edges = G.edges()
+    G._edges = G.edges()
 
     x, y = random.choice(G._edges)
 
     if random.random() < .5:
         x, y = y, x
 
-    p = G.D**-.5
+    #For geometric distance, use: 
+    #p = G.D**-.5
+    #For step distance, use:
+    p = G.D
     d_xy = d(G, x, y)
 
     if random.random() > p * d(G, x, y):
         return
 
     z = x
+    if G.degree(x) == G.number_of_nodes() - 1:
+        return
+    
     while z == x or z == y or G.has_edge(x, z):
-        z = random.randint(0, G.number_of_nodes() - 1) 
+        z = random.randint(0, G.number_of_nodes() - 1)
 
     d_xz = d(G, x, z)
 

@@ -31,6 +31,7 @@ Let the constant $p = 1 / D$ so that $p \; d(x, y) \leq 1$ for any possible $\{x
 \begin{enumerate}
  \item Randomly choose an edge from the graph.
  \item Apply a random orientation $(x, y)$ to the edge.
+ \item Let $k(x)$ give the degree of $x$. If $k(x) = m - 1$, do nothing this iteration.
  \item \label{item:z} Randomly choose a vertex $z$ from the set of all vertices that are neither $x$ nor adjacent to $x$.
  \item With probability
  \begin{equation}
@@ -213,15 +214,16 @@ $f_\Lambda(\lambda)$ is obviously 0 when $k$ is not in the range of possible exp
 \begin{equation}
  f_\Lambda(\lambda) = a \lim\limits_{\Delta \lambda \to 0} \frac{x(\lambda + \Delta \lambda) - x(\lambda)}{\Delta \lambda} = a \, \frac{dx}{d\lambda}
 \end{equation}
-for constant $a$. However, recall from the proof for Proposition \ref{prop:R1} that $\frac{d\lambda}{dx} = 0$ at the maximum of $\lambda(x)$ at $x=1/2$. Thus $f_\Lambda(\lambda) = a \, \frac{dx}{d\lambda}$ only when $\lambda \in  [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2})$. Because the number of real numbers in $[0, 1]$ is infinite, the probability that a vertex $x$ is exactly $1/2$ is 0; thus $f_\Lambda(2\,c\,n \tan^{-1}\frac{1}{2}) = 0$. To determine $a$, we note that the relationship 
+for some constant $a$. However, recall from the proof for Proposition \ref{prop:R1} that $\frac{d\lambda}{dx} = 0$ at the maximum of $\lambda(x)$ at $x=1/2$. Thus $f_\Lambda(\lambda) = a \, \frac{dx}{d\lambda}$ only when $\lambda \in  [c\,n\,\frac{\pi}{4},\; 2\,c\,n \tan^{-1}\frac{1}{2})$. Because the number of real numbers in $[0, 1]$ is infinite, the probability that a vertex $x$ is exactly $1/2$ is 0; thus $f_\Lambda(2\,c\,n \tan^{-1}\frac{1}{2}) = 0$. To determine $a$, we note that the relationship 
 \begin{equation}
  \int\limits_{0}^\infty f_\Lambda(\lambda)\, d\lambda = n
 \end{equation}
+<<<<<<< HEAD
 must hold. Substituting $a \, \frac{dx}{d\lambda}$ for $M(\lambda)$ gives us 
 \begin{equation}
  a\int\limits_{0}^\infty \frac{dx}{d\lambda} \, d\lambda = a\int\limits_{0}^1 dx = a.
 \end{equation}
-Thus $a = n$.
+Thus $a = 2n$.
 \end{proof}
 
 \begin{prop}
