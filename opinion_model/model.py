@@ -38,6 +38,45 @@ def k(G, m=0):
     print G.k
     return G.k
 
+#uses Newton's method to find k in Theorem 2
+#finds the zero of the function:
+#   f(c) = sum over all edges in K-n (c/(d(e)^2+c) - m
+def k_num(G, tolerance, maxIter):
+    print "Calculating k"
+    k = k_num_helper(1.0, G, tolerance, maxIter, 1)
+    print k
+    return k
+
+def k_num_helper(last, G, tolerance, maxIter, currentIter):
+    if currentIter > maxIter:
+        return last
+    new = last - (getPSum(G, last) - G.number_of_edges())/getDPSum(G, last)
+    if abs(new - last) < tol:
+        return new
+    else:
+        return k_num_helper(new, G, tolerance, maxIter, currentIter + 1)
+
+#gives the sum of the P(e) for all edges in the complete
+#graph K_n. Finds f(last) + m
+def getPSum(G, last):
+    total = 0.0
+    for v in G.node_iter():
+        for u in G.node_iter():
+            if v < u:
+                total += last/(d(G, u, v)**2 + last)
+    return total
+
+#gives the sum of the d/dk(P(e)) for all edges in the complete
+#graph K_n, where k is the constant. In otherwords, finds
+#d/dc(f(last))
+def getDPSum(G, last):
+    total = 0.0
+    for v in G.node_iter():
+        for u in G.node_iter():
+            if v < u:
+                total += d(G, u, v)**2/(d(G, u, v)**2 + last)
+    return total
+
 def random_opinions(G):
     for v in G.nodes_iter():
         G.node[v]['op'] = []
