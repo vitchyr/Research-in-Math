@@ -1,6 +1,7 @@
 data_miner
 *.o
 *.dat
+!degree_model/data/*.dat
 *.aux
 *.log
 *.synctex.gz
