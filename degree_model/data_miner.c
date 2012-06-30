@@ -34,6 +34,33 @@ void dd(int *distro, igraph_t *graph, int n)
     igraph_vector_destroy(&deg_vector);
 }
 
+int sum_array(double a[], int num_elements){
+    int i, sum=0;
+    for (i=0; i<num_elements; i++){
+        sum = sum + a[i];
+    }
+    return(sum);
+}
+
+void expected_dd(double *expectedDistro, int d_mean, int n, int m, double th){
+    int i;
+    for(i = 0; i < n; i++){
+        if(i==0){
+            expectedDistro[i] = 1.0;
+        } else if (i == 1){
+            expectedDistro[i] = 2.0*m / (2.0*m + n) * f(0, d_mean, th);
+        } else {
+            expectedDistro[i] = 2.0*m / i * ((f(i-1, d_mean, th)/(2.0*m+n) 
+            + (i-1)/(2.0*m))*expectedDistro[i-1]
+            - f(i-2, d_mean, th)/(2.0*m+n) * expectedDistro[i-2]);
+        }
+    }
+    int sum = sum_array(expectedDistro, sizeof(expectedDistro)/sizeof(double));
+    for(i = 0; i < n; i++){
+        expectedDistro[i] = (int)(n*expectedDistro[i]/sum);
+    }
+}
+
 void dd_procedure(int n, int m, int times, double th_min, double th_step, double th_max)
 {
     int n_lines = n * (int) ((th_max - th_min) / th_step);
@@ -45,13 +72,14 @@ void dd_procedure(int n, int m, int times, double th_min, double th_step, double
 
     int max_line_length = 200;
     char outstring[n_lines * max_line_length];
-    strcpy(outstring, "th\tdeg\tfreq\n");
+    strcpy(outstring, "th\tdeg\tobserved freq\texpected freq\n");
 
     igraph_t graph;
     int distro[n];
+    double expectedDistro[n];
 
     double th;
-    for(th = th_min; th <= th_max + .001; th += th_step)
+    for(th = th_min; th <= th_max + th_step/10; th += th_step)
     {
         printf("th = %f\n", th);
         igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
@@ -59,12 +87,13 @@ void dd_procedure(int n, int m, int times, double th_min, double th_step, double
         iterate_many(&graph, th, times);    
 
         dd(distro, &graph, n); 
+        expected_dd(expectedDistro, d_mean(&graph), n, m, th);
 
         int i;
         for(i = 0; i < n; i++)
         {
             char buffer[max_line_length]; 
-            sprintf(buffer, "%f\t%d\t%d\n", th, i, distro[i]);
+            sprintf(buffer, "%f\t%d\t%d\t%f\n", th, i, distro[i], expectedDistro[i]);
             strcat(outstring, buffer);
         }
     }
@@ -72,8 +101,8 @@ void dd_procedure(int n, int m, int times, double th_min, double th_step, double
     igraph_destroy(&graph);
 
     char filename[200];
-    sprintf(filename, "dd_%d_%d_%d_%d%%_%d%%_%d%%.dat", n, m, times,
-        (int) (100 * th_min), (int) (100 * th_step), (int) (100 * th_max));
+    sprintf(filename, "dd_%d_%d_%d_%d%%_%d%%_%d%%_%d.dat", n, m, times,
+        (int) (100 * th_min), (int) (100 * th_step), (int) (100 * th_max), 3);
     
     FILE *outfile = fopen(filename, "w");
     fputs(outstring, outfile);

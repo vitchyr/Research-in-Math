@@ -7,7 +7,7 @@
 
 double f(int d, double d_mean, double th)
 {
-    return th * ((double) d + 1.0) + (1.0 - th)*(d_mean + 1.0);
+    return th * pow((double) d + 1.0, 3) + (1.0 - th) * pow(d_mean + 1.0, 3);
 }
 
 double d_mean(igraph_t *graph)
@@ -40,6 +40,16 @@ igraph_integer_t all_degrees(igraph_t *graph, igraph_vector_t *degrees)
     igraph_vs_destroy(&vs);
 }
 
+double getDenom(igraph_t *graph, igraph_vector_t *degrees, double theta){
+    double denom = 0;
+    double dMean = d_mean(graph);
+    int i;
+    for(i = 0; i < igraph_vector_size(degrees); i++){
+        denom += f(VECTOR(*degrees)[i], dMean, theta);
+    }
+    return denom;
+}
+
 void iterate(igraph_t *graph, double th)
 {
     igraph_integer_t x, y, z = -1.0, xy;
@@ -62,8 +72,7 @@ void iterate(igraph_t *graph, double th)
     double random = 1.0 * rand() / RAND_MAX;
     int w;
     double total = 0.0;
-    double denom = (double)(2 * igraph_ecount(graph) + igraph_vcount(graph));
-
+    double denom = getDenom(graph, &degrees, th);
     for(w = 0; w < igraph_vector_size(&degrees); w++)
     {
         if(w != (int) x && w != (int) y)
@@ -94,6 +103,7 @@ void iterate(igraph_t *graph, double th)
 
 void iterate_many(igraph_t *graph, double th, int times)
 {
+    //double denom = getDenom(graph, th);
     int i;
     for(i = 0; i < times; i++)
     {
