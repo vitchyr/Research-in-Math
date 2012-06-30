@@ -22,33 +22,19 @@ def length(G, edge):
     vec_y = G.node[edge[1]]['op']
     return dn(vec_x, vec_y)
 
-#returns c in Theorem 2
-def k(G, m=0):
-    total = 0.0
-
-    for (u, u_data) in G.nodes_iter(True):
-        for (v, v_data) in G.nodes_iter(True):
-            if u < v:
-                total += (dn(u_data['op'], v_data['op'])**2 + 1.0)**-1
-
-    if m == 0:
-        m = G.number_of_edges()
-
-    G.k = m / total
-    print G.k
-    return G.k
-
 #uses bisection method to find c values, and averages them.
-def getC(G, iterations_for_getting_C):
+def getC(G, iterations_for_getting_C, m=None):
     print "Calculating G.c (Theorem 2)"
     c_values = []
+
     n = G.number_of_nodes()
-    m = G.number_of_edges()
-    D = G.D
+    if m is None:
+        m = G.number_of_edges()
+
     for i in xrange(iterations_for_getting_C):
         if i % (iterations_for_getting_C/10) == 0:
             print "%d percent" % (100 * i / iterations_for_getting_C)
-        H = make_graph(n, m, D)
+        H = make_graph(n, m, G.D)
         c_values.append(bisect(getPSumMinusM, H, 0.0, 1, 0.000001))
     c = sum(c_values)/len(c_values)
     print "G.c = %f" % c
@@ -72,10 +58,14 @@ def bisect(f, G, left, right, tol ):
 #graph K_n minus m
 def getPSumMinusM(G, last):
     total = 0.0
-    for v in G.nodes_iter():
-        for u in G.nodes_iter():
-            if v < u:
-                total += float(last)/(d(G, u, v)**2 + last)
+
+    #this is faster
+    for (u, u_data) in G.nodes_iter(True):
+        for (v, v_data) in G.nodes_iter(True):
+            if u < v:
+                total += float(last)/(dn(u_data['op'], v_data['op'])**2
+                    + last)
+
     return total - G.number_of_edges()
 
 def random_opinions(G):
@@ -85,14 +75,21 @@ def random_opinions(G):
         for i in range(G.D):
             G.node[v]['op'].append(random.random())
 
-def construct(G, d_mean):
-    k(G, .5 * G.number_of_nodes() * d_mean) 
+def construct(G, param, param_name):
+    if param_name == 'd_mean':
+        c = getC(G, 100, .5 * G.number_of_nodes() * param) 
+    elif param_name == 'c':
+        c = param
+    else:
+        print('incorrect param_name to construct!')
+        return
+
     for (u, u_data) in G.nodes_iter(True):
         for (v, v_data) in G.nodes_iter(True):
 
             if(u < v and 
                 random.random() <
-                G.k * (dn(u_data['op'], v_data['op'])**2 + 1.0)**-1):
+                c / (dn(u_data['op'], v_data['op'])**2 + c)):
                 G.add_edge(u, v)
 
 def reconstruct(G, d_mean):
@@ -110,7 +107,7 @@ def iterate(G):
     #For geometric distance, use: 
     #p = G.D**-.5
     #For step distance, use:
-    p = G.D
+    p = 1.0/G.D
     d_xy = d(G, x, y)
 
     if random.random() > p * d(G, x, y):
@@ -142,9 +139,7 @@ def iterate(G):
         G._edges.append((z, x))
 
 def draw_graph(G):
-    if G.D == 1:
-        pass
-    else:
+    if G.D == 2:
         pos = {}
         for v in G.nodes_iter():
             pos[v] = G.node[v]['op']
@@ -159,15 +154,12 @@ def make_graph(n, m, D):
     return G
 
 if __name__ == '__main__':
-    n = 50000
-    k = 4
+    n = 50
+    d_mean = 4
     times = 10**7
     D = 1
 
-    G = make_graph(n, .5 * n * k, D)
-
-    for i in range(times):
-        iterate(G)
-
-    write_deg(G, .04)
-    #draw_graph(G)
+    G = make_graph(n, 0, D)
+    construct(G, 0.000808, 'c')
+    print G.number_of_edges()
+    
