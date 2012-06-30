@@ -1,54 +1,62 @@
 import networkx as nx
 import model
-import math
 
-def write_edge_existence(G, iterations, times, n, d_mean, D):
+def write_edge_existence(G, iterations, times, n, d_mean, D, sample_rate, throw_away):
     #keeps track of how often a specific edge appears
     #key = edge
     #value = frequency
     edge_obs_freq = {}
-
+    print "Collecting data on edge existence"
     for i in xrange(times):
         if i % (times/10) == 0:
-            print "%d times" % i
-
+            print "%d percent" % (100 * i / times)
+ 
         #Method 1
         remake_graph(G)
 
         #Method 2
         #model.reconstruct(G, d_mean)
-        
-        for j in xrange(iterations):
-            model.iterate(G)
 
-        for edge in G.edges_iter():
-            if edge in edge_obs_freq:
-                edge_obs_freq[edge] += 1
-            else:
-                edge_obs_freq[edge] = 1
+        nsamples = 0
+
+        for j in xrange(iterations + throw_away):
+            if j >= throw_away and j % sample_rate == 0:
+                nsamples += 1
+
+                for edge in G.edges_iter():
+                    if edge in edge_obs_freq:
+                        edge_obs_freq[edge] += 1
+                    else:
+                        edge_obs_freq[edge] = 1
+
+            model.iterate(G)
 
     #normalize observed frequencies
     for key in edge_obs_freq.iterkeys():
-        edge_obs_freq[key] = float(edge_obs_freq[key]) / times
+        edge_obs_freq[key] = float(edge_obs_freq[key]) / (nsamples*times)
 
-    model.k(G)
-    edge_expected_freq = expected_edge_freq(G.number_of_nodes())
+    if 'c' in G.__dict__:
+        edge_expected_freq = expected_edge_freq(G.number_of_nodes(), G.c)
+    else:
+       print "G.c not initalized. Exiting..."
+       return
 
-    outstring = "edge\tdistance\tobs_freq\texpected_freq\n"
+    outstring = "edge\tdistance\tobs_freq\texp_freq\n"
     for key in edge_obs_freq.iterkeys():
-        outstring += "%s\t%f\t%f\t%f\n" % (key, model.length(G, key), edge_obs_freq[key],
-                                       edge_expected_freq[key])
+        outstring += "%s\t%f\t%f\t%f\n" % (key, model.d(G, *key), 
+            edge_obs_freq[key], edge_expected_freq[key])
 
     #save data
     outfile = open('edgeExistence_{0}n_{1}k_{2}d_{3}times_{4}iterations.dat'.format(n, d_mean, D, times, iterations), 'w')
     outfile.write(outstring)
     outfile.close()
 
-def expected_edge_freq(n):
+def expected_edge_freq(n, c):
     completeG = nx.complete_graph(n)
     edge_expected_freq = {}
+
     for edge in completeG.edges_iter(): 
-         edge_expected_freq[edge] = G.k/(model.length(G, edge)**2+1)
+         edge_expected_freq[edge] = c/(model.d(G, *edge)**2+c)
                  
     return edge_expected_freq
 
@@ -66,14 +74,21 @@ if __name__ == '__main__':
     n = 50 
     d_mean = 2.0
     D = 1
-    iterations = 1000
-    times = 1000
+    iterations = 10**4
+    times = 100
+    sample_rate = 100
+    throw_away = 10**3
+
+    iterations_for_getting_C = 100
 
     #Method 1
-    G = model.make_graph(n, d_mean * n / 2, D)
+    G = model.make_graph(n, (d_mean * n) / 2, D)
 
     #Method 2
     #G = model.make_graph(n, 0, D)
     #model.construct(G, d_mean)
-    
-    write_edge_existence(G, iterations, times, n, d_mean, D)
+
+    #required for expected calculation
+    G.c = model.getC(G, iterations_for_getting_C)
+    #G.c = 0.0001778  
+    write_edge_existence(G, iterations, times, n, d_mean, D, sample_rate, throw_away)

@@ -38,44 +38,45 @@ def k(G, m=0):
     print G.k
     return G.k
 
-#uses Newton's method to find k in Theorem 2
-#finds the zero of the function:
-#   f(c) = sum over all edges in K-n (c/(d(e)^2+c) - m
-def k_num(G, tolerance, maxIter):
-    print "Calculating k"
-    k = k_num_helper(1.0, G, tolerance, maxIter, 1)
-    print k
-    return k
+#uses bisection method to find c values, and averages them.
+def getC(G, iterations_for_getting_C):
+    print "Calculating G.c (Theorem 2)"
+    c_values = []
+    n = G.number_of_nodes()
+    m = G.number_of_edges()
+    D = G.D
+    for i in xrange(iterations_for_getting_C):
+        if i % (iterations_for_getting_C/10) == 0:
+            print "%d percent" % (100 * i / iterations_for_getting_C)
+        H = make_graph(n, m, D)
+        c_values.append(bisect(getPSumMinusM, H, 0.0, 1, 0.000001))
+    c = sum(c_values)/len(c_values)
+    print "G.c = %f" % c
+    return c
 
-def k_num_helper(last, G, tolerance, maxIter, currentIter):
-    if currentIter > maxIter:
-        return last
-    new = last - (getPSum(G, last) - G.number_of_edges())/getDPSum(G, last)
-    if abs(new - last) < tol:
-        return new
-    else:
-        return k_num_helper(new, G, tolerance, maxIter, currentIter + 1)
+def bisect(f, G, left, right, tol ):
+    a = left
+    b = right
+    currentIter = 0
+    while True:
+        c=(a+b)/2.0
+        if( b-c < tol ):
+            return c
+        if( f(G, b)>0 and f(G, c)<0 or f(G, b)<0 and f(G, c)>0 ):
+            a=c
+        else:
+            b=c
+        currentIter += 1
 
 #gives the sum of the P(e) for all edges in the complete
-#graph K_n. Finds f(last) + m
-def getPSum(G, last):
+#graph K_n minus m
+def getPSumMinusM(G, last):
     total = 0.0
-    for v in G.node_iter():
-        for u in G.node_iter():
+    for v in G.nodes_iter():
+        for u in G.nodes_iter():
             if v < u:
-                total += last/(d(G, u, v)**2 + last)
-    return total
-
-#gives the sum of the d/dk(P(e)) for all edges in the complete
-#graph K_n, where k is the constant. In otherwords, finds
-#d/dc(f(last))
-def getDPSum(G, last):
-    total = 0.0
-    for v in G.node_iter():
-        for u in G.node_iter():
-            if v < u:
-                total += d(G, u, v)**2/(d(G, u, v)**2 + last)
-    return total
+                total += float(last)/(d(G, u, v)**2 + last)
+    return total - G.number_of_edges()
 
 def random_opinions(G):
     for v in G.nodes_iter():
