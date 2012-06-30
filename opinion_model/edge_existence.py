@@ -76,9 +76,12 @@ if __name__ == '__main__':
     iterations = 10**4
     times = 100
 
+    iterations_for_getting_C = 100
+
     #Method 1
     G = model.make_graph(n, (d_mean * n) / 2, D)
 
+    print model.getC(G, iterations_for_getting_C)
     #required for expected calculation
     G.c = 0.0001778    
 
@@ -86,4 +89,4 @@ if __name__ == '__main__':
     #G = model.make_graph(n, 0, D)
     #model.construct(G, d_mean)
     
-    write_edge_existence(G, iterations, times, n, d_mean, D)
+    #write_edge_existence(G, iterations, times, n, d_mean, D)

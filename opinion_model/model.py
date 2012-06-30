@@ -38,6 +38,44 @@ def k(G, m=0):
     print G.k
     return G.k
 
+#uses bisection method to find c values, and averages them.
+def getC(G, iterations_for_getting_C):
+    c_values = []
+    n = G.number_of_nodes()
+    m = G.number_of_edges()
+    D = G.D
+    for i in xrange(iterations_for_getting_C):
+        if i % (iterations_for_getting_C/10) == 0:
+            print "%d percent" % (100 * i / iterations_for_getting_C)
+        H = make_graph(n, m, D)
+        c_values.append(bisect(getPSumMinusM, H, 0.0, 1, 0.000001))
+    return sum(c_values)/len(c_values)
+
+def bisect(f, G, left, right, tol ):
+    a = left
+    b = right
+    currentIter = 0
+    while True:
+        c=(a+b)/2.0
+        if( b-c < tol ):
+            return c
+        if( f(G, b)>0 and f(G, c)<0 or f(G, b)<0 and f(G, c)>0 ):
+            a=c
+        else:
+            b=c
+        currentIter += 1
+
+#gives the sum of the P(e) for all edges in the complete
+#graph K_n minus m
+def getPSumMinusM(G, last):
+    total = 0.0
+    for v in G.nodes_iter():
+        for u in G.nodes_iter():
+            if v < u:
+                total += float(last)/(d(G, u, v)**2 + last)
+    return total - G.number_of_edges()
+
+
 def random_opinions(G):
     for v in G.nodes_iter():
         G.node[v]['op'] = []
