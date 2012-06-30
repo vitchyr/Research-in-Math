@@ -126,6 +126,13 @@ Since each state in the rewiring model contains exactly $m$ edges, the expected 
 We reach our criterion for $c$ by substituting Equation \ref{eqn:proportional} into Equation \ref{eqn:sum-to-m}.
 \end{proof}
 
+\begin{figure}
+ \centering
+ \includegraphics{images/edge_existence2.pdf}
+ \caption{Experimental verification of Theorem \ref{thm:perc} using data from our implementation of the model. Each datapoint is for a different edge in the complete graph $K_{50}$. The datapoints do in fact lie on curves of the form $\frac{c}{d(e)^2 + c}$.}
+\end{figure}
+
+
 \begin{prop}
 \label{prop:c}
 For large $n$, $c$ satisfies
