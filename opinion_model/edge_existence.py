@@ -1,28 +1,26 @@
 import networkx as nx
 import model
 
-def write_edge_existence(G, iterations, times, n, d_mean, D):
+def write_edge_existence(G, iterations, times, n, d_mean, D, sample_rate, throw_away):
     #keeps track of how often a specific edge appears
     #key = edge
     #value = frequency
     edge_obs_freq = {}
-
+    print "Collecting data on edge existence"
     for i in xrange(times):
         if i % (times/10) == 0:
-            print "%d times" % i
-
+            print "%d percent" % (100 * i / times)
+ 
         #Method 1
         remake_graph(G)
 
         #Method 2
         #model.reconstruct(G, d_mean)
 
-        srate = 100 
-        wait_time = 10**3
         nsamples = 0
 
-        for j in xrange(iterations):
-            if j >= wait_time and j % srate == 0:
+        for j in xrange(iterations + throw_away):
+            if j >= throw_away and j % sample_rate == 0:
                 nsamples += 1
 
                 for edge in G.edges_iter():
@@ -39,6 +37,9 @@ def write_edge_existence(G, iterations, times, n, d_mean, D):
 
     if 'c' in G.__dict__:
         edge_expected_freq = expected_edge_freq(G.number_of_nodes(), G.c)
+    else:
+       print "G.c not initalized. Exiting..."
+       return
 
     outstring = "edge\tdistance\tobs_freq\texp_freq\n"
     for key in edge_obs_freq.iterkeys():
@@ -75,18 +76,19 @@ if __name__ == '__main__':
     D = 1
     iterations = 10**4
     times = 100
+    sample_rate = 100
+    throw_away = 10**3
 
     iterations_for_getting_C = 100
 
     #Method 1
     G = model.make_graph(n, (d_mean * n) / 2, D)
 
-    print model.getC(G, iterations_for_getting_C)
-    #required for expected calculation
-    G.c = 0.0001778    
-
     #Method 2
     #G = model.make_graph(n, 0, D)
     #model.construct(G, d_mean)
-    
-    #write_edge_existence(G, iterations, times, n, d_mean, D)
+
+    #required for expected calculation
+    G.c = model.getC(G, iterations_for_getting_C)
+    #G.c = 0.0001778  
+    write_edge_existence(G, iterations, times, n, d_mean, D, sample_rate, throw_away)

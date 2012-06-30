@@ -40,6 +40,7 @@ def k(G, m=0):
 
 #uses bisection method to find c values, and averages them.
 def getC(G, iterations_for_getting_C):
+    print "Calculating G.c (Theorem 2)"
     c_values = []
     n = G.number_of_nodes()
     m = G.number_of_edges()
@@ -49,7 +50,9 @@ def getC(G, iterations_for_getting_C):
             print "%d percent" % (100 * i / iterations_for_getting_C)
         H = make_graph(n, m, D)
         c_values.append(bisect(getPSumMinusM, H, 0.0, 1, 0.000001))
-    return sum(c_values)/len(c_values)
+    c = sum(c_values)/len(c_values)
+    print "G.c = %f" % c
+    return c
 
 def bisect(f, G, left, right, tol ):
     a = left
