@@ -97,7 +97,8 @@ def reconstruct(G, d_mean):
     construct(G, d_mean)
 
 def iterate(G):
-    G._edges = G.edges()
+    if '_edges' not in G.__dict__:
+        G._edges = G.edges()
 
     x, y = random.choice(G._edges)
 
@@ -154,12 +155,10 @@ def make_graph(n, m, D):
     return G
 
 if __name__ == '__main__':
-    n = 50
+    n = 500
     d_mean = 4
     times = 10**7
     D = 1
 
     G = make_graph(n, 0, D)
-    construct(G, 0.000808, 'c')
-    print G.number_of_edges()
-    
+    construct(G, d_mean, 'd_mean')
