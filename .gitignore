@@ -10,3 +10,6 @@ data_miner
 *.pdf
 *.txt
 !README.txt
+opinion_model/*.png
+opinion_model/*.svg
+opinion_model/*.docx
