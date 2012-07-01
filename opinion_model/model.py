@@ -21,7 +21,7 @@ def iterate(G):
     if random.random() < .5:
         x, y = y, x
 
-    if G.degree(x) == G.number_of_nodes() - 1:
+    if G.degree(x) == G.n - 1:
         return
 
     #For geometric distance, use: 
@@ -35,7 +35,7 @@ def iterate(G):
 
     z = x
     while z == x or z == y or G.has_edge(x, z):
-        z = random.choice(G.nodes())
+        z = random.choice(G._nodes)
 
     d_xz = distance(G, x, z)
     
@@ -60,7 +60,7 @@ def iterate(G):
 def draw_graph(G):
     pos = {}
     if G.D == 1: #draws along a circle
-        radius = min(1.0, math.log(G.number_of_nodes()))
+        radius = min(1.0, math.log(G.n))
         for v in G.nodes_iter():
             opinion = list(v)[0]
             pos[v] = [radius * math.cos(opinion), radius * math.sin(opinion)]
@@ -78,13 +78,10 @@ def draw_graph(G):
 def getC(G, iterations_for_getting_C):
     print "Calculating G.c (Theorem 2)"
     c_values = []
-    n = G.number_of_nodes()
-    m = G.number_of_edges()
-    D = G.D
     for i in xrange(iterations_for_getting_C):
         if i % (iterations_for_getting_C/10) == 0:
             print "%d percent" % (100 * i / iterations_for_getting_C)
-        H = make_opinion_graph(n, m, D)
+        H = make_opinion_graph(G.n, G.m, G.D)
         c_values.append(bisect(getPSumMinusM, H, 0.0, 1, 0.000001))
     c = sum(c_values)/len(c_values)
     print "G.c = %f" % c
@@ -112,7 +109,7 @@ def getPSumMinusM(G, last):
         for u in G.nodes_iter():
             if v < u:
                 total += float(last)/(distance(G, u, v)**2 + last)
-    return total - G.number_of_edges()
+    return total - G.m
 
 #******** Methods for adding edges ********
 
@@ -151,6 +148,8 @@ def random_opinions(G):
 def make_opinion_graph(n, m, D):
     G = nx.Graph()
     G.D = D
+    G.n = n
+    G.m = m
     nodeList = []
     for i in xrange(n):
         node = []
@@ -158,16 +157,17 @@ def make_opinion_graph(n, m, D):
             node.append(random.random())
         nodeList.append(tuple(node))
     G.add_nodes_from(nodeList)
+    G._nodes = G.nodes()
     add_random_edges(G, m)
     return G
 
 def add_random_edges(G, m):
     edges_added = 0
     while edges_added < m:
-        u = random.choice(G.nodes())
-        v = random.choice(G.nodes())
+        u = random.choice(G._nodes)
+        v = random.choice(G._nodes)
         while u == v:
-            v = random.choice(G.nodes())
+            v = random.choice(G._nodes)
         if not G.has_edge(u, v):
             #(u, v) vs. (v, u) doesn't matter because networkx doesn't
             #sort .edges() if they're tuples

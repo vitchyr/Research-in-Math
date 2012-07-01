@@ -8,3 +8,5 @@ data_miner
 *.xlsx
 *.pyc
 *.pdf
+*.txt
+!README.txt

@@ -55,8 +55,8 @@ def write_edge_existence(G, iterations, times, n, d_mean, D, sample_rate, throw_
 
 def expected_edge_freq(G):
     edge_expected_freq = {}
-    for u in G.nodes():
-        for v in G.nodes():
+    for u in G._nodes:
+        for v in G._nodes:
             if u < v:
                 freq = G.c/(model.distance(G, u, v)**2+G.c)
                 #for when edge_expected_freq[key] since the key can be
@@ -67,21 +67,20 @@ def expected_edge_freq(G):
 
 #this is to preserve the opinions of vertices
 def remake_graph(G):
-    m = G.number_of_edges()
     if '_edges' not in G.__dict__:      #to save computing time since 
         G.remove_edges_from(G._edges)   #G.edges() takes a lot
     else:
         G.remove_edges_from(G.edges())
-    model.add_random_edges(G, m)
+    model.add_random_edges(G, G.m)
 
 #There are two Methods to add edges:
 #   1. By using nx.gnm_random   (Must iterate for graph to reach steady state)
 #   2. By using model.construct (Theorem 2 - construct a graph at the steady state)
 #This is a test of Theorem 2, so Method 1 is used    
 if __name__ == '__main__':
-    n = 10 
+    n = 50 
     d_mean = 2.0
-    D = 2
+    D = 3
     iterations = 10**4
     times = 100
     sample_rate = 100
