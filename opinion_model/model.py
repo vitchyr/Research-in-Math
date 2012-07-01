@@ -27,7 +27,7 @@ def iterate(G):
     #For geometric distance, use: 
     #p = G.D**-.5
     #For step distance, use:
-    p = G.D
+    p = 1.0/G.D
     d_xy = distance(G, x, y)
 
     if random.random() > p * distance(G, x, y):
@@ -113,8 +113,8 @@ def getPSumMinusM(G, last):
 
 #******** Methods for adding edges ********
 
-def construct(G, d_mean):
-    k(G, .5 * G.number_of_nodes() * d_mean) 
+def construct(G, k_mean):
+    k(G, .5 * G.number_of_nodes() * k_mean) 
     for (u, u_data) in G.nodes_iter(True):
         for (v, v_data) in G.nodes_iter(True):
 
@@ -123,9 +123,9 @@ def construct(G, d_mean):
                 G.k * (distance(G, u, v)**2 + G.k)**-1):
                 G.add_edge(u, v)
 
-def reconstruct(G, d_mean):
+def reconstruct(G, k_mean):
     G.remove_edges_from(G.edges())
-    construct(G, d_mean)
+    construct(G, k_mean)
 
 #******** Graph creation - Version 1 ********
 def make_graph(n, m, D):
