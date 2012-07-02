@@ -129,9 +129,8 @@ We reach our criterion for $c$ by substituting Equation \ref{eqn:proportional} i
 \begin{figure}
  \centering
  \includegraphics{images/edge_existence2.pdf}
- \caption{Experimental verification of Theorem \ref{thm:perc} using data from our implementation of the model. Each datapoint is for a different edge in the complete graph $K_{50}$. The datapoints do in fact lie on curves of the form $\frac{c}{d(e)^2 + c}$.}
+ \caption{Experimental verification of Theorem \ref{thm:perc} using data from our implementation of the rewiring model. Each datapoint is for a different edge in the complete graph $K_{50}$. The datapoints do in fact lie on curves of the form $\frac{c}{d(e)^2 + c}$.}
 \end{figure}
-
 
 \begin{prop}
 \label{prop:c}
@@ -180,6 +179,7 @@ The expected number of vertices in an interval $I$ with dimensions $du_1, du_2, 
 \end{proof}
 
 \begin{prop}
+\label{prop:lambdax1}
 For $D = 1$, The expected degree of a vertex $x = x_1$ is
  \begin{equation}
  \lambda(x) = n\sqrt{c}\left[\tan^{-1}\left(\frac{x}{\sqrt{c}}\right)+\tan^{-1}\left(\frac{1-x}{\sqrt{c}}\right)\right]
@@ -194,11 +194,17 @@ Evaluating the integral yields our result.
 \end{proof}
 
 \begin{figure}
- \centering
- \includegraphics[scale=.8]{images/lambdaofx.pdf}
- \caption{A plot of expected degree $\lambda(x)$ vs. opinion $x$ when the mean degree is 8. The curve has reflectional symmetry across $x = \frac{1}{2}$ as expected.}
- \label{fig:lambdaofx}
+ \centering 
+ \subfloat[Experimental verification of Proposition \ref{prop:lambdax1} using data taken from the constructive model. The datapoints lie slightly below the curve; this is a side effect of the vertices being spaced evenly in the opinion space rather than placed randomly. The graph had 500 vertices. The coefficient $c$ was calculated using Proposition \ref{prop:c1D}.]{\includegraphics[scale=.85]{images/lambda_verify.pdf}}
+ \vspace{1cm}
+ \subfloat[Comparison of $\lambda(x)$ for graphs of different sizes.]{\includegraphics[scale=.85]{images/lambda_compare.pdf}}
+ \caption{Plots of expected degree $\lambda$ vs. opinion $x$ in the one-dimensional case with mean degree 4. The curves have reflectional symmetry across $x = \frac{1}{2}$ as expected.}
+ \label{fig:lambda}
 \end{figure}
+
+Figure \ref{fig:lambda} shows experimental verification of Proposition \ref{prop:lambdax1} --- and thus Theorem \ref{thm:lambdax} --- and a comparison of $\lambda(x)$ for graphs of different sizes. This second plot shows that, for reasonably large $n$, all vertices except those that are very close to the boundaries of the opinion space have $\lambda \approx \overline{k}$ for mean degree $\overline{k}$. To understand why the $\lambda(x)$ curves are different for graphs of different sizes, we consider the relationship between equilibrium mean edge length $\overline{d}$ and $n$: As $n$ increases, vertices become more tightly-packed, and edges with lower distances become possible; thus $\overline{d}$ decreases as $n$ increases. 
+
+Vertices $x$ such that $\min(x, 1 - x)$ is significantly greater than $\overline{d}$ have $\lambda \approx \overline{k}$, because none of the edges $\{x, u\}$ reach the boundary of the opinion space. On the other hand, vertices $x$ such that $\min(x, 1 - x)$ is relatively close to $\overline{d}$ have $\lambda < \overline{k}$ because the boundary of the opinion space prevents some edges $\{x, u\}$ that would otherwise be present. Because $\overline{d}$ decreases as $n$ increases, the threshold $\min(x, 1 - x)$ at which $\lambda(x)$ begins to drop sharply also decreases with $n$.
 
 \begin{prop}
 \label{prop:R1}
@@ -209,7 +215,7 @@ First we determine the critical values of $\lambda(x)$ with $x \in [0, 1]$. The 
 \begin{equation}
  \frac{d\lambda}{dx} = n\left(\frac{1}{1+\frac{x^2}{c}} - \frac{1}{1+\frac{(1-x)^2}{c}} \right).
 \end{equation}
-Thus $\frac{d\lambda}{dx} = 0$ if and only if $x^2 = (1 - x)^2$; so $x=\frac{1}{2}$ is the one critical value. From Figure \ref{fig:lambdaofx}, we see that $\lambda(\frac{1}{2})$ is the maximum expected degree. From the figure, it is also clear that the minima of $\lambda(x)$ lie at the endpoints of the interval. Thus the range of possible expected degrees is 
+Thus $\frac{d\lambda}{dx} = 0$ if and only if $x^2 = (1 - x)^2$; so $x=\frac{1}{2}$ is the one critical value. From Figure \ref{fig:lambdax}, we see that $\lambda(\frac{1}{2})$ is the maximum expected degree. From the figure, it is also clear that the minima of $\lambda(x)$ lie at the endpoints of the interval. Thus the range of possible expected degrees is 
 $[\lambda(0)=\lambda(1), \lambda(\frac{1}{2})] = \left[n \sqrt{c}\, \tan^{-1}\left(\frac{1}{\sqrt{c}}\right),2 n\sqrt{c}\,  \tan^{-1}\left(\frac{1}{2 \sqrt{c}}\right)\right]$. 
 \end{proof}
 
@@ -238,6 +244,6 @@ must hold. However, it is only necessary to integrate over $R_1$, since $f_\Lamb
  a\int\limits_{R_1} \frac{dx}{d\lambda} \, d\lambda = a\int\limits_{0}^1 dx = a.
 \end{equation}
 So $a = 1$.
-\end{proof}z
+\end{proof}
 
 \end{document}
