@@ -27,7 +27,7 @@ def iterate(G):
     #For geometric distance, use: 
     #p = G.D**-.5
     #For step distance, use:
-    p = G.D
+    p = 1.0/G.D
     d_xy = distance(G, x, y)
 
     if random.random() > p * distance(G, x, y):
@@ -113,19 +113,26 @@ def getPSumMinusM(G, last):
 
 #******** Methods for adding edges ********
 
-def construct(G, d_mean):
-    k(G, .5 * G.number_of_nodes() * d_mean) 
-    for (u, u_data) in G.nodes_iter(True):
-        for (v, v_data) in G.nodes_iter(True):
+def construct(G, param, param_name):
+    if param_name == 'k_mean':
+        c = getC(G, 100, .5 * G.number_of_nodes() * param) 
+    elif param_name == 'c':
+        c = param
+    else:
+        print('incorrect param_name to construct!')
+        return
 
-            if(u < v and 
+    for u in G.nodes_iter():
+        for v in G.nodes_iter():
+
+            if(u[0] < v[0] and 
                 random.random() <
-                G.k * (distance(G, u, v)**2 + G.k)**-1):
+                c / (distance(G, u, v)**2 + c)):
                 G.add_edge(u, v)
 
-def reconstruct(G, d_mean):
+def reconstruct(G, k_mean):
     G.remove_edges_from(G.edges())
-    construct(G, d_mean)
+    construct(G, k_mean)
 
 #******** Graph creation - Version 1 ********
 def make_graph(n, m, D):
@@ -177,16 +184,23 @@ def add_random_edges(G, m):
             edges_added += 1
     G._edges = G.edges()
 
+def mean_distance(G):
+    total = 0.0
+
+    for edge in G.edges_iter():
+        total += distance(G, *edge)
+
+    return total / G.number_of_edges()
+
 if __name__ == '__main__':
-    n = 50000
+    n = 200 
     k = 4
     times = 10**7
     D = 1
 
-    G = make_graph(n, .5 * n * k, D)
+    G = make_opinion_graph(n, 0, D)
 
     for i in range(times):
         iterate(G)
 
-    write_deg(G, .04)
     #draw_graph(G)
