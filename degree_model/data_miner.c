@@ -7,10 +7,10 @@
 
 #include "model.h"
 
-void dd(int *distro, igraph_t *graph, int n)
+void dd(int *distro, igraph_t *graph, int m)
 {
     int i;
-    for(i = 0; i < n; i++)
+    for(i = 0; i <= m; i++)
     {
         distro[i] = 0;
     }
@@ -75,7 +75,7 @@ void dd_procedure(int n, int m, int times, double th_min, double th_step, double
     strcpy(outstring, "th\tdeg\tobserved freq\texpected freq\n");
 
     igraph_t graph;
-    int distro[n];
+    int distro[m + 1];
     double expectedDistro[n];
 
     double th;
@@ -90,10 +90,10 @@ void dd_procedure(int n, int m, int times, double th_min, double th_step, double
         expected_dd(expectedDistro, d_mean(&graph), n, m, th);
 
         int i;
-        for(i = 0; i < n; i++)
+        for(i = 0; i <= m; i++)
         {
             char buffer[max_line_length]; 
-            sprintf(buffer, "%f\t%d\t%d\t%f\n", th, i, distro[i], expectedDistro[i]);
+            sprintf(buffer, "%f\t%d\t%d\n", th, i, distro[i]);
             strcat(outstring, buffer);
         }
     }
