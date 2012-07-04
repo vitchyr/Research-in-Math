@@ -204,12 +204,20 @@ Evaluating the integral yields our result.
 
 Figure \ref{fig:lambda} shows experimental verification of Proposition \ref{prop:lambdax1} --- and thus Theorem \ref{thm:lambdax} --- and a comparison of $\lambda(x)$ for graphs of different sizes. This second plot shows that, for reasonably large $n$, all vertices except those that are very close to the boundaries of the opinion space have $\lambda \approx \overline{k}$ where $\overline{k}$ is the mean degree. 
 
-\begin{comment}
-\begin{defn}
- Let $\overline{d}$ be the mean edge length (i.e. distance) when the graph has reached equilibrium.
-\end{defn}
-We posit that vertices $x$ such that $\min(x, 1 - x)$ is significantly greater than $\overline{d}$ have $\lambda \approx \overline{k}$; this is because almost none of the edges $\{x, u\}$ reach the boundary of the opinion space. On the other hand, vertices $x$ such that $\min(x, 1 - x)$ is relatively close to $\overline{d}$ have $\lambda < \overline{k}$ because the boundary of the opinion space prevents some edges $\{x, u\}$ that would otherwise be present. From Figure \ref{subfig:lambda-compare}, we see that the threshold $\min(x, 1 - x)$ at which $\lambda(x)$ begins to drop sharply decreases with $n$. This can be explained by considering the relationship between $\overline{d}$ and $n$. For finite $n$, $\overline{d} > 0$, since for $u$ and $v$ selected randomly from $\Omega$, $Pr(u = v) = 0$ and thus $d(u, v) > 0$. However, we will prove that, as $n$ tends to infinity with $\overline{k}$ held constant, $\overline{d}$ approaches 0. This explains why vertices very close to the boundary of the opinion space 
-can have $\lambda \approx \overline{k}$ in large graphs.
-\end{comment}
+We posit that vertices $x$ such that $\min(x, 1 - x)$ is greater than lengths of most edges have $\lambda \approx \overline{k}$; this is because almost none of the edges $\{x, u\}$ reach the boundary of the opinion space. On the other hand, vertices $x$ such that $\min(x, 1 - x)$ is not greater than the lengths of most edges have $\lambda < \overline{k}$ because the boundary of the opinion space prevents some edges $\{x, u\}$ that would otherwise be present. 
+
+From Figure \ref{subfig:lambda-compare}, we see that the threshold $\min(x, 1 - x)$ at which $\lambda(x)$ begins to drop decreases with $n$. From Table \ref{tbl:dist-distro}, we see that --- as a general rule --- the mean edge distance decreases as $n$ increases; this is because, as vertices become more tightly-packed, shorter edges become possible. Thus for greater $n$, vertices can be closer to the boundary of the opinion space while still having $\lambda \approx \overline{k}.$
+
+\begin{table}
+\centering
+\begin{tabular}{ c | c | c }
+  $n$ & $\overline{d}$ & $\sigma$ \\ \hline
+  15 & .16 & .14 \\
+  50 & .042 & .058 \\
+  500 & .0085 & .032 \\
+\end{tabular}
+\caption{Means and standard deviations of edge-distance distributions. Data was collected from the constructive model. The mean degree was 4.}
+\label{tbl:dist-distro}
+\end{table}
 
 \end{document}
