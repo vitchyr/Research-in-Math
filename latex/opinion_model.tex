@@ -167,13 +167,14 @@ We evaluate this integral to reach our result.
 \end{proof}
 Proposition $\ref{prop:c1D}$ is useful because it allows us to numerically solve for $c$ in the one-dimensional case.
 
-\section{Distance Distribution}
+\section{Length Distribution}
 \begin{defn}
  A looping opinion space of dimension $D$ is $\mathbb{R}^D$ with the identity $(x_1, x_2, \ldots, x_D) = (x_1 + n_1, x_2 + n_2, \ldots, x_D + n_D)$ for any $(n_1, n_2, \ldots n_D) \in \mathbb{Z}^D$. 
 \end{defn}
 This means that a looping opinion space still has a finite volume of 1, but no ``boundaries''; e.g. in the one-dimensional case, $x = 0$, $x = 1$, and $x = 2$ all refer to the same location.
 
 \begin{theorem}
+\label{thm:length-distro}
  For a graph with large $n$ at equilibrium on a looping opinion space, the probability density function for the continuous random variable $d(e)$ with $e$ selected randomly is
  \begin{equation}
  \sigma(s) = \frac{c\,n^2}{2m}\;\frac{\sqrt{2^{D+1}\;D} \;}{(D-1)!}\;\frac{(\sqrt{2}\,s)^{D-1}}{s^2 + c}
@@ -207,6 +208,16 @@ For $\Delta s \to 0$, the integral on the LHS is equal to $\sigma(s) \, \Delta s
   \sigma(s) = \frac{c\,n^2}{2m}\;\frac{\sqrt{2^{D+1}\;D} \;}{(D-1)!}\;\frac{(\sqrt{2}\,s)^{D-1}}{s^2 + c}.
  \end{equation}
 \end{proof}
+
+\begin{figure}
+ \centering
+ \subfloat{\includegraphics[scale=.45]{images/length_distro1.pdf}}
+ \hspace{.5cm}
+ \subfloat{\includegraphics[scale=.45]{images/length_distro2.pdf}}
+ \hspace{.5cm}
+ \subfloat{\includegraphics[scale=.45]{images/length_distro3.pdf}}
+ \caption{The $\sigma(s)$ given by Theorem \ref{thm:length-distro} matchs experimental data. Data was collected using the constructive model. The graphs had 2000 vertices and mean degree 4. Note that the $D = 1$ plot has a different scale on the horizontal axis than the other two plots.}
+\end{figure}
 
 \section{Expected Degree}
 \begin{theorem}
