@@ -176,23 +176,27 @@ This means that a looping opinion space still has a finite volume of 1, but no `
 \begin{theorem}
  For a graph with large $n$ at equilibrium on a looping opinion space, the probability density function for the continuous random variable $d(e)$ with $e$ selected randomly is
  \begin{equation}
-  \sigma(s) = \frac{c \,n^2\,D}{m}\,\frac{(\sqrt{2}\,s)^{D - 1}}{s^2 + c}
+ \sigma(s) = \frac{c\,n^2}{2m}\;\frac{\sqrt{2^{D+1}\;D} \;}{(D-1)!}\;\frac{(\sqrt{2}\,s)^{D-1}}{s^2 + c}
  \end{equation}
 for $s \leq 1/2$.
 \end{theorem}
 \begin{proof}
-For convenience, let $x = (0, 0, \ldots 0)$; this choice does not affect the validity of the following argument because all vertices are equivalent in a looping opinion space with a uniform distribution of vertices. For $s \leq \frac{1}{2}$ let $R$ be the region of the opinion space such that $d(x, u) \leq s$ for all $u \in R$. For $D = 1$, $R$ is an interval of length $2s$ with $x$ as a midpoint. For $D = 2$, $R$ is a square with side-length $\sqrt{2}\,s$. In general, $R$ has vertices $(\pm s, 0, 0, \ldots), (0, \pm s, 0, \ldots), (0, 0, \pm s, \ldots),$ and so on; in this context, ``vertex'' refers to a vertex of the $D$-dimensional figure that is $R$, rather than to a vertex in the graph. Points $u$ on the edge of $R$ between vertices $(s, 0, 0, \ldots)$ and $(0, s, 0, \ldots)$ must be of the form $(s - l, l, 0, \ldots)$ in order for $d(x, u)$ to be $s$; thus $R$ has straight-line edges. Additionally, we see from the Pythagorean theorem that all edges of $R$ have length $\sqrt{2}\,s$. A $D$-dimensional 
-figure that has edges of uniform length and $2^D$ vertices which are equidistant from some central point --- in this case $x$ --- is a hypercube of dimension $D$. 
+For convenience, let $x = (0, 0, \ldots 0)$; this choice does not affect the validity of the following argument because all vertices are equivalent in a looping opinion space with a uniform distribution of vertices. For $s \leq \frac{1}{2}$ let $R$ be the region of the opinion space such that $d(x, u) \leq s$ for all $u \in R$. Therefore $R$ is a $D$-dimensional cross polytope with vertices $(\pm s, 0, 0, \ldots), (0, \pm s, 0, \ldots),$ and so on. Note that $R$ is only a cross polytope for $s \leq \frac{1}{2}$; otherwise, $R$ begins to overlap with itself. By the Pythagorean Theorem, the edge length of $R$ is $\sqrt{2}\,s$.
 
-For specific vertex $x$, we want to find the number of edges $\{x, u\}$ such that $s \leq d(x, u) \leq s + \Delta s.$ The volume of the region $R^*$ that contains all such $u$ is the surface area of $R$ times $\Delta s$ for $\Delta s \to 0$, as this region can be ``unraveled'' into $D$-dimensional prism with height $\Delta s$ and the same surface area as $R$. The surface area of the $D$-dimensional hypercube of edge length $\sqrt{2}\,s$ is $2D(\sqrt{2}\,s)^{D-1}$ because there are $2D$ faces and each of these faces has area $(\sqrt{2}\,s)^{D-1}$. Thus the volume of $R^*$ is $2D(\sqrt{2}\,s)^{D-1} \, \Delta s$. The previous statement is invalid if $s > \frac{1}{2}$ because then $R$ begins to overlap upon itself.
-
-Because $n$ vertices are spread evenly throughout the opinion space, the number of \emph{possible} edges $\{x, u\}$ such that $u \in R^*$ is $n \left[2D(\sqrt{2}\,s)^{D-1} \, \Delta s\right].$ And from Theorem \ref{thm:perc}, we know that the probability a specific one of these edges is present is $\frac{c}{s^2 + c}$. So, for specific vertex $x$, we expect there to be 
+For specific vertex $x$, we want to find the number of edges $\{x, u\}$ such that $s \leq d(x, u) \leq s + \Delta s.$ Let $R^*$ be the region that contains all such $u$.  The volume of $R^*$ is the surface area of $R$ times $\Delta s$ for $\Delta s \to 0$, as $R^*$ can be ``unraveled'' into $D$-dimensional prism with height $\Delta s$ and the same surface area as $R$. The surface area of the $D$-dimensional cross polytope of edge length $\sqrt{2}\,s$ is
 \begin{equation}
-2 \,c \,n\,D\,\frac{(\sqrt{2}\,s)^{D - 1}}{s^2 + c} 
+A = \frac{\sqrt{2^{D+1}\;D} \; (\sqrt{2}\,s)^{D-1}}{(D-1)!}.
+\end{equation} 
+Even though the notion of surface area does not make sense in the one-dimensional case, this method still correctly predicts correct length of $R^*$.
+
+Because $n$ vertices are spread evenly throughout the opinion space, the number of \emph{possible} edges $\{x, u\}$ such that $u \in R^*$ is 
+$n \, A \, \Delta s.$ And from Theorem \ref{thm:perc}, we know that the probability a specific one of these edges is present is $\frac{c}{s^2 + c}$. So, for specific vertex $x$, we expect there to be 
+\begin{equation}
+n\,A\,\frac{c}{s^2 + c} \; \Delta s 
 \end{equation}
  edges $\{x, u\}$ such that $s \leq d(x, u) \leq s + \Delta s.$ 
 
-This argument can be repeated for every vertex $x$ in the graph; however, doing so will count each edge twice. Therefore the number of edges $e$ such that $s \leq d(e) \leq s + \Delta s$ is $c \,n^2\,D\,\frac{(\sqrt{2}\,s)^{D - 1}}{s^2 + c}$. When selecting a random edge, the probability that any given edge is selected is $\frac{1}{m}$. Thus $Pr(s \leq d(e) \leq s + \Delta s) = \frac{c \,n^2\,D}{m}\,\frac{(\sqrt{2}\,s)^{D - 1}}{s^2 + c}$ for $\Delta s \to 0.$
+This argument can be repeated for every vertex $x$ in the graph; however, doing so will count each edge twice. Therefore the number of edges $e$ such that $s \leq d(e) \leq s + \Delta s$ is $\frac{n^2\,A}{2}\,\frac{c}{s^2 + c} \; \Delta s $. When selecting a random edge, the probability that any given edge is selected is $\frac{1}{m}$. Thus $Pr(s \leq d(e) \leq s + \Delta s) = \frac{n^2\,A}{2m}\,\frac{c}{s^2 + c} \; \Delta s $ for $\Delta s \to 0.$
 
 By the definition of probability density function, 
 \begin{equation}
@@ -200,7 +204,7 @@ By the definition of probability density function,
 \end{equation}
 For $\Delta s \to 0$, the integral on the LHS is equal to $\sigma(s) \, \Delta s$. This gives us
  \begin{equation}
-  \sigma(s) = \frac{c \,n^2\,D}{m}\,\frac{(\sqrt{2}\,s)^{D - 1}}{s^2 + c}.
+  \sigma(s) = \frac{c\,n^2}{2m}\;\frac{\sqrt{2^{D+1}\;D} \;}{(D-1)!}\;\frac{(\sqrt{2}\,s)^{D-1}}{s^2 + c}.
  \end{equation}
 \end{proof}
 
