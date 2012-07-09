@@ -131,9 +131,19 @@ Because $k \geq 1$ and $j \geq 1$, we can apply Proposition \ref{prop:F(k)} to c
 \end{proof}
 
 \section{Degree Distribution}
-Now consider the \emph{stationary degree distribution} for the model. Let $N_k$ be the number of vertices in the graph with degree $k$. For a degree distribution to be stationary, the expected value for the change in $N_k$ during an iteration must be 0 for all integers $k \geq 0$. Consider the four ways in which $N_k$ can change during an iteration, for $k \geq 0$:
-
-\begin{enumerate}
+Let $N_k$ be the number of vertices in the graph that have degree $k$.
+\begin{theorem}
+\label{thm:exp-change}
+The expected change in $N_k$ during an iteration is
+\begin{equation*}
+\label{eqn:N_k}
+ \langle \Delta N_k \rangle = \frac{f(k - 1)}{2m + n} N_{k-1} + \frac{k + 1}{2m} N_{k + 1} - \frac{f(k)}{2m + n} N_{k} - \frac{k}{2m} N_{k}
+\end{equation*}
+for $k \geq 0$.
+\end{theorem}
+\begin{proof}
+Consider the four ways in which $N_k$ can change during an iteration:
+ \begin{enumerate}
  \item A vertex of degree $k - 1$ receives a new edge. $N_k$ increases by 1. This occurs with probability $\frac{f(k - 1)}{2m + n} N_{k-1}$ since the probability that a specific vertex of degree $k - 1$ is rewired to is $\frac{f(k - 1)}{2m + n}$ and there are $N_{k - 1}$ such vertices. This probability is trivially 0 for the $k = 0$ case, since there are no vertices of degree -1.
  
  \item A vertex of degree $k + 1$ has an incident edge removed. $N_k$ increases by 1. This occurs with probability $\frac{1}{2} \frac{k + 1}{m} N_{k + 1}$. For a specific vertex of degree $k + 1$ to have one of its $k + 1$ incident edges removed, this edge must first be selected; this occurs with probability $(k + 1)/ m$. Next, only one of the two possible orientations of this edge can result in the degree $k + 1$ vertex losing an edge. A vertex must also be chosen in Step \ref{item:z} of the procedure, but the probability that this occurs is nearly 1 for a large network.
@@ -142,24 +152,27 @@ Now consider the \emph{stationary degree distribution} for the model. Let $N_k$ 
  
  \item A vertex of degree $k$ has an incident edge removed. $N_k$ decreases by 1. This occurs with probability $\frac{1}{2} \frac{k}{m} N_{k}.$ This probability is trivially 0 for the $k = 0$ case, since a vertex of degree 0 has no incident edges to be removed.
 \end{enumerate}
-Thus we can express the expected change in $N_k$ during an iteration as
+We sum these probabilities to reach our final result. Probabilities for events that decrease $N_k$ by 1 are multiplied by -1.
+\end{proof}
 
-\begin{equation}
-\label{eqn:N_k}
- \langle \Delta N_k \rangle = \frac{f(k - 1)}{2m + n} N_{k-1} + \frac{k + 1}{2m} N_{k + 1} - \frac{f(k)}{2m + n} N_{k} - \frac{k}{2m} N_{k}.
-\end{equation}
-Recall that $\langle \Delta N_k \rangle$ must equal 0 for all $k$ for the stationary degree distribution. Using this and making the substitution $i = k + 1$, we get a recursive equation for this stationary degree distribution.
+\begin{defn}
+Let the stationary degree distribution be the degree distribution such that $\langle N_k \rangle = -$ for all $k \geq 0$. 
+\end{defn}
 
 \begin{theorem}
-The stationary degree distribution $N$ is given by 
-\begin{equation}
+\label{thm:stationary-dd}
+The stationary degree distribution is given by 
+\begin{equation*}
 \label{eqn:N_i}
  N_{i} = \frac{2m}{i}\left[\left( \frac{f(i - 1)}{2m + n} + \frac{i - 1}{2m} \right) N_{i - 1} -  \frac{f(i - 2)}{2m + n} N_{i - 2}\right].
-\end{equation}
+\end{equation*}
 for all $i \geq 1$.
 \end{theorem}
-This equation can be simplified for the $i = 1$ case by noting that $N_{i - 2} = N_{-1} = 0$ and $\frac{i - 1}{2m} = 0$:
+\begin{proof}
+ First we make the substitution $\langle N_k \rangle = 0$ in the relationship proved by Theorem \ref{thm:exp-change}. Now making the substitution $i = k + 1$, we get a recursive equation for the stationary degree distribution.
+\end{proof}
 
+The equation in Theorem \ref{thm:stationary-dd} can be simplified for the $i = 1$ case by noting that $N_{i - 2} = N_{-1} = 0$ and $\frac{i - 1}{2m} = 0$:
 \begin{equation}
 \label{eqn:N_1}
  N_{1} = \frac{2m}{2m + n} \; f(0) \; N_0.

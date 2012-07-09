@@ -203,77 +203,21 @@ Evaluating the integral yields our result.
 \end{figure}
 
 Figure \ref{fig:lambda} shows experimental verification of Proposition \ref{prop:lambdax1} --- and thus Theorem \ref{thm:lambdax} --- and a comparison of $\lambda(x)$ for graphs of different sizes. This second plot shows that, for reasonably large $n$, all vertices except those that are very close to the boundaries of the opinion space have $\lambda \approx \overline{k}$ where $\overline{k}$ is the mean degree. 
-\begin{defn}
- Let $\overline{d}$ be the mean edge length (i.e. distance) when the graph has reached equilibrium.
-\end{defn}
-We posit that vertices $x$ such that $\min(x, 1 - x)$ is significantly greater than $\overline{d}$ have $\lambda \approx \overline{k}$; this is because almost none of the edges $\{x, u\}$ reach the boundary of the opinion space. On the other hand, vertices $x$ such that $\min(x, 1 - x)$ is relatively close to $\overline{d}$ have $\lambda < \overline{k}$ because the boundary of the opinion space prevents some edges $\{x, u\}$ that would otherwise be present. From Figure \ref{subfig:lambda-compare}, we see that the threshold $\min(x, 1 - x)$ at which $\lambda(x)$ begins to drop sharply decreases with $n$. This can be explained by considering the relationship between $\overline{d}$ and $n$. For finite $n$, $\overline{d} > 0$, since for $u$ and $v$ selected randomly from $\Omega$, $Pr(u = v) = 0$ and thus $d(u, v) > 0$. However, we will prove that, as $n$ tends to infinity with $\overline{k}$ held constant, $\overline{d}$ approaches 0. This explains why vertices very close to the boundary of the opinion space can have $\lambda \approx \overline{k}$ in large graphs.
-\begin{prop}
-For any dimension $D$,
- \begin{equation*}
-  \lim\limits_{n\to\infty} \overline{d} = 0.
- \end{equation*}
-\end{prop}
-\begin{proof}
-First we note that
-\begin{equation}
-\label{eqn:overline-d-sum}
- \overline{d} = \frac{1}{{n \choose 2}} \sum\limits_{e\in K_n}  P(e)\,d(e).
-\end{equation}
-From Theorem \ref{thm:perc}, we know that the probability $P(e)$ an edge $e$ is present at equilibrium is $\frac{c}{d(e)^2 + c}$. For large $n$, vertices are distributed evenly within the opinion space, so there are $n\, du$ vertices in the interval $du = du_1 \cdot du_2 \cdots du_D$ and $\frac{1}{2}n^2 \,du\, dv$ edges between vertices in $du$ and vertices in $dv$.  Thus for large $n$,
-\begin{equation}
-\label{eqn:overline-d-integral}
-\overline{d} = c\int\limits_\Omega \int\limits_\Omega \frac{\,d(u, v)}{d(u, v)^2 + c}\,du\,dv
-\end{equation}
-since the $n \choose 2$ from Equation \ref{eqn:overline-d-sum} cancels with the $\frac{1}{2} n^2$ from $\frac{1}{2}n^2 \,du\, dv$. Compare this to Proposition \ref{prop:c}, which states that
-\begin{equation*}
- \int\limits_\Omega \int\limits_\Omega \frac{du \, dv}{d(u, v)^2 + c} = \frac{2m}{c\,n^2}.
-\end{equation*}
-The limits of integration are the same, though the integrand of Equation \ref{eqn:overline-d-integral} has $d(u, v)$ in the numerator while the other does not. Because the maximum distance is $D$,
-\begin{equation}
- \frac{\,d(u, v)}{d(u, v)^2 + c} \leq \frac{\,D}{d(u, v)^2 + c}
-\end{equation}
-for any $u, v$. Thus $\overline{d} \leq D\,\frac{2m}{n^2}$. Making the substitution $m = \frac{1}{2} \overline{k} \,n$ and taking the limit, we have $\lim_{n\to\infty} \overline{d} \leq D\,\overline{k}\,\lim_{n\to\infty}\frac{1}{n} = 0.$
-\end{proof}
 
+We posit that vertices $x$ such that $\min(x, 1 - x)$ is greater than the lengths of most edges have $\lambda \approx \overline{k}$; this is because almost none of the edges $\{x, u\}$ reach the boundary of the opinion space. On the other hand, vertices $x$ such that $\min(x, 1 - x)$ is not greater than the lengths of most edges have $\lambda < \overline{k}$ because the boundary of the opinion space prevents some edges $\{x, u\}$ that would otherwise be present. 
 
-\begin{prop}
-\label{prop:R1}
- For $D=1$, $\lambda(x) \in R_1 = \left[n \sqrt{c}\, \tan^{-1}\left(\frac{1}{\sqrt{c}}\right),2 n\sqrt{c}\,  \tan^{-1}\left(\frac{1}{2 \sqrt{c}}\right)\right]$ for any $x$.
- \end{prop}
-\begin{proof}
-First we determine the critical values of $\lambda(x)$ with $x \in [0, 1]$. The derivative is
-\begin{equation}
- \frac{d\lambda}{dx} = n\left(\frac{1}{1+\frac{x^2}{c}} - \frac{1}{1+\frac{(1-x)^2}{c}} \right).
-\end{equation}
-Thus $\frac{d\lambda}{dx} = 0$ if and only if $x^2 = (1 - x)^2$; so $x=\frac{1}{2}$ is the one critical value. From Figure \ref{fig:lambda}, we see that $\lambda(\frac{1}{2})$ is the maximum expected degree. From the figure, it is also clear that the minima of $\lambda(x)$ lie at the endpoints of the interval. Thus the range of possible expected degrees is 
-$[\lambda(0)=\lambda(1), \lambda(\frac{1}{2})] = \left[n \sqrt{c}\, \tan^{-1}\left(\frac{1}{\sqrt{c}}\right),2 n\sqrt{c}\,  \tan^{-1}\left(\frac{1}{2 \sqrt{c}}\right)\right]$. 
-\end{proof}
+From Figure \ref{subfig:lambda-compare}, we see that the threshold $\min(x, 1 - x)$ at which $\lambda(x)$ begins to drop decreases with $n$. Table \ref{tbl:dist-distro} shows: first, that the mean edge distance seems to decrease as $n$ increases --- this is because, as vertices become more tightly-packed, shorter edges become possible --- and secondly, that the standard deviation from that mean also decreases as $n$ increases. These two facts explain why, for greater $n$, vertices can be closer to the boundary of the opinion space while still having $\lambda \approx \overline{k}.$
 
-\begin{prop}
- For $D=1$, the probability distribution function for the continuous random variable $\Lambda = \lambda(x)$ where $x$ is selected randomly from $[0, 1]$ is
- \begin{equation}
- f_\Lambda(\lambda) = \left\{
-     \begin{array}{lr}
-  \,\frac{dx}{d\lambda} & : \lambda \in R_1 \\
-  0 & : \lambda \notin R_1
-     \end{array}
-   \right..
-\end{equation}
-\end{prop}
-\begin{proof}
-$f_\Lambda(\lambda)$ is obviously 0 when $k$ is not in the range of possible expected degrees, $R_1$. Let $x(\lambda)$ give the opinion of a vertex with expected degree $\lambda$ and always return a value in $[0, 1/2]$. With $\Delta \lambda \to 0$, all vertices in the interval $[x(\lambda), x(\lambda + \Delta \lambda)]$ have expected degree $\lambda$. Because vertices are spread evenly within the opinion space, the number of vertices that have expected degree $\lambda$ is proportional to $x(\lambda + \Delta \lambda) - x(\lambda)$. Therefore
-\begin{equation}
- f_\Lambda(\lambda) = a \lim\limits_{\Delta \lambda \to 0} \frac{x(\lambda + \Delta \lambda) - x(\lambda)}{\Delta \lambda} = a \, \frac{dx}{d\lambda}
-\end{equation}
-for some constant $a$. To determine $a$, we note that the relationship 
-\begin{equation}
- \int\limits_{0}^\infty f_\Lambda(\lambda)\, d\lambda = 1
-\end{equation}
-must hold. However, it is only necessary to integrate over $R_1$, since $f_\Lambda(\lambda) = 0$ for $\lambda \notin R_1$. Thus we can substitute $a \, \frac{dx}{d\lambda}$ for $f_\Lambda(\lambda)$ and evaluate the integral.
-\begin{equation}
- a\int\limits_{R_1} \frac{dx}{d\lambda} \, d\lambda = a\int\limits_{0}^1 dx = a.
-\end{equation}
-So $a = 1$.
-\end{proof}
+\begin{table}
+\centering
+\begin{tabular}{ c | c | c }
+  $n$ & $\overline{d}$ & $\sigma$ \\ \hline
+  15 & .16 & .14 \\
+  50 & .042 & .058 \\
+  500 & .0085 & .032 \\
+\end{tabular}
+\caption{Means and standard deviations of edge-distance distributions. Data was collected from the constructive model. The mean degree was 4.}
+\label{tbl:dist-distro}
+\end{table}
 
 \end{document}
