@@ -7,10 +7,11 @@
 
 double f(int d, double d_mean, double th)
 {
-    return th * pow((double) d + 1.0, 3) + (1.0 - th) * pow(d_mean + 1.0, 3);
+    double j = 1.2;
+    return th * pow((double) d + 1.0, j) + (1.0 - th) * pow(d_mean + 1.0, j);
 }
 
-double d_mean(igraph_t *graph)
+double get_d_mean(igraph_t *graph)
 {
     return 2.0 * igraph_ecount(graph) / (double) igraph_vcount(graph);
 }
@@ -40,14 +41,37 @@ igraph_integer_t all_degrees(igraph_t *graph, igraph_vector_t *degrees)
     igraph_vs_destroy(&vs);
 }
 
-double getDenom(igraph_t *graph, igraph_vector_t *degrees, double theta){
+double get_denom(igraph_t *graph, igraph_vector_t *degrees, double theta,
+    igraph_integer_t x, igraph_integer_t y){
     double denom = 0;
-    double dMean = d_mean(graph);
+    double dMean = get_d_mean(graph);
     int i;
     for(i = 0; i < igraph_vector_size(degrees); i++){
-        denom += f(VECTOR(*degrees)[i], dMean, theta);
+        if(i != (int) x && i != (int) y)
+        {
+            denom += f(VECTOR(*degrees)[i], dMean, theta);
+        }
     }
     return denom;
+}
+
+void display_degrees(igraph_t *graph)
+{
+    igraph_vector_t degrees;
+    igraph_vector_init(&degrees, 1); 
+    all_degrees(graph, &degrees);
+
+    int i;
+    for(i = 0; i < igraph_vector_size(&degrees); i++)
+    {
+        if(VECTOR(degrees)[i] != 0)
+        {
+            printf("%g, ", VECTOR(degrees)[i]);
+        }
+    }
+
+    printf("----------------");
+    igraph_vector_destroy(&degrees);
 }
 
 void iterate(igraph_t *graph, double th)
@@ -69,15 +93,18 @@ void iterate(igraph_t *graph, double th)
     igraph_vector_init(&degrees, 1); 
     all_degrees(graph, &degrees);
 
+
+    double d_mean = get_d_mean(graph);
     double random = 1.0 * rand() / RAND_MAX;
     int w;
     double total = 0.0;
-    double denom = getDenom(graph, &degrees, th);
+    double denom = get_denom(graph, &degrees, th, x, y); 
+
     for(w = 0; w < igraph_vector_size(&degrees); w++)
     {
         if(w != (int) x && w != (int) y)
         {
-            total += f(VECTOR(degrees)[w], d_mean(graph), th) / denom; 
+            total += f(VECTOR(degrees)[w], d_mean, th) / denom; 
 
             if(random < total)
             {
@@ -103,10 +130,15 @@ void iterate(igraph_t *graph, double th)
 
 void iterate_many(igraph_t *graph, double th, int times)
 {
-    //double denom = getDenom(graph, th);
     int i;
     for(i = 0; i < times; i++)
     {
+        if(i % 10000 == 0)
+        {
+            display_degrees(graph);
+            getchar();
+        }
+
         iterate(graph, th); 
     }
 }

@@ -87,7 +87,7 @@ void dd_procedure(int n, int m, int times, double th_min, double th_step, double
         iterate_many(&graph, th, times);    
 
         dd(distro, &graph, n); 
-        expected_dd(expectedDistro, d_mean(&graph), n, m, th);
+        expected_dd(expectedDistro, get_d_mean(&graph), n, m, th);
 
         int i;
         for(i = 0; i <= m; i++)
