@@ -220,4 +220,26 @@ From Figure \ref{subfig:lambda-compare}, we see that the threshold $\min(x, 1 - 
 \label{tbl:dist-distro}
 \end{table}
 
+\newpage
+\section{Degree Distribution}
+The degree distribution of the vertices at equilibrium is Poisson.
+\begin{proof}
+Given a vertex with opinion $x$, the probability that this vertex is of degree $k$ is given by
+	\begin{equation}
+		p\left(deg(x)=k\right) = p(\{x, z\} \in E)^k (1 - p(\{x, z\} \in E))^{n-1-k}
+	\end{equation}
+where $p(\{x, z\} \in E)$ denotes the probability that a vertex of opinion $x$ is connected to a random vertex. This is equal to the total number of vertices that $x$ is connected to, divided by $n$. For large $n$, this is given by the equation
+	\begin{equation}
+		p(\{x, z\} \in E) = \frac{1}{n} \sum_{z \in V} \frac{n \cdot c}{d(x, z)^2 + c} = c \int\limits_\Omega \frac{dz}{d(v_x, z)^2 + c}
+	\end{equation}
+Using Equation 15, this is simply $\frac{\lambda(x)}{n}$. We know that for $x \ne 0^D, 1^D$, $\lambda(x)$ is some constant, so let $\frac{\lambda(x)}{n} = \eta$, for some constant $\eta$. We now have
+	\begin{equation}
+		p\left(deg(v_x)=k\right) = \eta ^k \left( 1 - \eta \right)^{n-1-k}
+	\end{equation}
+To get the unconditioned probability that a vertex has degree $k$, $p\left(deg(v)=k\right)$, we multiply by the condition that a vertex is of opinion $x$. Because vertices are randomly distributed, this is given by the constant $1/n$. Then, we sum it over all $n$ vertices.
+	\begin{equation}
+		p\left(deg(v)=k\right) =  \int\limits_\Omega \frac{1}{n} \cdot \eta ^k \left( 1 - \eta \right)^{n-1-k} n \ dx = \cdot \eta ^k \left( 1 - \eta \right)^{n-1-k}
+	\end{equation}
+	For large $n$, this is a Poisson distribution.
+\end{proof}
 \end{document}
