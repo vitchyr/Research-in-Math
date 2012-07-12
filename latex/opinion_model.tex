@@ -166,6 +166,73 @@ For $D=1$, the double integral in Theorem \ref{prop:c} reduces to
 We evaluate this integral to reach our result.
 \end{proof}
 Proposition $\ref{prop:c1D}$ is useful because it allows us to numerically solve for $c$ in the one-dimensional case.
+
+\section{Length Distribution}
+\begin{defn}
+ A looping opinion space of dimension $D$ is $\mathbb{R}^D$ with the identity $(x_1, x_2, \ldots, x_D) = (x_1 + n_1, x_2 + n_2, \ldots, x_D + n_D)$ for any $(n_1, n_2, \ldots n_D) \in \mathbb{Z}^D$. 
+\end{defn}
+This means that a looping opinion space still has a finite volume of 1, but no ``boundaries''; e.g. in the one-dimensional case, $x = 0$, $x = 1$, and $x = 2$ all refer to the same location.
+
+\begin{theorem}
+\label{thm:length-distro}
+ For a graph with large $n$ at equilibrium on a looping opinion space, the probability density function for the continuous random variable $d(e)$ with $e$ selected randomly is
+ \begin{equation}
+ \sigma(s) = \frac{c\,n^2}{2m}\;\frac{\sqrt{2^{D+1}\;D} \;}{(D-1)!}\;\frac{(\sqrt{2}\,s)^{D-1}}{s^2 + c}
+ \end{equation}
+for $s \leq 1/2$.
+\end{theorem}
+\begin{proof}
+For convenience, let $x = (0, 0, \ldots 0)$; this choice does not affect the validity of the following argument because all vertices are equivalent in a looping opinion space with a uniform distribution of vertices. For $s \leq \frac{1}{2}$ let $R$ be the region of the opinion space such that $d(x, u) \leq s$ for all $u \in R$. Therefore $R$ is a $D$-dimensional cross polytope with vertices $(\pm s, 0, 0, \ldots), (0, \pm s, 0, \ldots),$ and so on. Note that $R$ is only a cross polytope for $s \leq \frac{1}{2}$; otherwise, $R$ begins to overlap with itself. By the Pythagorean Theorem, the edge length of $R$ is $\sqrt{2}\,s$.
+
+For specific vertex $x$, we want to find the number of edges $\{x, u\}$ such that $s \leq d(x, u) \leq s + \Delta s.$ Let $R^*$ be the region that contains all such $u$.  The volume of $R^*$ is the surface area of $R$ times $\Delta s$ for $\Delta s \to 0$, as $R^*$ can be ``unraveled'' into $D$-dimensional prism with height $\Delta s$ and the same surface area as $R$. The surface area of the $D$-dimensional cross polytope of edge length $\sqrt{2}\,s$ is
+\begin{equation}
+A = \frac{\sqrt{2^{D+1}\;D} \; (\sqrt{2}\,s)^{D-1}}{(D-1)!}.
+\end{equation} 
+Even though the notion of surface area does not make sense in the one-dimensional case, this method still correctly predicts correct length of $R^*$.
+
+\begin{figure}
+\centering
+\includegraphics[scale=.6]{images/polytope.pdf}
+\caption{Illustration of $R$ and $R^*$ for $D = 2$.}
+\end{figure}
+
+Because $n$ vertices are spread evenly throughout the opinion space, the number of \emph{possible} edges $\{x, u\}$ such that $u \in R^*$ is 
+$n \, A \, \Delta s.$ And from Theorem \ref{thm:perc}, we know that the probability a specific one of these edges is present is $\frac{c}{s^2 + c}$. So, for specific vertex $x$, we expect there to be 
+\begin{equation}
+n\,A\,\frac{c}{s^2 + c} \; \Delta s 
+\end{equation}
+ edges $\{x, u\}$ such that $s \leq d(x, u) \leq s + \Delta s.$ 
+
+This argument can be repeated for every vertex $x$ in the graph; however, doing so will count each edge twice. Therefore the number of edges $e$ such that $s \leq d(e) \leq s + \Delta s$ is $\frac{n^2\,A}{2}\,\frac{c}{s^2 + c} \; \Delta s $. When selecting a random edge, the probability that any given edge is selected is $\frac{1}{m}$. Thus $Pr(s \leq d(e) \leq s + \Delta s) = \frac{n^2\,A}{2m}\,\frac{c}{s^2 + c} \; \Delta s $ for $\Delta s \to 0.$
+
+By the definition of probability density function, 
+\begin{equation}
+ \int\limits_{s}^{s + \Delta s} \sigma(t)\,dt = Pr(s \leq d(e) \leq s + \Delta s).
+\end{equation}
+For $\Delta s \to 0$, the integral on the LHS is equal to $\sigma(s) \, \Delta s$. This gives us
+ \begin{equation}
+  \sigma(s) = \frac{c\,n^2}{2m}\;\frac{\sqrt{2^{D+1}\;D} \;}{(D-1)!}\;\frac{(\sqrt{2}\,s)^{D-1}}{s^2 + c}.
+ \end{equation}
+\end{proof}
+
+
+
+\begin{figure}
+ \centering
+ \subfloat{\includegraphics[scale=.45]{images/length_distro1.pdf}}
+ \hspace{.5cm}
+ \subfloat{\includegraphics[scale=.45]{images/length_distro2.pdf}}
+ \hspace{.5cm}
+ \subfloat{\includegraphics[scale=.45]{images/length_distro3.pdf}}
+ \caption{The $\sigma(s)$ given by Theorem \ref{thm:length-distro} matchs experimental data. Data was collected using the constructive model. The graphs had 2000 vertices and mean degree 4. Note that the $D = 1$ plot has a different scale on the horizontal axis than the other two plots.}
+\end{figure}
+
+\begin{figure}
+ \centering
+ \includegraphics[scale=.7]{images/sigma_multi.pdf}
+ \caption{Plot of $\sigma(s)$ for higher dimensions on graphs with 2000 vertices and mean degree 4. Theorem \ref{thm:length-distro} is not as useful for higher dimensions, as it only applies for $s \leq 1/2$ and edges can have length as great as $D$. }
+\end{figure}
+
 \section{Expected Degree}
 \begin{theorem}
 \label{thm:lambdax}
