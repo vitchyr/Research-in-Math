@@ -4,8 +4,14 @@ import random
 
 def distance(G, u, v):
     total = 0.0
-    for i in range(G.D):
-        total += abs(u[i] - v[i])
+
+    if G.looping:
+        for i in range(G.D):
+            total += min(abs(u[i] - v[i]), u[i] + 1 - v[i],
+                v[i] + 1 - u[i])
+    else:
+        for i in range(G.D):
+            total += abs(u[i] - v[i])
         
     return total
 
@@ -75,16 +81,21 @@ def draw_graph(G):
 #******** Methods for getting G.k (Theorem 2 ********
 
 #uses bisection method to find c values, and averages them.
-def getC(G, iterations_for_getting_C):
+def getC(G, m, iterations, tol, start):
     print "Calculating G.c (Theorem 2)"
+    G.m = m
+
     c_values = []
-    for i in xrange(iterations_for_getting_C):
-        if i % (iterations_for_getting_C/10) == 0:
-            print "%d percent" % (100 * i / iterations_for_getting_C)
-        H = make_opinion_graph(G.n, G.m, G.D)
-        c_values.append(bisect(getPSumMinusM, H, 0.0, 1, 0.000001))
+    for i in xrange(iterations):
+
+        if iterations > 9 and i % (iterations/10) == 0:
+            print "%d percent" % (100 * i / iterations)
+
+        H = make_opinion_graph(G.n, G.m, G.D, G.looping)
+        c_values.append(bisect(getPSumMinusM, H, 0.0, start, tol)) 
+
     c = sum(c_values)/len(c_values)
-    print "G.c = %f" % c
+    print c
     return c
 
 def bisect(f, G, left, right, tol ):
@@ -95,20 +106,27 @@ def bisect(f, G, left, right, tol ):
         c=(a+b)/2.0
         if( b-c < tol ):
             return c
-        if( f(G, b)>0 and f(G, c)<0 or f(G, b)<0 and f(G, c)>0 ):
+
+        fGb = f(G, b)
+        fGc = f(G, c)
+
+        if( fGb > 0 and fGc <0 or fGb <0 and fGc >0 ):
             a=c
         else:
             b=c
         currentIter += 1
+        print c
 
 #gives the sum of the P(e) for all edges in the complete
 #graph K_n minus m
 def getPSumMinusM(G, last):
     total = 0.0
+
     for v in G.nodes_iter():
         for u in G.nodes_iter():
-            if v < u:
+            if v[0] < u[0]:
                 total += float(last)/(distance(G, u, v)**2 + last)
+
     return total - G.m
 
 #******** Methods for adding edges ********
@@ -138,11 +156,13 @@ def reconstruct(G, k_mean):
 
 #Nodes are tuples that represent their opinion vector
 #Access the ith opinion by using node[i]
-def make_opinion_graph(n, m, D):
+def make_opinion_graph(n, m, D, looping=False):
     G = nx.Graph()
     G.D = D
     G.n = n
     G.m = m
+    G.looping = looping
+
     nodeList = []
     for i in xrange(n):
         node = []
@@ -179,14 +199,10 @@ def mean_distance(G):
     return total / G.number_of_edges()
 
 if __name__ == '__main__':
-    n = 200 
-    k = 4
-    times = 10**7
-    D = 1
+    n = 2000 
 
-    G = make_opinion_graph(n, 0, D)
-
-    for i in range(times):
-        iterate(G)
-
-    #draw_graph(G)
+    for D in (1, 2,3):
+        G = make_opinion_graph(n, 0, D, True)
+        c= getC(G, 4000, 1, 1e-8, 1e-2)
+        construct(G, c, 'c')
+        print G.number_of_edges()
