@@ -153,20 +153,6 @@ def reconstruct(G, k_mean):
     construct(G, k_mean)
 
 #******** Graph creation - Version 1 ********
-def make_graph(n, m, D):
-    G = nx.gnm_random_graph(n, m)
-    G.D = D
-    random_opinions(G)
-    return G
-
-def random_opinions(G):
-    for v in G.nodes_iter():
-        G.node[v]['op'] = []
-
-        for i in range(G.D):
-            G.node[v]['op'].append(random.random())
-
-#******** Graph creation - Version 1 ********
 
 #Nodes are tuples that represent their opinion vector
 #Access the ith opinion by using node[i]
