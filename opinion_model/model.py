@@ -81,15 +81,15 @@ def draw_graph(G):
 #******** Methods for getting G.k (Theorem 2 ********
 
 #uses bisection method to find c values, and averages them.
-def getC(G, m, iterations, tol, start):
+def getC(G, m, stat_size=1, tol=10**-8, start=0.0001):
     print "Calculating G.c (Theorem 2)"
     G.m = m
 
     c_values = []
-    for i in xrange(iterations):
+    for i in xrange(stat_size):
 
-        if iterations > 9 and i % (iterations/10) == 0:
-            print "%d percent" % (100 * i / iterations)
+        if stat_size > 9 and i % (stat_size/10) == 0:
+            print "%d percent" % (100 * i / stat_size)
 
         H = make_opinion_graph(G.n, G.m, G.D, G.looping)
         c_values.append(bisect(getPSumMinusM, H, 0.0, start, tol)) 
@@ -133,13 +133,13 @@ def getPSumMinusM(G, last):
 
 def construct(G, param, param_name):
     if param_name == 'k_mean':
-        c = getC(G, 100, .5 * G.number_of_nodes() * param) 
+        c = getC(G, .5 * G.number_of_nodes() * param) 
     elif param_name == 'c':
         c = param
     else:
-        print('incorrect param_name to construct!')
+        print('incorrect param_name to construct! Must be \'k_mean\' or \'c\'')
         return
-
+    G.c = c
     for u in G.nodes_iter():
         for v in G.nodes_iter():
 
@@ -199,10 +199,13 @@ def mean_distance(G):
     return total / G.number_of_edges()
 
 if __name__ == '__main__':
-    n = 2000 
+    n = 5000
+    G = make_opinion_graph(n, 0, 3, True)
+    c= getC(G, 10000, 1, 1e-8, 1e-2)
+    print c
 
-    for D in (1, 2,3):
-        G = make_opinion_graph(n, 0, D, True)
-        c= getC(G, 4000, 1, 1e-8, 1e-2)
-        construct(G, c, 'c')
-        print G.number_of_edges()
+##    for D in (1, 2,3):
+##        G = make_opinion_graph(n, 0, D, True)
+##        c= getC(G, 4000, 1, 1e-8, 1e-2)
+##        construct(G, c, 'c')
+##        print G.number_of_edges()
