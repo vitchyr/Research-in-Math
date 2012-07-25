@@ -1,5 +1,5 @@
 import networkx as nx
-import matplotlib
+import matplotlib.pyplot as plt
 import random
 
 def distance(G, u, v):
@@ -45,7 +45,7 @@ def iterate(G):
 
     d_xz = distance(G, x, z)
     
-    if d_xy < d_xz and random.random() > d_xy / d_xz:
+    if G.alpha == 2 and d_xy < d_xz and random.random() > d_xy / d_xz:
         return
 
     G.remove_edge(x, y) 
@@ -75,8 +75,16 @@ def draw_graph(G):
             print "Drawing based on first two opinions"
         for v in G.nodes_iter():
             pos[v] = list(v)[:2]
-    nx.draw(G, pos)
-    matplotlib.pyplot.show()
+
+    plt.plot([], [])
+
+    nx.draw(G, pos, plt.axes(), with_labels=False, node_size=50,
+        edge_color='#555555')
+    plt.axis('on')
+    plt.xlim(0, 1)
+    plt.ylim(0,1)
+    plt.title(r'd = 2, $\alpha$ = 1')
+    plt.show()
 
 #******** Methods for getting G.k (Theorem 2 ********
 
@@ -156,11 +164,12 @@ def reconstruct(G, k_mean):
 
 #Nodes are tuples that represent their opinion vector
 #Access the ith opinion by using node[i]
-def make_opinion_graph(n, m, D, looping=False):
+def make_opinion_graph(n, m, D, alpha=2, looping=False):
     G = nx.Graph()
     G.D = D
     G.n = n
     G.m = m
+    G.alpha = alpha
     G.looping = looping
 
     nodeList = []
@@ -199,13 +208,14 @@ def mean_distance(G):
     return total / G.number_of_edges()
 
 if __name__ == '__main__':
-    n = 5000
-    G = make_opinion_graph(n, 0, 3, True)
-    c= getC(G, 10000, 1, 1e-8, 1e-2)
-    print c
+    n = 50 
+    k_mean = 4
+    D = 2
+    times = 2*10**4
 
-##    for D in (1, 2,3):
-##        G = make_opinion_graph(n, 0, D, True)
-##        c= getC(G, 4000, 1, 1e-8, 1e-2)
-##        construct(G, c, 'c')
-##        print G.number_of_edges()
+    G = make_opinion_graph(n, .5 * n * k_mean, 2, 1) 
+
+    for i in xrange(times):
+        iterate(G)
+
+    draw_graph(G) 
