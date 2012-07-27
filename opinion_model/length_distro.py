@@ -1,17 +1,26 @@
 import model
-import corestats
+import pickle
 
 if __name__ == '__main__':
-    n = 500
+    n = 2000
+    k_mean = 4
+    times = 1*10**7
 
-    G = model.make_opinion_graph(n, 0, 1)
-    c=[0.01196013437, .000801687, .000006662]
-    model.construct(G, c[2], 'c')
-    print G.number_of_edges()
+    D = 3
+    alpha = 2
+
+    G = model.make_opinion_graph(n, .5 * n* k_mean, D, alpha)
+
+    for i in range(times):
+        model.iterate(G)
+
+        if i % 10**4 == 0:
+            md = model.mean_distance(G)
+            print md
 
     distances = []
     for e in G.edges_iter():
         distances.append(model.distance(G, *e))
 
-    stats = corestats.Stats(distances)
-    print(stats.avg(), stats.stdev()) 
+    outfile = open('distance_{}_{}.dat'.format(D, alpha), 'w')
+    pickle.dump(distances, outfile)
