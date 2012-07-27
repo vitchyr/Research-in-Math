@@ -4,17 +4,15 @@ import scipy.linalg
 
 import model
 
-if __name__ == '__main__':
+
+def procedure(ticks):
     n = 500
     b = .000006662 
-
-    ticks = 5
-
-    D = 3
+    D = 1
     alpha = 2
 
-    print 'Number of types: {}'.format(ticks**(D))
-    print 'Number of elements in matrix: {}'.format(ticks**(D*2))
+    n_types = ticks**D
+    #print 'Number of types: {}'.format(n_types)
     M = np.zeros([ticks**D, ticks**D])
     registry = {}
     
@@ -33,8 +31,13 @@ if __name__ == '__main__':
             pos_i = [float(_i) / (ticks - 1) for _i in i]
             pos_j = [float(_j) / (ticks - 1) for _j in j]
 
-            M[registry[i], registry[j]] = \
+            M[registry[i], registry[j]] = .5 * n**2 / n_types**2 *\
                 b / (b + model.distance(None, pos_i, pos_j)**alpha) 
 
     eigvals = scipy.linalg.eigvals(M) 
-    print max(eigvals)
+    return max(eigvals)
+
+if __name__ == '__main__':
+    print procedure(5000)
+if __name__ == '__main__':
+    print procedure(5000)
