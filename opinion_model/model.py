@@ -5,12 +5,12 @@ import random
 def distance(G, u, v):
     total = 0.0
 
-    if G.looping:
+    if G is not None and G.looping:
         for i in range(G.D):
             total += min(abs(u[i] - v[i]), u[i] + 1 - v[i],
                 v[i] + 1 - u[i])
     else:
-        for i in range(G.D):
+        for i in range(len(u)):
             total += abs(u[i] - v[i])
         
     return total
@@ -85,6 +85,12 @@ def draw_graph(G):
     plt.ylim(0,1)
     plt.title(r'd = 2, $\alpha$ = 1')
     plt.show()
+
+def plot_dd(G):
+    plt.hist(G.degree().values())
+    plt.title(r'Degree Distribution: d = 2, $\alpha$ = 1')
+    plt.show()
+    plt.savefig('opdd_2_1.pdf')
 
 #******** Methods for getting G.k (Theorem 2 ********
 
@@ -208,14 +214,13 @@ def mean_distance(G):
     return total / G.number_of_edges()
 
 if __name__ == '__main__':
-    n = 50 
+    n = 50
     k_mean = 4
-    D = 2
-    times = 2*10**4
+    times = 10**4
 
     G = make_opinion_graph(n, .5 * n * k_mean, 2, 1) 
 
     for i in xrange(times):
         iterate(G)
 
-    draw_graph(G) 
+    draw_graph(G)
