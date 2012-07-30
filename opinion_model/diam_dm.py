@@ -4,13 +4,13 @@ import model
 if __name__ == '__main__':
     n_min = 200
     n_step = 500
-    n_max = 5200
+    n_max = 4700
 
     k = 4
-    D = 3
+    D = 2
     times = 5*10**0
-    stats_size = 25
-    alpha = 2
+    stats_size = 5
+    alpha = 1
 
     outstring = 'N\tDiameter\n'
     print 'N\tDiameter'
