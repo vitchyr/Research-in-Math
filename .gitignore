@@ -8,3 +8,9 @@ data_miner
 *.xlsx
 *.pyc
 *.pdf
+*.docx
+*.txt
+!README.txt
+opinion_model/*.png
+opinion_model/*.svg
+opinion_model/*.docx

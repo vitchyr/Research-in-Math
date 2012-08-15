@@ -1,6 +1,8 @@
 \documentclass[a4paper,10pt]{article}
 
-\usepackage{subfig}
+%\usepackage{subfig}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{verbatim}
@@ -8,6 +10,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{geometry}
+
 
 \newtheorem{defn}{Definition}
 \newtheorem{prop}{Proposition}
@@ -126,12 +129,18 @@ Since each state in the rewiring model contains exactly $m$ edges, the expected 
 We reach our criterion for $c$ by substituting Equation \ref{eqn:proportional} into Equation \ref{eqn:sum-to-m}.
 \end{proof}
 
+\begin{figure}
+ \centering
+ \includegraphics{images/edge_existence2.pdf}
+ \caption{Experimental verification of Theorem \ref{thm:perc} using data from our implementation of the rewiring model. Each datapoint is for a different edge in the complete graph $K_{50}$. The datapoints do in fact lie on curves of the form $\frac{c}{d(e)^2 + c}$.}
+\end{figure}
+
 \begin{prop}
 \label{prop:c}
 For large $n$, $c$ satisfies
- \begin{equation}
-  \frac{c\,n^2}{2} \int\limits_\Omega \int\limits_\Omega \frac{du \, dv}{d(u, v)^2 + c} = m.
- \end{equation}
+ \begin{equation*}
+  \int\limits_\Omega \int\limits_\Omega \frac{du \, dv}{d(u, v)^2 + c} = \frac{2m}{c\,n^2}.
+ \end{equation*}
 where $\Omega$ is the opinion space $[0, 1]^D$.
 \end{prop}
 \begin{proof}
@@ -160,6 +169,112 @@ For $D=1$, the double integral in Theorem \ref{prop:c} reduces to
 We evaluate this integral to reach our result.
 \end{proof}
 Proposition $\ref{prop:c1D}$ is useful because it allows us to numerically solve for $c$ in the one-dimensional case.
+
+\section{Length Distribution}
+\begin{defn}
+ A looping opinion space of dimension $D$ is $\mathbb{R}^D$ with the identity $(x_1, x_2, \ldots, x_D) = (x_1 + n_1, x_2 + n_2, \ldots, x_D + n_D)$ for any $(n_1, n_2, \ldots n_D) \in \mathbb{Z}^D$. 
+\end{defn}
+This means that a looping opinion space still has a finite volume of 1, but no ``boundaries''; e.g. in the one-dimensional case, $x = 0$, $x = 1$, and $x = 2$ all refer to the same location.
+
+\begin{theorem}
+\label{thm:length-distro}
+ For a graph with large $n$ at equilibrium on a looping opinion space, the probability density function for the continuous random variable $d(e)$ with $e$ selected randomly is
+ \begin{equation}
+ \sigma(s) = 
+	\begin{cases}
+		\frac{n^2}{2m}\,\frac{c}{s^2 + c} A(\sqrt{2} s) & \mbox{if } s \leq \frac{1}{2} \\
+	   	\frac{n^2}{2m}\,\frac{c}{s^2 + c} \left[A(\sqrt{2} s) - A\left(\frac{\sqrt{2}D}{D-1}\left(s-\frac{1}{2}\right)\right)\right] & \mbox{if } s > \frac{1}{2}
+	\end{cases}
+  \end{equation}
+Where
+  \begin{equation}
+	A(l) = \frac{\sqrt{2^{D+1}\;D} \; l^{D-1}}{(D-1)!}
+  \end{equation} 
+\end{theorem}
+\begin{proof}
+For convenience, let $x = (0, 0, \ldots 0)$; this choice does not affect the validity of the following argument because all vertices are equivalent in a looping opinion space with a uniform distribution of vertices. Let $R$ be the region of the opinion space such that $d(x, u) \leq s$ for all $u \in R$. For $s \leq \frac{1}{2}$, $R$ is a $D$-dimensional cross polytope with vertices $(\pm s, 0, 0, \ldots), (0, \pm s, 0, \ldots),$ and so on. Note that $R$ is only a cross polytope for $s \leq \frac{1}{2}$; otherwise, $R$ begins to overlap with itself. By the Pythagorean Theorem, the edge length of $R$ is $\sqrt{2}\,s$.
+
+For specific vertex $x$, we want to find the number of edges $\{x, u\}$ such that $s \leq d(x, u) \leq s + \Delta s.$ Let $R^*$ be the region that contains all such $u$.  The volume of $R^*$ is the surface area of $R$ times $\Delta s$ for $\Delta s \to 0$, as $R^*$ can be ``unraveled'' into a $(D-1)$-dimensional prism that has the surface area $A_{R^*}(s)$, with height $\Delta s$. The surface area of the $D$-dimensional cross polytope of edge length $l$ is
+\begin{equation}
+A(l) = \frac{\sqrt{2^{D+1}\;D} \; l^{D-1}}{(D-1)!}
+\end{equation} 
+For $s \leq \frac{1}{2}$, $R^*$ has the shape of across polytope, so $A_{R^*}(s) = A(\sqrt{2}s)$ (Figure 2a). For $s > \frac{1}{2}$, we must subtract the amount of surface area that overlaps with itself. As seen in Figure 2, the overlapping region generates another cross polytope, $R_o$. To find $A_{R^*}(s)$, subtract the surface area of $R_o$ from $A(\sqrt{2}s)$ (Figure 2b). To get the surface area of $R_o$, note that the edge length of $R_o$ grows linearly with $s$. For any dimension $D$, the edge length of $R_o$ at $s = \frac{1}{2}$ is $0$ (Figure 2a), and its edge length at $s = \frac{D}{2}$ is $\frac{D}{\sqrt{2}}$ (Figure 2c). Thus, the edge length of $R_o$ is given by the linear equation
+\begin{equation}
+	L(s) = \frac{\sqrt{2}D}{D-1}\left(s-\frac{1}{2}\right)
+\end{equation}
+And its surface area is given by $A\left(\frac{\sqrt{2}D}{D-1}\left(s-\frac{1}{2}\right)\right)$.
+\begin{figure}
+	\begin{subfigure}[b]{1\textwidth}
+        \centering
+        \includegraphics[scale=.6]{images/overlappingExplanation_1.jpg}
+        \caption{$s \leq \frac{1}{2}$}
+        \label{fig:first}
+    \end{subfigure}
+    \begin{subfigure}[b]{1\textwidth}
+        \centering
+        \includegraphics[scale=.6]{images/overlappingExplanation_2.jpg}
+        \caption{$\frac{1}{2} < s < 1$. The gray region is the surface area of interest.}
+        \label{fig:second}
+    \end{subfigure}
+    \begin{subfigure}[b]{1\textwidth}
+        \centering
+        \includegraphics[scale=.5]{images/overlappingExplanation_3.jpg}
+        \caption{$s = 1$}
+        \label{fig:third}
+    \end{subfigure}
+    \caption{Illustration of $R$ for $D = 2$. For $s \leq \frac{1}{2}$ (a), the surface area of the cross polytope gives the desired surface area. For $\frac{1}{2} < s < 1$ (b) or $s = 1$ (c), the surface area of the cross polytope created by the overlapping area (shown on the right) must be subtracted.}
+    \label{fig:examples}
+\end{figure}
+
+Even though the notion of surface area does not make sense in the one-dimensional case, this method still correctly predicts correct length of $R^*$. So, now we have
+\begin{equation}
+	A_{R}(s) = 
+\begin{cases}
+	A(\sqrt{2} s) & \mbox{if } s \leq \frac{1}{2} \\
+   	A(\sqrt{2} s) - A\left(\frac{\sqrt{2}D}{D-1}\left(s-\frac{1}{2}\right)\right) & \mbox{if } s > \frac{1}{2}
+\end{cases}
+\end{equation}
+
+
+Because $n$ vertices are spread evenly throughout the opinion space, the number of \emph{possible} edges $\{x, u\}$ such that $u \in R^*$ is 
+$n \, A_{R}(s) \, \Delta s.$ And from Theorem \ref{thm:perc}, we know that the probability a specific one of these edges is present is $\frac{c}{s^2 + c}$. So, for specific vertex $x$, we expect there to be 
+\begin{equation}
+n\,A_{R^*}(s)\,\frac{c}{s^2 + c} \; \Delta s 
+\end{equation}
+ edges $\{x, u\}$ such that $s \leq d(x, u) \leq s + \Delta s.$ 
+
+This argument can be repeated for every vertex $x$ in the graph; however, doing so will count each edge twice. Therefore the number of edges $e$ such that $s \leq d(e) \leq s + \Delta s$ is $\frac{n^2}{2}\,\frac{c}{s^2 + c}\,A_{R}(s) \; \Delta s $. When selecting a random edge, the probability that any given edge is selected is $\frac{1}{m}$. Thus $Pr(s \leq d(e) \leq s + \Delta s) = \frac{n^2}{2m}\,\frac{c}{s^2 + c}\,A_{R}(s) \; \Delta s $ for $\Delta s \to 0$.
+
+By the definition of probability density function, 
+\begin{equation}
+ \int\limits_{s}^{s + \Delta s} \sigma(t)\,dt = Pr(s \leq d(e) \leq s + \Delta s).
+\end{equation}
+For $\Delta s \to 0$, the integral on the LHS is equal to $\sigma(s) \, \Delta s$. This gives us
+ \begin{equation}
+ \sigma(s) = \frac{n^2}{2m}\,\frac{c}{s^2 + c} A_{R}(s)
+ \end{equation}
+\end{proof}
+
+\begin{figure}
+ \centering
+ 	\begin{subfigure}[b]{.5\textwidth}
+		\includegraphics[scale=.45]{images/length_distro1.pdf}
+ 	\end{subfigure}
+ 	 \begin{subfigure}[b]{.4\textwidth}
+		\includegraphics[scale=.45]{images/length_distro2.pdf}
+ 	\end{subfigure}
+ 	 \begin{subfigure}[b]{.4\textwidth}
+		\includegraphics[scale=.45]{images/length_distro3.pdf}
+ 	\end{subfigure}
+ \caption{The $\sigma(s)$ given by Theorem \ref{thm:length-distro} matchs experimental data. Data was collected using the constructive model. The graphs had 2000 vertices and mean degree 4. Note that the $D = 1$ plot has a different scale on the horizontal axis than the other two plots.}
+\end{figure}
+
+\begin{figure}
+ \centering
+ \includegraphics[scale=.7]{images/sigma_multi.pdf}
+ \caption{Plot of $\sigma(s)$ for higher dimensions on graphs with 2000 vertices and mean degree 4. Theorem \ref{thm:length-distro} is not as useful for higher dimensions, as it only applies for $s \leq 1/2$ and edges can have length as great as $D$. }
+\end{figure}
+
 \section{Expected Degree}
 \begin{theorem}
 \label{thm:lambdax}
@@ -173,6 +288,7 @@ The expected number of vertices in an interval $I$ with dimensions $du_1, du_2, 
 \end{proof}
 
 \begin{prop}
+\label{prop:lambdax1}
 For $D = 1$, The expected degree of a vertex $x = x_1$ is
  \begin{equation}
  \lambda(x) = n\sqrt{c}\left[\tan^{-1}\left(\frac{x}{\sqrt{c}}\right)+\tan^{-1}\left(\frac{1-x}{\sqrt{c}}\right)\right]
@@ -187,50 +303,61 @@ Evaluating the integral yields our result.
 \end{proof}
 
 \begin{figure}
- \centering
- \includegraphics[scale=.8]{images/lambdaofx.pdf}
- \caption{A plot of expected degree $\lambda(x)$ vs. opinion $x$ when the mean degree is 8. The curve has reflectional symmetry across $x = \frac{1}{2}$ as expected.}
- \label{fig:lambdaofx}
+ \centering 
+ 	\begin{subfigure}[h]{1\textwidth}
+ 		\centering
+ 		\includegraphics[scale=.85]{images/lambda_verify.pdf}
+ 		\caption{Experimental verification of Proposition \ref{prop:lambdax1} using data taken from the constructive model. The datapoints lie slightly below the curve; this is a side effect of the vertices being spaced evenly in the opinion space rather than placed randomly. The graph had 500 vertices. The coefficient $c$ was calculated using Proposition \ref{prop:c1D}.}
+ 	\end{subfigure}
+ 	\qquad
+ 	\begin{subfigure}[h]{1\textwidth}
+ 		\centering
+ 		\includegraphics[scale=.85]{images/lambda_compare.pdf}
+ 		\caption{Comparison of $\lambda(x)$ for graphs of different sizes.}
+ 		\label{subfig:lambda-compare}
+ 	\end{subfigure}
+ \caption{Plots of expected degree $\lambda$ vs. opinion $x$ in the one-dimensional case with mean degree 4. The curves have reflectional symmetry across $x = \frac{1}{2}$ as expected.}
+ \label{fig:lambda}
 \end{figure}
 
-\begin{prop}
-\label{prop:R1}
- For $D=1$, $\lambda(x) \in R_1 = \left[n \sqrt{c}\, \tan^{-1}\left(\frac{1}{\sqrt{c}}\right),2 n\sqrt{c}\,  \tan^{-1}\left(\frac{1}{2 \sqrt{c}}\right)\right]$ for any $x$.
- \end{prop}
+Figure \ref{fig:lambda} shows experimental verification of Proposition \ref{prop:lambdax1} --- and thus Theorem \ref{thm:lambdax} --- and a comparison of $\lambda(x)$ for graphs of different sizes. This second plot shows that, for reasonably large $n$, all vertices except those that are very close to the boundaries of the opinion space have $\lambda \approx \overline{k}$ where $\overline{k}$ is the mean degree. 
+
+We posit that vertices $x$ such that $\min(x, 1 - x)$ is greater than the lengths of most edges have $\lambda \approx \overline{k}$; this is because almost none of the edges $\{x, u\}$ reach the boundary of the opinion space. On the other hand, vertices $x$ such that $\min(x, 1 - x)$ is not greater than the lengths of most edges have $\lambda < \overline{k}$ because the boundary of the opinion space prevents some edges $\{x, u\}$ that would otherwise be present. 
+
+From Figure \ref{subfig:lambda-compare}, we see that the threshold $\min(x, 1 - x)$ at which $\lambda(x)$ begins to drop decreases with $n$. Table \ref{tbl:dist-distro} shows: first, that the mean edge distance seems to decrease as $n$ increases --- this is because, as vertices become more tightly-packed, shorter edges become possible --- and secondly, that the standard deviation from that mean also decreases as $n$ increases. These two facts explain why, for greater $n$, vertices can be closer to the boundary of the opinion space while still having $\lambda \approx \overline{k}.$
+
+\begin{table}
+\centering
+\begin{tabular}{ c | c | c }
+  $n$ & $\overline{d}$ & $\sigma$ \\ \hline
+  15 & .16 & .14 \\
+  50 & .042 & .058 \\
+  500 & .0085 & .032 \\
+\end{tabular}
+\caption{Means and standard deviations of edge-distance distributions. Data was collected from the constructive model. The mean degree was 4.}
+\label{tbl:dist-distro}
+\end{table}
+
+\newpage
+\section{Degree Distribution}
+The degree distribution of the vertices at equilibrium is Poisson.
 \begin{proof}
-First we determine the critical values of $\lambda(x)$ with $x \in [0, 1]$. The derivative is
-\begin{equation}
- \frac{d\lambda}{dx} = n\left(\frac{1}{1+\frac{x^2}{c}} - \frac{1}{1+\frac{(1-x)^2}{c}} \right).
-\end{equation}
-Thus $\frac{d\lambda}{dx} = 0$ if and only if $x^2 = (1 - x)^2$; so $x=\frac{1}{2}$ is the one critical value. From Figure \ref{fig:lambdaofx}, we see that $\lambda(\frac{1}{2})$ is the maximum expected degree. From the figure, it is also clear that the minima of $\lambda(x)$ lie at the endpoints of the interval. Thus the range of possible expected degrees is 
-$[\lambda(0)=\lambda(1), \lambda(\frac{1}{2})] = \left[n \sqrt{c}\, \tan^{-1}\left(\frac{1}{\sqrt{c}}\right),2 n\sqrt{c}\,  \tan^{-1}\left(\frac{1}{2 \sqrt{c}}\right)\right]$. 
+Given a vertex with opinion $x$, the probability that this vertex is of degree $k$ is given by
+	\begin{equation}
+		p\left(deg(x)=k\right) = p(\{x, z\} \in E)^k (1 - p(\{x, z\} \in E))^{n-1-k}
+	\end{equation}
+where $p(\{x, z\} \in E)$ denotes the probability that a vertex of opinion $x$ is connected to a random vertex. This is equal to the total number of vertices that $x$ is connected to, divided by $n$. For large $n$, this is given by the equation
+	\begin{equation}
+		p(\{x, z\} \in E) = \frac{1}{n} \sum_{z \in V} \frac{n \cdot c}{d(x, z)^2 + c} = c \int\limits_\Omega \frac{dz}{d(v_x, z)^2 + c}
+	\end{equation}
+Using Equation 15, this is simply $\frac{\lambda(x)}{n}$. We know that for $x \ne 0^D, 1^D$, $\lambda(x)$ is some constant, so let $\frac{\lambda(x)}{n} = \eta$, for some constant $\eta$. We now have
+	\begin{equation}
+		p\left(deg(v_x)=k\right) = \eta ^k \left( 1 - \eta \right)^{n-1-k}
+	\end{equation}
+To get the unconditioned probability that a vertex has degree $k$, $p\left(deg(v)=k\right)$, we multiply by the condition that a vertex is of opinion $x$. Because vertices are randomly distributed, this is given by the constant $1/n$. Then, we sum it over all $n$ vertices.
+	\begin{equation}
+		p\left(deg(v)=k\right) =  \int\limits_\Omega \frac{1}{n} \cdot \eta ^k \left( 1 - \eta \right)^{n-1-k} n \ dx = \cdot \eta ^k \left( 1 - \eta \right)^{n-1-k}
+	\end{equation}
+	For large $n$, this is a Poisson distribution.
 \end{proof}
-
-\begin{prop}
- For $D=1$, the probability distribution function for the continuous random variable $\Lambda = \lambda(x)$ where $x$ is selected randomly from $[0, 1]$ is
- \begin{equation}
- f_\Lambda(\lambda) = \left\{
-     \begin{array}{lr}
-  \,\frac{dx}{d\lambda} & : \lambda \in R_1 \\
-  0 & : \lambda \notin R_1
-     \end{array}
-   \right..
-\end{equation}
-\end{prop}
-\begin{proof}
-$f_\Lambda(\lambda)$ is obviously 0 when $k$ is not in the range of possible expected degrees, $R_1$. Let $x(\lambda)$ give the opinion of a vertex with expected degree $\lambda$ and always return a value in $[0, 1/2]$. With $\Delta \lambda \to 0$, all vertices in the interval $[x(\lambda), x(\lambda + \Delta \lambda)]$ have expected degree $\lambda$. Because vertices are spread evenly within the opinion space, the number of vertices that have expected degree $\lambda$ is proportional to $x(\lambda + \Delta \lambda) - x(\lambda)$. Therefore
-\begin{equation}
- f_\Lambda(\lambda) = a \lim\limits_{\Delta \lambda \to 0} \frac{x(\lambda + \Delta \lambda) - x(\lambda)}{\Delta \lambda} = a \, \frac{dx}{d\lambda}
-\end{equation}
-for some constant $a$. To determine $a$, we note that the relationship 
-\begin{equation}
- \int\limits_{0}^\infty f_\Lambda(\lambda)\, d\lambda = 1
-\end{equation}
-must hold. However, it is only necessary to integrate over $R_1$, since $f_\Lambda(\lambda) = 0$ for $\lambda \notin R_1$. Thus we can substitute $a \, \frac{dx}{d\lambda}$ for $f_\Lambda(\lambda)$ and evaluate the integral.
-\begin{equation}
- a\int\limits_{R_1} \frac{dx}{d\lambda} \, d\lambda = a\int\limits_{0}^1 dx = a.
-\end{equation}
-So $a = 1$.
-\end{proof}z
-
 \end{document}

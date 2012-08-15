@@ -1,57 +1,115 @@
-import networkx
-import matplotlib
+import networkx as nx
+import matplotlib.pyplot as plt
 import random
 
-def dn(vec_x, vec_y):
-    D = len(vec_x)
+def distance(G, u, v):
     total = 0.0
 
-    for i in range(D):
-        total += abs(vec_x[i] - vec_y[i])
+    if G is not None and G.looping:
+        for i in range(G.D):
+            total += min(abs(u[i] - v[i]), u[i] + 1 - v[i],
+                v[i] + 1 - u[i])
+    else:
+        for i in range(len(u)):
+            total += abs(u[i] - v[i])
         
     return total
 
-def d(G, x, y):
-    vec_x = G.node[x]['op']
-    vec_y = G.node[y]['op']
-
-    return dn(vec_x, vec_y)
-
 def length(G, edge):
-    vec_x = G.node[edge[0]]['op']
-    vec_y = G.node[edge[1]]['op']
-    return dn(vec_x, vec_y)
+    return distance(G, edge[0], edge[1])
 
-#returns c in Theorem 2
-def k(G, m=0):
-    total = 0.0
+def iterate(G):
+    if '_edges' not in G.__dict__:
+        G._edges = G.edges()
 
-    for (u, u_data) in G.nodes_iter(True):
-        for (v, v_data) in G.nodes_iter(True):
-            if u < v:
-                total += (dn(u_data['op'], v_data['op'])**2 + 1.0)**-1
+    x, y = random.choice(G._edges)
 
-    if m == 0:
-        m = G.number_of_edges()
+    if random.random() < .5:
+        x, y = y, x
 
-    G.k = m / total
-    print G.k
-    return G.k
+    if G.degree(x) == G.n - 1:
+        return
+
+    #For geometric distance, use: 
+    #p = G.D**-.5
+    #For step distance, use:
+    p = 1.0/G.D
+    d_xy = distance(G, x, y)
+
+    if random.random() > p * distance(G, x, y):
+        return
+
+    z = x
+    while z == x or z == y or G.has_edge(x, z):
+        z = random.choice(G._nodes)
+
+    d_xz = distance(G, x, z)
+    
+    if G.alpha == 2 and d_xy < d_xz and random.random() > d_xy / d_xz:
+        return
+
+    G.remove_edge(x, y) 
+    G.add_edge(x, z)
+
+    if (x,y) in G._edges:
+        G._edges.remove((x, y))
+    else:
+        G._edges.remove((y, x))
+
+    #not sure if this is correct. We might want to always append (x,z)
+    #since edge_existence.remake_graph deletes edges by using ._edges
+    if (x,z) in G._edges:
+        G._edges.append((x, z))
+    else:
+        G._edges.append((z, x))
+
+def draw_graph(G):
+    pos = {}
+    if G.D == 1: #draws along a circle
+        radius = min(1.0, math.log(G.n))
+        for v in G.nodes_iter():
+            opinion = list(v)[0]
+            pos[v] = [radius * math.cos(opinion), radius * math.sin(opinion)]
+    else:
+        if G.D > 2:
+            print "Drawing based on first two opinions"
+        for v in G.nodes_iter():
+            pos[v] = list(v)[:2]
+
+    plt.plot([], [])
+
+    nx.draw(G, pos, plt.axes(), with_labels=False, node_size=50,
+        edge_color='#555555')
+    plt.axis('on')
+    plt.xlim(0, 1)
+    plt.ylim(0,1)
+    plt.title(r'd = 2, $\alpha$ = 1')
+    plt.show()
+
+def plot_dd(G):
+    plt.hist(G.degree().values())
+    plt.title(r'Degree Distribution: d = 2, $\alpha$ = 1')
+    plt.show()
+    plt.savefig('opdd_2_1.pdf')
+
+#******** Methods for getting G.k (Theorem 2 ********
 
 #uses bisection method to find c values, and averages them.
-def getC(G, iterations_for_getting_C):
+def getC(G, m, stat_size=1, tol=10**-8, start=0.0001):
     print "Calculating G.c (Theorem 2)"
+    G.m = m
+
     c_values = []
-    n = G.number_of_nodes()
-    m = G.number_of_edges()
-    D = G.D
-    for i in xrange(iterations_for_getting_C):
-        if i % (iterations_for_getting_C/10) == 0:
-            print "%d percent" % (100 * i / iterations_for_getting_C)
-        H = make_graph(n, m, D)
-        c_values.append(bisect(getPSumMinusM, H, 0.0, 1, 0.000001))
+    for i in xrange(stat_size):
+
+        if stat_size > 9 and i % (stat_size/10) == 0:
+            print "%d percent" % (100 * i / stat_size)
+
+        H = make_opinion_graph(G.n, G.m, G.D, G.looping)
+        c_values.append(bisect(getPSumMinusM, H, 0.0, start, tol)) 
+
     c = sum(c_values)/len(c_values)
-    print "G.c = %f" % c
+    print c
     return c
 
 def bisect(f, G, left, right, tol ):
@@ -62,112 +120,107 @@ def bisect(f, G, left, right, tol ):
         c=(a+b)/2.0
         if( b-c < tol ):
             return c
-        if( f(G, b)>0 and f(G, c)<0 or f(G, b)<0 and f(G, c)>0 ):
+
+        fGb = f(G, b)
+        fGc = f(G, c)
+
+        if( fGb > 0 and fGc <0 or fGb <0 and fGc >0 ):
             a=c
         else:
             b=c
         currentIter += 1
+        print c
 
 #gives the sum of the P(e) for all edges in the complete
 #graph K_n minus m
 def getPSumMinusM(G, last):
     total = 0.0
+
     for v in G.nodes_iter():
         for u in G.nodes_iter():
-            if v < u:
-                total += float(last)/(d(G, u, v)**2 + last)
-    return total - G.number_of_edges()
+            if v[0] < u[0]:
+                total += float(last)/(distance(G, u, v)**2 + last)
 
-def random_opinions(G):
-    for v in G.nodes_iter():
-        G.node[v]['op'] = []
+    return total - G.m
 
-        for i in range(G.D):
-            G.node[v]['op'].append(random.random())
+#******** Methods for adding edges ********
 
-def construct(G, d_mean):
-    k(G, .5 * G.number_of_nodes() * d_mean) 
-    for (u, u_data) in G.nodes_iter(True):
-        for (v, v_data) in G.nodes_iter(True):
+def construct(G, param, param_name):
+    if param_name == 'k_mean':
+        c = getC(G, .5 * G.number_of_nodes() * param) 
+    elif param_name == 'c':
+        c = param
+    else:
+        print('incorrect param_name to construct! Must be \'k_mean\' or \'c\'')
+        return
+    G.c = c
+    for u in G.nodes_iter():
+        for v in G.nodes_iter():
 
-            if(u < v and 
+            if(u[0] < v[0] and 
                 random.random() <
-                G.k * (dn(u_data['op'], v_data['op'])**2 + 1.0)**-1):
+                c / (distance(G, u, v)**2 + c)):
                 G.add_edge(u, v)
 
-def reconstruct(G, d_mean):
+def reconstruct(G, k_mean):
     G.remove_edges_from(G.edges())
-    construct(G, d_mean)
+    construct(G, k_mean)
 
-def iterate(G):
-    G._edges = G.edges()
+#******** Graph creation - Version 1 ********
 
-    x, y = random.choice(G._edges)
-
-    if random.random() < .5:
-        x, y = y, x
-
-    #For geometric distance, use: 
-    #p = G.D**-.5
-    #For step distance, use:
-    p = G.D
-    d_xy = d(G, x, y)
-
-    if random.random() > p * d(G, x, y):
-        return
-
-    z = x
-    if G.degree(x) == G.number_of_nodes() - 1:
-        return
-    
-    while z == x or z == y or G.has_edge(x, z):
-        z = random.randint(0, G.number_of_nodes() - 1)
-
-    d_xz = d(G, x, z)
-
-    if d_xy < d_xz and random.random() > d_xy / d_xz:
-        return
-
-    G.remove_edge(x, y) 
-    G.add_edge(x, z)
-
-    if x < y:
-        G._edges.remove((x, y))
-    else:
-        G._edges.remove((y, x))
-
-    if x < z:
-        G._edges.append((x, z))
-    else:
-        G._edges.append((z, x))
-
-def draw_graph(G):
-    if G.D == 1:
-        pass
-    else:
-        pos = {}
-        for v in G.nodes_iter():
-            pos[v] = G.node[v]['op']
-
-        networkx.draw(G, pos)
-        matplotlib.pyplot.show()
-
-def make_graph(n, m, D):
-    G = networkx.gnm_random_graph(n, m)
+#Nodes are tuples that represent their opinion vector
+#Access the ith opinion by using node[i]
+def make_opinion_graph(n, m, D, alpha=2, looping=False):
+    G = nx.Graph()
     G.D = D
-    random_opinions(G)
+    G.n = n
+    G.m = m
+    G.alpha = alpha
+    G.looping = looping
+
+    nodeList = []
+    for i in xrange(n):
+        node = []
+        for j in xrange(D):
+            node.append(random.random())
+        nodeList.append(tuple(node))
+    G.add_nodes_from(nodeList)
+    G._nodes = G.nodes()
+    add_random_edges(G, m)
     return G
 
+def add_random_edges(G, m):
+    edges_added = 0
+    while edges_added < m:
+        u = random.choice(G._nodes)
+        v = random.choice(G._nodes)
+        while u == v:
+            v = random.choice(G._nodes)
+        if not G.has_edge(u, v):
+            #(u, v) vs. (v, u) doesn't matter because networkx doesn't
+            #sort .edges() if they're tuples
+            #plus, there's a check in iterate ((x,y) in G._edges:) that
+            #makes sure the correct one is removed
+            G.add_edge(u, v)
+            edges_added += 1
+    G._edges = G.edges()
+
+def mean_distance(G):
+    total = 0.0
+
+    for edge in G.edges_iter():
+        total += distance(G, *edge)
+
+    return total / G.number_of_edges()
+
 if __name__ == '__main__':
-    n = 50000
-    k = 4
-    times = 10**7
-    D = 1
+    n = 50
+    k_mean = 4
+    times = 10**4
 
-    G = make_graph(n, .5 * n * k, D)
+    G = make_opinion_graph(n, .5 * n * k_mean, 2, 1) 
 
-    for i in range(times):
+    for i in xrange(times):
         iterate(G)
 
-    write_deg(G, .04)
-    #draw_graph(G)
+    draw_graph(G)
