@@ -8,6 +8,7 @@ data_miner
 *.xlsx
 *.pyc
 *.pdf
+!degree_model/data/*.pdf
 *.docx
 *.txt
 !README.txt

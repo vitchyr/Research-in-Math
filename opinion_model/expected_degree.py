@@ -23,16 +23,17 @@ def write_expected_deg(G, n, d_mean, D, times):
 
     #save data
     print "saving data"
-    outfile = open('expected_degree_{0}n_{1}k_{2}D.dat'.format(n, d_mean, D), 'w')
+    outfile = open('observed_degree_{0}n_{1}k_{2}D.dat'.format(n, d_mean, D), 'w')
     outfile.write(outstring)
     outfile.close()
 
 if __name__ == '__main__':
     n = 2000 
     d_mean = 4.0
-    D = 3
-    times = 10**6                               
+    D = 1
+    times = 10**6
+    alpha = 2
 
-    G = model.make_opinion_graph(n, 0.5 * d_mean * n, D)
+    G = model.make_opinion_graph(n, 0.5 * d_mean * n, D, alpha)
 
     write_expected_deg(G, n, d_mean, D, times)

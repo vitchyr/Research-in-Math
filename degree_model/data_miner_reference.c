@@ -7,10 +7,10 @@
 
 #include "model.h"
 
-void dd(int *distro, igraph_t *graph, int m)
+void dd(int *distro, igraph_t *graph, int n)
 {
     int i;
-    for(i = 0; i <= m; i++)
+    for(i = 0; i < n; i++)
     {
         distro[i] = 0;
     }
@@ -75,7 +75,7 @@ void dd_procedure(int n, int m, int times, double th_min, double th_step, double
     strcpy(outstring, "th\tdeg\tobserved freq\texpected freq\n");
 
     igraph_t graph;
-    int distro[m + 1];
+    int distro[n];
     double expectedDistro[n];
 
     double th;
@@ -87,13 +87,13 @@ void dd_procedure(int n, int m, int times, double th_min, double th_step, double
         iterate_many(&graph, th, times);    
 
         dd(distro, &graph, n); 
-        expected_dd(expectedDistro, get_d_mean(&graph), n, m, th);
+        expected_dd(expectedDistro, d_mean(&graph), n, m, th);
 
         int i;
-        for(i = 0; i <= m; i++)
+        for(i = 0; i < n; i++)
         {
             char buffer[max_line_length]; 
-            sprintf(buffer, "%f\t%d\t%d\n", th, i, distro[i]);
+            sprintf(buffer, "%f\t%d\t%d\t%f\n", th, i, distro[i], expectedDistro[i]);
             strcat(outstring, buffer);
         }
     }
@@ -132,48 +132,48 @@ double get_lc_frac(igraph_t *graph)
     return (double) max_size / (double) igraph_vcount(graph);
 } 
 
-double stats_procedure_loop(int n, double th, int times, double k, int stats_size)
+double stats_procedure_loop(int n, int m, int times, double th, int stats_size)
 {
     int i;
     double lc_frac_sum = 0.0;
     
-    igraph_t graph;
-    igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, n*k/2,
-            IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
     for(i = 0; i < stats_size; i++)
     {
+        igraph_t graph;
+
+        igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
+            IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
         iterate_many(&graph, th, times);    
+
         lc_frac_sum += get_lc_frac(&graph);
     }
 
     return lc_frac_sum / (double) stats_size;
 }
 
-void stats_procedure(int n, double th, int times, double k_min,
-    double k_step, double k_max, int stats_size)
+void stats_procedure(int n, int m, int times, double th_min,
+    double th_step, double th_max, int stats_size)
 {
-    printf("th = %f\n", th);
-    printf("k\tlc_frac\n");
-    int n_lines = n * (int) ((k_max - k_min) / k_step);
+    int n_lines = n * (int) ((th_max - th_min) / th_step);
     int max_line_length = 200;
     char outstring[n_lines * max_line_length];
-    strcpy(outstring, "k\tlc_frac\n");
+    strcpy(outstring, "th\tlc_frac\n");
 
-    double k, lc_frac;
-    for(k = k_min; k <= k_max + k_step/2; k += k_step)
+    double th, lc_frac;
+    for(th = th_min; th <= th_max + th_step/2; th += th_step)
     {
-        lc_frac = stats_procedure_loop(n, th, times, k, stats_size);    
+        printf("th = %f\n", th);
+        lc_frac = stats_procedure_loop(n, m, times, th, stats_size);    
 
         char buffer[max_line_length]; 
-        printf("%f\t%f\n", k, lc_frac);
-        sprintf(buffer, "%f\t%f\n", k, lc_frac);
+        sprintf(buffer, "%f\t%f\n", th, lc_frac);
         strcat(outstring, buffer);
     }
 
     char filename[200];
-    sprintf(filename, "stats_%dn_%fth_%dtimes_%fkmin_%fkstep_%fkmax_%dstatsize.dat", n, th, times,
-        k_min, k_step,
-        k_max, stats_size);
+    sprintf(filename, "stats_%d_%d_%d_%d%%_%d%%_%d%%_%d.dat", n, m, times,
+        (int) (100 * th_min), (int) (100 * th_step),
+        (int) (100 * th_max), stats_size);
     
     FILE *outfile = fopen(filename, "w");
     fputs(outstring, outfile);
@@ -182,24 +182,24 @@ void stats_procedure(int n, double th, int times, double k_min,
 
 void main(int argc, char *argv[])
 {
-    int n, times, stats_size = 0;
-    double th, k_min, k_step, k_max;
+    int n, m, times, stats_size = 0;
+    double th_min, th_step, th_max;
 
     if(argc > 6)
     {
         n = atoi(argv[1]);
-        th = atof(argv[2]);
+        m = atoi(argv[2]);
         times = atoi(argv[3]);
-        k_min = atof(argv[4]);
-        k_step = atof(argv[5]);
-        k_max = atof(argv[6]);
+        th_min = atof(argv[4]);
+        th_step = atof(argv[5]);
+        th_max = atof(argv[6]);
 
         if(argc > 7)
         {
             stats_size = atoi(argv[7]);
         }
     } else {
-        printf("Syntax: ./data_miner n th times k_min k_step k_max [stats_size]\n");
+        printf("Syntax: ./data_miner n m times th_min th_step th_max [stats_size]\n");
         printf("Exiting...\n");
         return;
     }
@@ -209,9 +209,8 @@ void main(int argc, char *argv[])
 
     if(stats_size == 0)
     {
-        return;
-        //dd_procedure(n, m, times, th_min, th_step, th_max);
+        dd_procedure(n, m, times, th_min, th_step, th_max);
     } else {
-        stats_procedure(n, th, times, k_min, k_step, k_max, stats_size);
+        stats_procedure(n, m, times, th_min, th_step, th_max, stats_size);
     }
 }
