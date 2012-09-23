@@ -111,8 +111,8 @@ double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
         if(i % interval == 0 && i != 0)
         {
             //TODO: uncomment to determine multiple
-            //igraph_diameter(graph, &diameter_tmp, 0, 0, 0, 1, 1);
-            //printf("%d // %g: ", i, diameter_tmp);
+            igraph_diameter(graph, &diameter_tmp, 0, 0, 0, 1, 1);
+            printf("%d: %g // ", i, diameter_tmp);
 
             if(!record)
             {

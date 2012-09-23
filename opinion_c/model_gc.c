@@ -131,8 +131,8 @@ double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
     {
         if(i % interval == 0 && i != 0)
         {
-            //UNCOMMENT
-            //printf("%d // %g: ", i, mean_distance(graph, opinions, m, D));
+            //TODO: uncomment to determine multiple
+            printf("%d: %g // ", i, mean_distance(graph, opinions, m, D));
 
             if(!record)
             {
@@ -179,11 +179,14 @@ void main(int argc, char *argv[])
     srand(seed);
 
     double gc_frac;
+
+    //TODO: set trials, multiple, n
     int trials = 10;
-    int multiple = 10000;
+    int multiple = 1000;
     n = 1000;
     double k_mean;
 
+    //TODO: set mean degree range
     for(k_mean = .6; k_mean <= 8.0; k_mean += .2)
     {
         m=(int) (.5 * k_mean * (double) n);
