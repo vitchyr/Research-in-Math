@@ -8,7 +8,7 @@ if __name__ == '__main__':
 
     k = 4
     D = 1
-    times = 1*10**2
+    times = 1*10**3
     stats_size = 50
     alpha = 2
 
