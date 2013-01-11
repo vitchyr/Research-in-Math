@@ -5,17 +5,18 @@
 #include <math.h>
 
 #define MAX_I 10000000000
-#define MULTIPLE 1//100000 //iterations per vertex until stable
+#define MULTIPLE 1000000 //iterations per vertex until stable
 #define ITERATIONS 100000000 //iterations until stable
-#define TRIALS_PER_GRAPH 100
+#define TRIALS_PER_GRAPH 50
 #define TRIALS_PER_N 1
 #define DEGREE_DIST 0 //record degree distribution?
 
-#define MIN 300
-#define MAX 300
+#define MIN 1200
+#define MAX 1200
 #define STEP 100
 
-#define TESTING 1	//use to test different multiples
+#define PERCENT 101	//how often do you want a percent update?
+#define TESTING 0	//use to test different multiples
 #define PRINTLOTS 0 //to determine multiple by continuely running
 #define USE_ITER 0  //(0) wait until a certain iterations per node
 					//(1) wait until a certain number of iterations
@@ -146,7 +147,7 @@ double get_pw_distance(igraph_t *graph, int n){
 	igraph_vector_ptr_t components;
 	igraph_vector_ptr_init(&components, 1);
 	//WARNING: assumes LC > half
-	igraph_decompose(graph, &components, IGRAPH_WEAK, -1, n/2);
+	igraph_decompose(graph, &components, IGRAPH_WEAK, -1, 2);
 	igraph_t * buf, * largest_component;
 	int max_size = 0, buf_size = 0;
 	igraph_real_t pwd;
@@ -173,10 +174,17 @@ double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
 
     for(i = 0; i < MAX_I; i++)
     {
-#if TESTING
-		if(i % (ITERATIONS/10) == 0 && i != 0 && !record){
+#if (PERCENT < 100 && PERCENT > 0)
+#if USE_ITER
+		if(i % (ITERATIONS/100*PERCENT) == 0 && i != 0 && !record){
 			printf("%d percent \n", (int)((double)i / (double)ITERATIONS * 100));
 		}
+#else
+
+		if(i % (multiple*n/100*PERCENT) == 0 && i != 0 && !record){
+			printf("%d percent \n", (int)((double)i / ((double) multiple*n) * 100));
+		}
+#endif
 #endif
         if(i % interval == 0 && i != 0)
         {
@@ -190,7 +198,9 @@ double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
 				if(i > ITERATIONS){
 #else
                 if(i > multiple*n && multiple != 0){ //multiple = 0  to never record (debugging)
+#if TESTING
 					printf("****************** RECORDING ******************\n");
+#endif
 #endif					
                     record = 1;
                 }
@@ -294,6 +304,7 @@ void main(int argc, char *argv[])
 
         for(i = 0; i < trials; i++)
         {
+			printf("Trial %d for n = %d.\n", i, n);
             igraph_t graph;
             igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNM, n, m,
                 IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
@@ -319,7 +330,7 @@ void main(int argc, char *argv[])
 
     printf("\n%s\n", outstring);
 	FILE *pfile = NULL;
-	char *filename = "output.dat";
+	char *filename = "output12.dat";
     pfile = fopen(filename, "w");
     if(pfile == NULL)
 	{
