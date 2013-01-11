@@ -5,18 +5,19 @@
 #include <math.h>
 
 #define MAX_I 10000000000
-#define MULTIPLE 1000 //iterations per vertex until stable
-#define ITERATIONS 10000000 //iterations until stable
+#define MULTIPLE 1//100000 //iterations per vertex until stable
+#define ITERATIONS 100000000 //iterations until stable
 #define TRIALS_PER_GRAPH 100
 #define TRIALS_PER_N 1
 #define DEGREE_DIST 0 //record degree distribution?
 
-#define MIN 1000
-#define MAX 1000
+#define MIN 300
+#define MAX 300
 #define STEP 100
 
-#define PRINTLOTS 0
-#define USE_ITER 1  //(0) wait until a certain iterations per node
+#define TESTING 1	//use to test different multiples
+#define PRINTLOTS 0 //to determine multiple by continuely running
+#define USE_ITER 0  //(0) wait until a certain iterations per node
 					//(1) wait until a certain number of iterations
 					//until you test to see if it's stable
 
@@ -172,22 +173,25 @@ double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
 
     for(i = 0; i < MAX_I; i++)
     {
+#if TESTING
+		if(i % (ITERATIONS/10) == 0 && i != 0 && !record){
+			printf("%d percent \n", (int)((double)i / (double)ITERATIONS * 100));
+		}
+#endif
         if(i % interval == 0 && i != 0)
         {
 #if PRINTLOTS
-            //TODO: uncomment to determine multiple
 			buf = get_pw_distance(graph, n);
 			printf("%d: %.5g\n", i, buf);
 #endif
 
             if(!record){
-#if !USE_ITER
-                if(i > multiple*n && multiple != 0){ //multiple = 0  to never record (debugging)
-#endif
 #if USE_ITER
 				if(i > ITERATIONS){
-#endif					
+#else
+                if(i > multiple*n && multiple != 0){ //multiple = 0  to never record (debugging)
 					printf("****************** RECORDING ******************\n");
+#endif					
                     record = 1;
                 }
             } else {
@@ -215,7 +219,9 @@ double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
                     igraph_vector_destroy(&deg_vector);
                 } else {
 					buf = get_pw_distance(graph, n);
+#if TESTING
 					printf("%d: %.5g\n", i, buf);
+#endif
                     pw_distance_sum += buf;
                 }
 
@@ -269,7 +275,11 @@ void main(int argc, char *argv[])
 
     double pw_distance_sum;
     char outstring[1000];
+	outstring[0] = '\0';
 	strcat(outstring, "n\tpair-wise distance\n");
+#if !TESTING
+	printf("n\tpair-wise distance\n");
+#endif
 
     int trials = TRIALS_PER_N;
     int multiple = MULTIPLE; //iterations per vertex until stable
@@ -297,11 +307,29 @@ void main(int argc, char *argv[])
 
         char buffer[100];
         sprintf(buffer, "%d\t%g\n", n, pw_distance_sum);// (double) trials);
+#if TESTING
 		printf("****************************************\n");
         printf("%s", buffer);
 		printf("****************************************\n");
+#else
+		printf("%s", buffer);
+#endif
         strcat(outstring, buffer);
     }
 
-    //printf("\n%s\n", outstring);
+    printf("\n%s\n", outstring);
+	FILE *pfile = NULL;
+	char *filename = "output.dat";
+    pfile = fopen(filename, "w");
+    if(pfile == NULL)
+	{
+		printf("Error opening %s for writing. Program terminated.", filename);
+	}
+	/*
+	int i = 0;
+    for(i = 0 ; i < sizeof outstring/sizeof outstring[0] ; i++)
+    	fputs(outstring[i], pfile);
+	*/
+	fputs(outstring, pfile);
+    fclose(pfile);
 }
