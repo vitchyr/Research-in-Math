@@ -2,6 +2,7 @@ data_miner
 *.o
 *.dat
 !degree_model/data/*.dat
+!opinion_model/jan2013_data/*.dat
 *.aux
 *.log
 *.synctex.gz

@@ -16,15 +16,21 @@ y1 = []
 
 for line in f1:
     datum = line.replace('\n','').split('\t')
-    x1.append(function(int(datum[0])))
+    x1.append(int(datum[0]))
     y1.append(float(datum[1]))
 
 f1.close()
 
+##x1 = [1,2,3,4,5]
+##y1 = [2,4,8,16,32]
+
+x1 = np.array(x1)
+y1 = np.array(y1)
+
 #Fitting power law:
-popt, pcov = curve_fit(function, x, y);
-print "popt: " + popt
-print "pcov: " + pcov
+popt, pcov = curve_fit(function, x1, y1);
+print "popt: " + str(popt)
+print "pcov: " + str(pcov)
 
 #Labels:
 plt.scatter(x1,y1, c='b', label=r'$\alpha$ = 1, exponent = ?')
