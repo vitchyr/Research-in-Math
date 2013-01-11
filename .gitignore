@@ -15,3 +15,5 @@ data_miner
 opinion_model/*.png
 opinion_model/*.svg
 opinion_model/*.docx
+test*
+go

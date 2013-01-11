@@ -4,6 +4,22 @@
 #include <string.h>
 #include <math.h>
 
+#define MAX_I 10000000000
+#define MULTIPLE 1000 //iterations per vertex until stable
+#define ITERATIONS 10000000 //iterations until stable
+#define TRIALS_PER_GRAPH 100
+#define TRIALS_PER_N 1
+#define DEGREE_DIST 0 //record degree distribution?
+
+#define MIN 1000
+#define MAX 1000
+#define STEP 100
+
+#define PRINTLOTS 0
+#define USE_ITER 1  //(0) wait until a certain iterations per node
+					//(1) wait until a certain number of iterations
+					//until you test to see if it's stable
+
 double d(double *opinions, int D, igraph_integer_t x, igraph_integer_t y)
 {
     int i;
@@ -18,6 +34,7 @@ double d(double *opinions, int D, igraph_integer_t x, igraph_integer_t y)
     return total;
 }
 
+/*don't needs this.  use igraph_average_path_length()
 double mean_distance(igraph_t *graph, double *opinions, int m, int D)
 {
     igraph_integer_t x, y, edge;
@@ -31,6 +48,8 @@ double mean_distance(igraph_t *graph, double *opinions, int m, int D)
 
     return total / (double) m;
 } 
+*/
+
 
 void iterate(igraph_t *graph, double *opinions, int n, int m, 
     int D, int alpha)
@@ -98,37 +117,80 @@ void generate_opinions(int n, int D, double *opinions)
     }
 }
 
+/*  This is using clusters
+double get_pw_distance(igraph_t *graph){
+    igraph_integer_t no;
+	igraph_vector_t membership, csize;
+	igraph_vector_init(&membership, 1);
+	igraph_vector_init(&csize, 1);
+	//TODO: use pairwise distance instead of diameter
+	igraph_clusters(graph, &membership, &csize, &no, IGRAPH_WEAK);
+	if(VECTOR(membership)[0] == VECTOR(membership)[1]){
+		printf("they're the same!\n");
+	} else {
+		printf("they're different\n");
+	}
+	int t;
+	printf("I think the LC is component %f", VECTOR(csize)[1]);
+	
+	for(t =0; t < 800; t++){
+		printf("vertex %d belongs to component %f", t, VECTOR(membership)[t]);
+	}
+	igraph_vector_destroy(&membership);
+	igraph_vector_destroy(&csize);
+	return 0.0;
+} */
+
+double get_pw_distance(igraph_t *graph, int n){
+	igraph_vector_ptr_t components;
+	igraph_vector_ptr_init(&components, 1);
+	//WARNING: assumes LC > half
+	igraph_decompose(graph, &components, IGRAPH_WEAK, -1, n/2);
+	igraph_t * buf, * largest_component;
+	int max_size = 0, buf_size = 0;
+	igraph_real_t pwd;
+	int i;
+	for(i = 0; i < igraph_vector_ptr_size(&components); i++){
+		buf = (igraph_t*) (igraph_vector_ptr_e(&components, i));
+		buf_size = igraph_vcount(buf);
+		if (buf_size > max_size){
+			max_size = buf_size;
+			largest_component = buf;
+		}
+	}
+	igraph_average_path_length(largest_component, &pwd, 0, 0);
+	igraph_vector_ptr_destroy_all(&components);
+	return (double) pwd;
+}
+
 double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
     int alpha, int interval, int multiple, int dd)
 {
-    int i, j = 0, k, record = 0, trials = 100;
+    int i, j = 0, k, record = 0, trials = TRIALS_PER_GRAPH;
     int data[trials * n];
-    double diameter = 0.0;
-    igraph_integer_t diameter_tmp;
+    double pw_distance_sum = 0.0, buf = 0.0;
 
-    for(i = 0; i < 1000000000; i++)
+    for(i = 0; i < MAX_I; i++)
     {
         if(i % interval == 0 && i != 0)
         {
+#if PRINTLOTS
             //TODO: uncomment to determine multiple
-            igraph_diameter(graph, &diameter_tmp, 0, 0, 0, 1, 1);
-            printf("%d: %g // ", i, diameter_tmp);
+			buf = get_pw_distance(graph, n);
+			printf("%d: %.5g\n", i, buf);
+#endif
 
-            if(!record)
-            {
-                //char input = getchar();
-
-                /*if(input == 'q')
-                {
-                    break;
-                }*/
-
-                if(i > multiple*n)
-                {
+            if(!record){
+#if !USE_ITER
+                if(i > multiple*n && multiple != 0){ //multiple = 0  to never record (debugging)
+#endif
+#if USE_ITER
+				if(i > ITERATIONS){
+#endif					
+					printf("****************** RECORDING ******************\n");
                     record = 1;
                 }
-            } else
-            {
+            } else {
                 if(j == trials)
                 {
                     break;
@@ -152,8 +214,9 @@ double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
                     igraph_vs_destroy(&vs);
                     igraph_vector_destroy(&deg_vector);
                 } else {
-                    igraph_diameter(graph, &diameter_tmp, 0, 0, 0, 1, 1);
-                    diameter += ((double)diameter_tmp) / trials;
+					buf = get_pw_distance(graph, n);
+					printf("%d: %.5g\n", i, buf);
+                    pw_distance_sum += buf;
                 }
 
                 j++;
@@ -181,7 +244,7 @@ double procedure(igraph_t *graph, double *opinions, int n, int m, int D,
         fclose(outfile);
     } 
 
-    return diameter;
+    return pw_distance_sum / trials;
 }
 
 void main(int argc, char *argv[])
@@ -204,20 +267,20 @@ void main(int argc, char *argv[])
     unsigned int seed = (unsigned int)time(NULL);
     srand(seed);
 
-    double diameter;
+    double pw_distance_sum;
     char outstring[1000];
+	strcat(outstring, "n\tpair-wise distance\n");
 
-    //TODO: set trials and multiple
-    int trials = 10;
-    int multiple = 10000;
+    int trials = TRIALS_PER_N;
+    int multiple = MULTIPLE; //iterations per vertex until stable
+	int degreeDistro = DEGREE_DIST;
 
-    //TODO: set n range and increment
-    for(n = 800; n <= 1000; n += 100)
+    for(n = MIN; n <= MAX; n += STEP)
     {
         m = 2 * n;
 
         int i;
-        diameter = 0;
+        pw_distance_sum = 0;
 
         for(i = 0; i < trials; i++)
         {
@@ -228,13 +291,15 @@ void main(int argc, char *argv[])
             double opinions[n][D];
             generate_opinions(n, D, &opinions[0][0]);
 
-            diameter += procedure(&graph, &opinions[0][0], n, m,
-                D, alpha, interval, multiple, 0) / trials;
+            pw_distance_sum += procedure(&graph, &opinions[0][0], n, m,
+                D, alpha, interval, multiple, degreeDistro)/trials;
         }
 
         char buffer[100];
-        sprintf(buffer, "%d\t%g\n", n, diameter);
+        sprintf(buffer, "%d\t%g\n", n, pw_distance_sum);// (double) trials);
+		printf("****************************************\n");
         printf("%s", buffer);
+		printf("****************************************\n");
         strcat(outstring, buffer);
     }
 

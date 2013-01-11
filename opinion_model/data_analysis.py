@@ -36,19 +36,19 @@ f1.close()
 ##f2.close()
 
 #Fitting lines:
-slope, intercept, r_value, p_value, std_err = stats.linregress(x1,y1)
+slope1, intercept, r_value, p_value, std_err = stats.linregress(x1,y1)
 coefs1 = np.lib.polyfit(x1, y1, 1)
 fit_y1 = np.lib.polyval(coefs1, x1)
 plt.plot(x1, fit_y1, 'b-')
 
-##slope, intercept, r_value, p_value, std_err = stats.linregress(x2,y2)
+##slope2, intercept, r_value, p_value, std_err = stats.linregress(x2,y2)
 ##coefs2 = np.lib.polyfit(x2, y2, 1)
 ##fit_y2 = np.lib.polyval(coefs2, x2)
 ##plt.plot(x2, fit_y2, 'g-')
 
 #Labels:
-plt.scatter(x1,y1, c='b', label=r'$\alpha$ = 1')
-##plt.scatter(x2,y2, c='g', label=r'$\alpha$ = 2')
+plt.scatter(x1,y1, c='b', label=r'$\alpha$ = 1, slope =' + slope1)
+##plt.scatter(x2,y2, c='g', label=r'$\alpha$ = 2, slope =' + slope2)
 plt.ylabel(headers[1])
 ##plt.xlabel(headers[0])
 plt.xlabel("$Log(" + headers[0] +")$")
